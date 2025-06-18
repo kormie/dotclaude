@@ -4,7 +4,7 @@
 [user]
     name = David Kormushoff
     email = kormie@gmail.com
-    signingkey = CC88252F9D88566B
+	signingkey = /Users/david.kormushoff/.ssh/id_ed25519.pub
 
 [init]
     defaultBranch = main
@@ -146,3 +146,5 @@
 # Include local/private config if it exists
 [include]
     path = ~/.gitconfig.local
+[gpg "ssh"]
+	allowedSignersFile = /Users/david.kormushoff/.ssh/allowed_signers
