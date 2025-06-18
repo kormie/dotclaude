@@ -1,0 +1,308 @@
+#!/bin/bash
+
+# tmux-claude-workspace - Set up optimized tmux workspace for Claude Code development
+# Usage: tmux-claude-workspace [project-name] [feature1] [feature2]
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+NC='\033[0m' # No Color
+
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+log_workspace() {
+    echo -e "${PURPLE}[WORKSPACE]${NC} $1"
+}
+
+# Default configuration
+PROJECT_NAME="${1:-$(basename "$(pwd)")}"
+FEATURE1="${2:-feature-1}"
+FEATURE2="${3:-feature-2}"
+SESSION_NAME="claude-dev-${PROJECT_NAME}"
+
+# Check if we're in a git repository
+check_git_repo() {
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        log_error "Not in a git repository. Please run from within a git repo."
+        exit 1
+    fi
+}
+
+# Check if tmux is available
+check_tmux() {
+    if ! command -v tmux &> /dev/null; then
+        log_error "tmux is not installed. Please install tmux first."
+        exit 1
+    fi
+}
+
+# Check if claude-code is available
+check_claude_code() {
+    if ! command -v claude-code &> /dev/null; then
+        log_warn "claude-code command not found. Will use placeholders in tmux panes."
+        return 1
+    fi
+    return 0
+}
+
+# Create git worktrees for parallel development
+setup_worktrees() {
+    local base_dir="$(pwd)"
+    local worktree_dir="${base_dir}/.worktrees"
+    
+    log_info "Setting up git worktrees in ${worktree_dir}"
+    
+    # Create worktree directory if it doesn't exist
+    mkdir -p "$worktree_dir"
+    
+    # Create worktrees for each feature
+    for feature in "$FEATURE1" "$FEATURE2"; do
+        local worktree_path="${worktree_dir}/${feature}"
+        
+        if [[ -d "$worktree_path" ]]; then
+            log_warn "Worktree already exists: $worktree_path"
+        else
+            # Create branch if it doesn't exist
+            if ! git rev-parse --verify "$feature" >/dev/null 2>&1; then
+                log_info "Creating branch: $feature"
+                git branch "$feature"
+            fi
+            
+            # Create worktree
+            log_info "Creating worktree: $worktree_path"
+            git worktree add "$worktree_path" "$feature"
+        fi
+    done
+    
+    echo "$worktree_dir"
+}
+
+# Kill existing session if it exists
+cleanup_existing_session() {
+    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+        log_warn "Killing existing session: $SESSION_NAME"
+        tmux kill-session -t "$SESSION_NAME"
+    fi
+}
+
+# Create the optimized tmux layout
+create_tmux_layout() {
+    local base_dir="$(pwd)"
+    local worktree_dir="$1"
+    local claude_available="$2"
+    
+    log_workspace "Creating tmux session: $SESSION_NAME"
+    
+    # Create new session (detached)
+    tmux new-session -d -s "$SESSION_NAME" -c "$base_dir"
+    
+    # Rename first window
+    tmux rename-window -t "$SESSION_NAME:1" "claude-workspace"
+    
+    # Split into 4 panes
+    # Top: Split horizontally for 2 Claude Code sessions
+    tmux split-window -h -t "$SESSION_NAME:1" -c "${worktree_dir}/${FEATURE2}"
+    
+    # Bottom: Split both panes vertically
+    tmux split-window -v -t "$SESSION_NAME:1.1" -c "$base_dir"  # Bottom left (nvim)
+    tmux split-window -v -t "$SESSION_NAME:1.2" -c "$base_dir"  # Bottom right (git ops)
+    
+    # Set up each pane
+    setup_pane_1 "$worktree_dir" "$claude_available"  # Top left: Claude session 1
+    setup_pane_2 "$worktree_dir" "$claude_available"  # Top right: Claude session 2  
+    setup_pane_3 "$base_dir"                          # Bottom left: Neovim
+    setup_pane_4 "$base_dir"                          # Bottom right: Git ops
+    
+    # Resize panes for optimal layout
+    # Make top panes larger (60% height)
+    tmux resize-pane -t "$SESSION_NAME:1.1" -y 60%
+    tmux resize-pane -t "$SESSION_NAME:1.2" -y 60%
+    
+    # Set pane titles
+    tmux select-pane -t "$SESSION_NAME:1.1" -T "Claude: $FEATURE1"
+    tmux select-pane -t "$SESSION_NAME:1.2" -T "Claude: $FEATURE2"
+    tmux select-pane -t "$SESSION_NAME:1.3" -T "Neovim: $(basename "$base_dir")"
+    tmux select-pane -t "$SESSION_NAME:1.4" -T "Git Operations"
+    
+    # Start in the first Claude Code pane
+    tmux select-pane -t "$SESSION_NAME:1.1"
+}
+
+# Set up individual panes
+setup_pane_1() {
+    local worktree_dir="$1"
+    local claude_available="$2"
+    local pane="$SESSION_NAME:1.1"
+    
+    log_workspace "Setting up Claude Code session 1: $FEATURE1"
+    
+    if [[ "$claude_available" == "true" ]]; then
+        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
+        tmux send-keys -t "$pane" "echo 'Claude Code Session 1: $FEATURE1'" Enter
+        tmux send-keys -t "$pane" "echo 'Ready to start claude-code .'" Enter
+        tmux send-keys -t "$pane" "clear" Enter
+    else
+        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
+        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE1 (claude-code not available)'" Enter
+    fi
+}
+
+setup_pane_2() {
+    local worktree_dir="$1"
+    local claude_available="$2" 
+    local pane="$SESSION_NAME:1.2"
+    
+    log_workspace "Setting up Claude Code session 2: $FEATURE2"
+    
+    if [[ "$claude_available" == "true" ]]; then
+        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
+        tmux send-keys -t "$pane" "echo 'Claude Code Session 2: $FEATURE2'" Enter
+        tmux send-keys -t "$pane" "echo 'Ready to start claude-code .'" Enter
+        tmux send-keys -t "$pane" "clear" Enter
+    else
+        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
+        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE2 (claude-code not available)'" Enter
+    fi
+}
+
+setup_pane_3() {
+    local base_dir="$1"
+    local pane="$SESSION_NAME:1.3"
+    
+    log_workspace "Setting up Neovim session"
+    
+    tmux send-keys -t "$pane" "cd $base_dir" Enter
+    
+    # Check if neovim is available
+    if command -v nvim &> /dev/null; then
+        tmux send-keys -t "$pane" "echo 'Neovim ready. Type nvim to start editing.'" Enter
+    elif command -v vim &> /dev/null; then
+        tmux send-keys -t "$pane" "echo 'Vim available. Neovim preferred but not installed.'" Enter
+    else
+        tmux send-keys -t "$pane" "echo 'No vim/neovim found. Please install neovim.'" Enter
+    fi
+    
+    tmux send-keys -t "$pane" "clear" Enter
+}
+
+setup_pane_4() {
+    local base_dir="$1"
+    local pane="$SESSION_NAME:1.4"
+    
+    log_workspace "Setting up Git operations pane"
+    
+    tmux send-keys -t "$pane" "cd $base_dir" Enter
+    tmux send-keys -t "$pane" "echo 'Git Operations - Repository Root'" Enter
+    tmux send-keys -t "$pane" "git status" Enter
+}
+
+# Display usage information
+show_workspace_info() {
+    local worktree_dir="$1"
+    
+    log_info "Claude Code Development Workspace Ready!"
+    echo
+    echo -e "${BLUE}Session:${NC} $SESSION_NAME"
+    echo -e "${BLUE}Project:${NC} $PROJECT_NAME"
+    echo -e "${BLUE}Worktrees:${NC} $worktree_dir"
+    echo
+    echo -e "${PURPLE}Pane Layout:${NC}"
+    echo "  ┌─────────────────┬─────────────────┐"
+    echo "  │ Claude: $FEATURE1   │ Claude: $FEATURE2   │"
+    echo "  ├─────────────────┼─────────────────┤"
+    echo "  │ Neovim          │ Git Operations  │"
+    echo "  └─────────────────┴─────────────────┘"
+    echo
+    echo -e "${GREEN}Commands:${NC}"
+    echo "  Attach: tmux attach-session -t $SESSION_NAME"
+    echo "  Detach: Ctrl-a + d"
+    echo "  Switch panes: Ctrl-a + arrow keys"
+    echo "  Sync panes: Ctrl-a + S (toggle)"
+    echo
+    echo -e "${YELLOW}Quick Start:${NC}"
+    echo "  1. Attach to session"
+    echo "  2. In pane 1: claude-code ."
+    echo "  3. In pane 2: claude-code ."
+    echo "  4. In pane 3: nvim"
+    echo "  5. In pane 4: git operations"
+}
+
+# Clean up worktrees (optional)
+cleanup_worktrees() {
+    local worktree_dir="$1"
+    
+    read -p "Remove worktrees when done? (y/N): " cleanup_choice
+    if [[ "$cleanup_choice" =~ ^[Yy]$ ]]; then
+        log_info "Cleaning up worktrees..."
+        git worktree remove "${worktree_dir}/${FEATURE1}" 2>/dev/null || true
+        git worktree remove "${worktree_dir}/${FEATURE2}" 2>/dev/null || true
+        rmdir "$worktree_dir" 2>/dev/null || true
+        log_info "Worktrees cleaned up"
+    fi
+}
+
+# Main function
+main() {
+    log_info "Setting up Claude Code development workspace"
+    log_info "Project: $PROJECT_NAME | Features: $FEATURE1, $FEATURE2"
+    
+    # Validation
+    check_git_repo
+    check_tmux
+    local claude_available="false"
+    if check_claude_code; then
+        claude_available="true"
+    fi
+    
+    # Setup
+    cleanup_existing_session
+    local worktree_dir
+    worktree_dir=$(setup_worktrees)
+    create_tmux_layout "$worktree_dir" "$claude_available"
+    
+    # Information
+    show_workspace_info "$worktree_dir"
+    
+    # Attach to session
+    log_info "Attaching to tmux session..."
+    tmux attach-session -t "$SESSION_NAME"
+    
+    # Optional cleanup after session ends
+    cleanup_worktrees "$worktree_dir"
+}
+
+# Handle script arguments
+case "${1:-}" in
+    -h|--help)
+        echo "Usage: tmux-claude-workspace [project-name] [feature1] [feature2]"
+        echo
+        echo "Creates an optimized tmux workspace for Claude Code development with:"
+        echo "  - 2 parallel Claude Code sessions in separate git worktrees"
+        echo "  - 1 Neovim session for code editing"
+        echo "  - 1 Git operations pane"
+        echo
+        echo "Arguments:"
+        echo "  project-name    Name for the tmux session (default: current directory)"
+        echo "  feature1        Name for first feature branch/worktree (default: feature-1)"
+        echo "  feature2        Name for second feature branch/worktree (default: feature-2)"
+        exit 0
+        ;;
+    *)
+        main "$@"
+        ;;
+esac
