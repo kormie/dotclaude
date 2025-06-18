@@ -73,8 +73,8 @@ install_tool() {
 install_rust_tools() {
     log_info "Installing modern Rust-based CLI tools..."
     
-    # Better ls replacement
-    install_tool "exa" "exa" || install_tool "eza" "eza"
+    # Better ls replacement (eza is the modern fork of exa)
+    install_tool "eza" "eza"
     
     # Better cat replacement  
     install_tool "bat" "bat"
@@ -146,17 +146,12 @@ create_aliases() {
 # Modern CLI tool aliases - coexist with traditional tools
 # These provide modern alternatives without replacing the originals
 
-# exa/eza (better ls)
+# eza (better ls - modern fork of exa)
 if command -v eza &> /dev/null; then
     alias ll2='eza -la --git --header --group-directories-first'
     alias l2='eza -l --git --header --group-directories-first'
     alias la2='eza -la --git --header --group-directories-first'
     alias tree2='eza --tree'
-elif command -v exa &> /dev/null; then
-    alias ll2='exa -la --git --header --group-directories-first'
-    alias l2='exa -l --git --header --group-directories-first'  
-    alias la2='exa -la --git --header --group-directories-first'
-    alias tree2='exa --tree'
 fi
 
 # bat (better cat)
@@ -210,8 +205,7 @@ show_summary() {
     
     # Check each tool
     local tools=(
-        "exa:Enhanced ls with colors and git integration"
-        "eza:Alternative enhanced ls (newer fork of exa)"
+        "eza:Enhanced ls with colors and git integration (modern fork of exa)"
         "bat:Cat with syntax highlighting and paging"
         "fd:Simple and fast alternative to find"
         "rg:Extremely fast grep alternative"
