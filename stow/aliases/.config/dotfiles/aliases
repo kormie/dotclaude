@@ -1,0 +1,254 @@
+# Centralized Alias Management
+# Single source of truth for all shell aliases
+# Load this from .zshrc with: [[ -f ~/.config/dotfiles/aliases ]] && source ~/.config/dotfiles/aliases
+
+# ============================================================================
+# MODERN CLI TOOLS (coexisting with traditional tools)
+# ============================================================================
+
+# eza (better ls - modern fork of exa)
+if command -v eza &> /dev/null; then
+    alias ll2='eza -la --git --header --group-directories-first --icons'
+    alias l2='eza -l --git --header --group-directories-first --icons'  
+    alias la2='eza -la --git --header --group-directories-first --icons'
+    alias ls2='eza --icons'
+    alias tree2='eza --tree --icons'
+    alias lsd2='eza -D --icons'  # List only directories
+fi
+
+# bat (better cat)
+if command -v bat &> /dev/null; then
+    alias cat2='bat --style=numbers,changes,header'
+    alias less2='bat --style=numbers,changes,header'
+    alias batl='bat --style=numbers'  # bat with line numbers only
+fi
+
+# fd (better find) - check for actual fd binary, not shell function
+if command -v /opt/homebrew/bin/fd &> /dev/null; then
+    alias find2='/opt/homebrew/bin/fd'
+    alias fd2='/opt/homebrew/bin/fd'
+fi
+
+# ripgrep (better grep)
+if command -v rg &> /dev/null; then
+    alias grep2='rg'
+    alias rg2='rg --color=always'
+fi
+
+# dust (better du)
+if command -v dust &> /dev/null; then
+    alias du2='dust'
+fi
+
+# procs (better ps)
+if command -v procs &> /dev/null; then
+    alias ps2='procs'
+fi
+
+# bottom (better top)
+if command -v btm &> /dev/null; then
+    alias top2='btm'
+fi
+
+# zoxide (smart cd) - initialize if available
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh)"
+    alias cd2='z'
+    alias cdi='zi'  # interactive zoxide
+fi
+
+# ============================================================================
+# GIT ALIASES (enhanced)
+# ============================================================================
+
+# Enhanced git aliases building on Oh-My-Zsh git plugin
+alias glogp='git log --graph --pretty="format:%C(yellow)%h%Cred%d%Creset %s %C(white) %C(cyan)%an%Creset, %C(green)%ar%Creset"'
+alias glogd='git log --graph --pretty="format:%C(yellow)%h%Cred%d%Creset %s %C(white) %C(cyan)%an%Creset, %C(green)%ar%Creset" --date=short'
+alias glogdifft='env GIT_EXTERNAL_DIFF=difft git log -p --ext-diff'
+alias gdifft='env GIT_EXTERNAL_DIFF=difft git diff --ext-diff'
+
+# ============================================================================
+# DOCKER ALIASES (colima support)
+# ============================================================================
+
+# Docker aliases with colima support
+if command -v colima &> /dev/null; then
+    alias dstart='colima start'
+    alias dstop='colima stop'
+    alias drestart='colima restart'
+    alias dstatus='colima status'
+fi
+
+# Standard docker aliases (work with both Docker Desktop and colima)
+alias dps='docker ps'
+alias dpsa='docker ps -a'
+alias dimg='docker images'
+alias drm='docker rm'
+alias drmi='docker rmi'
+alias dlog='docker logs'
+alias dexec='docker exec -it'
+
+# Docker Compose
+alias dc='docker-compose'
+alias dcu='docker-compose up'
+alias dcd='docker-compose down'
+alias dcr='docker-compose restart'
+alias dcl='docker-compose logs'
+
+# ============================================================================
+# DEVELOPMENT ALIASES
+# ============================================================================
+
+# Common development shortcuts
+alias v='nvim'
+alias vim='nvim'
+alias vi='nvim'
+
+# Python development
+alias py='python3'
+alias pip='pip3'
+alias ve='python3 -m venv'
+alias va='source venv/bin/activate'
+
+# Node.js development
+alias nid='npm install --save-dev'
+alias nis='npm install --save'
+alias nig='npm install -g'
+alias nrs='npm run start'
+alias nrd='npm run dev'
+alias nrb='npm run build'
+alias nrt='npm run test'
+
+# Go development
+alias gor='go run'
+alias gob='go build'
+alias got='go test'
+alias gom='go mod'
+
+# ============================================================================
+# SYSTEM ALIASES
+# ============================================================================
+
+# Navigation shortcuts
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias -- -='cd -'
+
+# Common operations
+alias mkdir='mkdir -p'
+alias cp='cp -v'
+alias mv='mv -v'
+alias rm='rm -v'
+
+# List operations
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# System monitoring
+alias df='df -h'
+alias free='free -h'
+alias psg='ps aux | grep'
+
+# Network
+alias ports='netstat -tulanp'
+alias myip='curl -s http://whatismyip.akamai.com/'
+alias localip="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
+
+# ============================================================================
+# UTILITY ALIASES
+# ============================================================================
+
+# Quick edits
+alias zshrc='nvim ~/.zshrc'
+alias aliases='nvim ~/.config/dotfiles/aliases'
+alias reload='source ~/.zshrc'
+
+# Directory shortcuts
+alias dl='cd ~/Downloads'
+alias dt='cd ~/Desktop'
+alias docs='cd ~/Documents'
+alias repos='cd ~/Documents/Repos'
+alias dotfiles='cd ~/Documents/Repos/dotfiles'
+
+# Claude Code workspace
+alias cw='tmux-claude-workspace'
+alias claude-workspace='tmux-claude-workspace'
+
+# File operations with safety
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Archive operations
+alias tar='tar -v'
+alias untar='tar -xf'
+alias untargz='tar -xzf'
+
+# Date and time
+alias now='date "+%Y-%m-%d %H:%M:%S"'
+alias nowutc='date -u "+%Y-%m-%d %H:%M:%S UTC"'
+alias timestamp='date "+%Y%m%d_%H%M%S"'
+
+# ============================================================================
+# CONDITIONAL ALIASES (tool-specific)
+# ============================================================================
+
+# If htop is available, use it instead of top
+if command -v htop &> /dev/null; then
+    alias top='htop'
+fi
+
+# If prettyping is available
+if command -v prettyping &> /dev/null; then
+    alias ping='prettyping'
+fi
+
+# If httpie is available
+if command -v http &> /dev/null; then
+    alias http='http --print=HhBb'
+fi
+
+# ============================================================================
+# FUNCTION ALIASES (more complex operations)
+# ============================================================================
+
+# Create directory and cd into it
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# Extract any archive
+extract() {
+    if [ -f "$1" ] ; then
+        case $1 in
+            *.tar.bz2)   tar xjf $1     ;;
+            *.tar.gz)    tar xzf $1     ;;
+            *.bz2)       bunzip2 $1     ;;
+            *.rar)       unrar e $1     ;;
+            *.gz)        gunzip $1      ;;
+            *.tar)       tar xf $1      ;;
+            *.tbz2)      tar xjf $1     ;;
+            *.tgz)       tar xzf $1     ;;
+            *.zip)       unzip $1       ;;
+            *.Z)         uncompress $1  ;;
+            *.7z)        7z x $1        ;;
+            *)     echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# Quick backup
+backup() {
+    cp "$1"{,.bak}
+}
+
+# Weather (if curl is available)
+if command -v curl &> /dev/null; then
+    weather() {
+        curl -s "wttr.in/$1"
+    }
+fi
