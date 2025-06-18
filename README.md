@@ -233,10 +233,22 @@ find2 . -name "*.js"  # Fast find (fd)
 
 ## 📖 Documentation
 
+### 🌐 **[Full Documentation](https://kormie.github.io/dotclaude/)** (GitHub Pages)
+
+Complete guides, tutorials, and reference documentation with beautiful search and navigation.
+
+### 📚 Local Documentation
+```bash
+# Serve documentation locally
+cd docs && npm install && npm run docs:dev
+# Open http://localhost:5173
+```
+
+### 📄 Quick Reference
 - **[PROJECT_PLAN.md](PROJECT_PLAN.md)**: Detailed project roadmap and milestones
 - **[CLAUDE.md](CLAUDE.md)**: Project instructions and configuration guidance  
 - **[backups/](backups/)**: Automatic backups with timestamps
-- **[docs/](docs/)**: Additional documentation and guides
+- **[docs/](docs/)**: VitePress documentation source
 
 ## 🤝 Contributing
 
@@ -250,4 +262,4 @@ Personal dotfiles configuration - use at your own discretion.
 
 **Built for the future of AI-assisted development** 🤖✨
 
-*Last updated: Phase 1 Complete - December 2024*
+*Last updated: Phase 1 Complete - June 2025*

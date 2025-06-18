@@ -95,6 +95,7 @@ dotfiles/
 - **Modern Diff Tools**: Delta as default, difftastic for syntax-aware analysis
 - **Claude Code Optimization**: Specialized tmux workflows for agentic development
 - **Vim-Style Navigation**: CapsLock=Ctrl optimized keybindings, comma leader, hjkl navigation
+- **VitePress Documentation**: Modern documentation system with GitHub Pages integration
 
 ### Claude Code Development Features:
 - **Multi-Session Tmux Layout**: 4-pane setup with parallel Claude Code sessions using git worktrees
@@ -102,6 +103,13 @@ dotfiles/
 - **Vim-Optimized Keybindings**: Seamless navigation between vim and tmux with consistent hjkl patterns
 - **Git Worktree Integration**: Parallel development on different features without branch conflicts
 - **Session Management**: Named sessions, easy switching, and workspace persistence
+
+### Documentation System:
+- **VitePress Integration**: Modern, fast documentation with GitHub Pages deployment
+- **Comprehensive Guides**: Installation, configuration, and Claude Code workflow documentation
+- **Local Development**: `npm run docs:dev` for instant local documentation server
+- **Auto-deployment**: GitHub Actions automatically builds and deploys on every push
+- **Search & Navigation**: Built-in search, mobile responsive, dark/light themes
 
 ## Phase 2: Incremental Shell Enhancement (Week 2)
 **Goal**: Enhance shell without breaking existing workflow

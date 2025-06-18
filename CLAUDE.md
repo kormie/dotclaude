@@ -53,6 +53,7 @@ Each configuration lives in its own Stow package under `stow/`:
 - **Incremental Adoption**: Use new tools as they're ready, maintain existing workflow
 - **Single Source of Truth**: Centralized configuration management (especially for aliases)
 - **Idempotent**: Safe to run setup scripts multiple times
+- **Documentation Updates**: Always update the README.md, CLAUDE.md, PROJECT_PLAN.md and docs directory in a dedicated commit before pushing to remote if necessary to ensure documentation is up to date
 
 ## Modern Tool Replacements
 When implementing Rust-based CLI tool replacements:
@@ -120,5 +121,18 @@ When implementing Rust-based CLI tool replacements:
 ✅ **Git Worktree Integration**: Parallel development without conflicts
 ✅ **Vim-Optimized Keybindings**: CapsLock=Ctrl leveraged, comma leader, hjkl navigation
 ✅ **Session Management**: Named sessions with persistence and switching
+
+## Documentation System
+✅ **VitePress Documentation**: Modern, fast documentation with GitHub Pages integration
+- **Live Site**: https://kormie.github.io/dotclaude/
+- **Local Development**: `cd docs && npm run docs:dev`
+- **Auto-deployment**: GitHub Actions on every push to main
+- **Features**: Built-in search, mobile responsive, dark/light mode, edit links
+
+## Documentation Structure
+- **getting-started/**: Installation and setup guides
+- **guide/**: Configuration guides and package management
+- **claude-code/**: AI development workflows and tmux integration
+- **reference/**: Command reference and troubleshooting
 
 **Ready for Phase 2**: Shell enhancement with Oh-My-Zsh integration
