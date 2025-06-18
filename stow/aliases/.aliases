@@ -1,0 +1,180 @@
+# Centralized Alias Management
+# Single source of truth for all shell aliases
+
+# Safety aliases - require confirmation for destructive operations
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias ln='ln -i'
+
+# Enhanced basic commands
+alias ls='ls -G'  # Enable colors on macOS
+alias ll='ls -la'
+alias la='ls -A'
+alias l='ls -CF'
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+# Directory navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias ~='cd ~'
+alias -- -='cd -'
+
+# Directory operations
+alias md='mkdir -p'
+alias rd='rmdir'
+
+# File operations
+alias which='type -a'
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+
+# Process management
+alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+alias myps='ps -f -u $USER'
+
+# Network
+alias ping='ping -c 5'
+alias fastping='ping -c 100 -s.2'
+alias ports='netstat -tulanp'
+
+# System info
+alias meminfo='free -m -l -t'
+alias cpuinfo='lscpu'
+alias df='df -H'
+alias du='du -ch'
+alias free='free -m'
+
+# Git aliases (complement .gitconfig)
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gb='git branch'
+alias gco='git checkout'
+alias glog='git log --oneline --graph --decorate'
+
+# Difftastic aliases using GIT_EXTERNAL_DIFF pattern
+alias gdifft='env GIT_EXTERNAL_DIFF=difft git diff'
+alias glogdifft='env GIT_EXTERNAL_DIFF=difft git log -p --ext-diff'
+alias gshowdifft='env GIT_EXTERNAL_DIFF=difft git show --ext-diff'
+
+# Docker aliases (works with both Docker Desktop and colima)
+if command -v docker &> /dev/null; then
+    alias d='docker'
+    alias dc='docker-compose'
+    alias dps='docker ps'
+    alias di='docker images'
+    alias drm='docker rm'
+    alias drmi='docker rmi'
+    alias dstop='docker stop $(docker ps -q)'
+    alias drmall='docker rm $(docker ps -aq)'
+    
+    # Colima-specific aliases
+    if command -v colima &> /dev/null; then
+        alias colima-start='colima start'
+        alias colima-stop='colima stop'
+        alias colima-status='colima status'
+        alias colima-restart='colima restart'
+        alias colima-ssh='colima ssh'
+    fi
+fi
+
+# Kubernetes aliases (if kubectl is available)
+if command -v kubectl &> /dev/null; then
+    alias k='kubectl'
+    alias kgp='kubectl get pods'
+    alias kgs='kubectl get services'
+    alias kgd='kubectl get deployments'
+    alias kdp='kubectl describe pod'
+    alias kds='kubectl describe service'
+    alias kdd='kubectl describe deployment'
+fi
+
+# Programming language shortcuts
+alias py='python3'
+alias py2='python2'
+alias rb='ruby'
+alias js='node'
+
+# Text editors
+alias vi='nvim'
+alias vim='nvim'
+alias nano='nvim'
+
+# Web development
+if command -v http &> /dev/null; then
+    alias GET='http GET'
+    alias POST='http POST'
+    alias PUT='http PUT'
+    alias DELETE='http DELETE'
+fi
+
+# JSON/YAML processing
+if command -v jq &> /dev/null; then
+    alias jq='jq -C'  # Always colorize JSON
+fi
+
+# Archive operations
+alias untar='tar -zxvf'
+alias tar='tar -zcvf'
+
+# Clipboard operations (macOS)
+alias pbcopy='pbcopy'
+alias pbpaste='pbpaste'
+alias copy='pbcopy'
+alias paste='pbpaste'
+
+# Quick edits
+alias zshrc='$EDITOR ~/.zshrc'
+alias bashrc='$EDITOR ~/.bashrc'
+alias vimrc='$EDITOR ~/.vimrc'
+alias aliases='$EDITOR ~/.aliases'
+
+# Reload configurations
+alias reload='source ~/.zshrc'
+alias rebash='source ~/.bashrc'
+
+# Show/hide hidden files in Finder (macOS)
+alias showfiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder /System/Library/CoreServices/Finder.app'
+alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder /System/Library/CoreServices/Finder.app'
+
+# Lock screen (macOS)
+alias lock='/System/Library/CoreServices/Menu\ Extras/User.menu/Contents/Resources/CGSession -suspend'
+
+# Empty trash (macOS)
+alias emptytrash='sudo rm -rfv /Volumes/*/.Trashes; sudo rm -rfv ~/.Trash; sudo rm -rfv /private/var/log/asl/*.asl'
+
+# Update system (macOS with Homebrew)
+if command -v brew &> /dev/null; then
+    alias brewup='brew update && brew upgrade && brew cleanup'
+    alias caskup='brew upgrade --cask && brew cleanup'
+fi
+
+# Weather (requires curl)
+alias weather='curl -s "http://wttr.in/$(curl -s ipinfo.io/city 2>/dev/null || echo "New+York")?format=3"'
+
+# Claude Code Development Aliases
+if command -v tmux &> /dev/null; then
+    alias claude-workspace='tmux-claude-workspace'
+    alias cw='tmux-claude-workspace'
+    alias claude-tmux='tmux-claude-workspace'
+fi
+
+# Include modern tool aliases if available
+if [[ -f "$HOME/.dotfiles/stow/rust-tools/.aliases" ]]; then
+    source "$HOME/.dotfiles/stow/rust-tools/.aliases"
+fi
+
+# Include local/private aliases if they exist
+if [[ -f "$HOME/.aliases.local" ]]; then
+    source "$HOME/.aliases.local"
+fi
