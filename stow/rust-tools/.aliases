@@ -1,0 +1,47 @@
+# Modern CLI tool aliases - coexist with traditional tools
+# These provide modern alternatives without replacing the originals
+
+# eza (better ls - modern fork of exa)
+if command -v eza &> /dev/null; then
+    alias ll2='eza -la --git --header --group-directories-first'
+    alias l2='eza -l --git --header --group-directories-first'
+    alias la2='eza -la --git --header --group-directories-first'
+    alias tree2='eza --tree'
+fi
+
+# bat (better cat)
+if command -v bat &> /dev/null; then
+    alias cat2='bat'
+    alias less2='bat'
+fi
+
+# fd (better find)
+if command -v fd &> /dev/null; then
+    alias find2='fd'
+fi
+
+# ripgrep (better grep)
+if command -v rg &> /dev/null; then
+    alias grep2='rg'
+fi
+
+# dust (better du)
+if command -v dust &> /dev/null; then
+    alias du2='dust'
+fi
+
+# procs (better ps)
+if command -v procs &> /dev/null; then
+    alias ps2='procs'
+fi
+
+# bottom (better top)
+if command -v btm &> /dev/null; then
+    alias top2='btm'
+fi
+
+# zoxide (smart cd)
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh)"
+    alias cd2='z'
+fi

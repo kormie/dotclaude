@@ -1,0 +1,207 @@
+# Dotfiles Repository .gitignore
+
+# ============================================================================
+# BACKUP FILES (exclude all backup directories and files)
+# ============================================================================
+backups/
+*.bak
+*.backup
+*.orig
+*~
+.*.swp
+.*.swo
+
+# User-specific backup files created during setup
+.zshrc.original
+.zshrc.enhanced
+.zshrc.pre-oh-my-zsh
+
+# ============================================================================
+# SYSTEM AND EDITOR FILES
+# ============================================================================
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Vim
+*.swp
+*.swo
+*~
+.viminfo
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# ============================================================================
+# TEMPORARY AND LOG FILES
+# ============================================================================
+
+# General temporary files
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Shell history (don't accidentally commit)
+.zsh_history
+.bash_history
+.history
+
+# ============================================================================
+# SECURITY AND PERSONAL DATA
+# ============================================================================
+
+# SSH keys and certificates
+*.pem
+*.key
+*.crt
+*.p12
+id_rsa*
+id_ed25519*
+id_ecdsa*
+
+# GPG keys
+*.gpg
+*.asc
+secring.*
+
+# Personal configuration files that might contain sensitive data
+.netrc
+.aws/
+.ssh/config
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# ============================================================================
+# DEVELOPMENT AND BUILD ARTIFACTS
+# ============================================================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+
+# Ruby
+.bundle/
+vendor/bundle/
+.ruby-version
+.rbenv-version
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Rust
+target/
+Cargo.lock
+
+# ============================================================================
+# CLAUDE CODE AND AI DEVELOPMENT
+# ============================================================================
+
+# Claude Code settings (user-specific)
+.claude/settings.local.json
+.claude/cache/
+.claude/logs/
+
+# AI development artifacts
+*.ai.log
+.ai-session/
+
+# Temporary files from automated tools
+.automation-temp/
+.script-temp/
+
+# ============================================================================
+# DOCUMENTATION BUILD ARTIFACTS
+# ============================================================================
+
+# VitePress build output
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+docs/node_modules/
+
+# Other documentation generators
+_site/
+.jekyll-cache/
+.jekyll-metadata
+.docusaurus/
+
+# ============================================================================
+# TESTING AND DEVELOPMENT
+# ============================================================================
+
+# Test artifacts
+test-results/
+.nyc_output/
+coverage/
+*.lcov
+
+# Development databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Local development configuration
+.local/
+local.config.*
+
+# ============================================================================
+# PACKAGE MANAGERS AND TOOLS
+# ============================================================================
+
+# Homebrew Bundle dump (if generated)
+Brewfile.lock.json
+
+# Stow backup files
+*.stow-backup
+
+# Git worktrees (exclude worktree directories)
+.worktrees/
+
+# ============================================================================
+# USER-SPECIFIC OVERRIDES
+# ============================================================================
+
+# Allow users to add their own ignores
+.gitignore.local
