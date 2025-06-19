@@ -254,6 +254,12 @@ set -g terminal-overrides 'xterm*:smcup@:rmcup@'
 - "Neovim: project-name" for editor panes
 - "Git Operations" for git command panes
 
+**Auto-Start Claude Sessions:**
+- Automatically launches `claude .` in Claude Code panes
+- Detects if claude command is available
+- Falls back to placeholder messages if claude not found
+- Seamless startup experience with `tmux-claude-workspace`
+
 **Layout Optimization:**
 - Top panes get 60% of screen height for code work
 - Bottom panes sized for quick reference and commands
