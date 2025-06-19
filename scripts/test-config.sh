@@ -150,12 +150,20 @@ test_tmux_config() {
             return 0
         fi
         
-        # Test tmux configuration syntax
-        if tmux -f "$tmux_config" -C "source-file $tmux_config" 2>&1; then
+        # Test tmux configuration syntax by checking for basic parsing errors
+        # Create a temporary socket for testing to avoid conflicts
+        local test_socket="/tmp/tmux-config-test-$$"
+        
+        if tmux -S "$test_socket" -f "$tmux_config" new-session -d -s "config-test" "echo 'Config test'" 2>/dev/null && \
+           tmux -S "$test_socket" kill-session -t "config-test" 2>/dev/null; then
             log_info "Tmux configuration syntax is valid"
+            # Clean up any remaining socket
+            rm -f "$test_socket" 2>/dev/null
             return 0
         else
             log_error "Tmux configuration has syntax errors"
+            # Clean up any remaining socket
+            rm -f "$test_socket" 2>/dev/null
             return 1
         fi
     else
