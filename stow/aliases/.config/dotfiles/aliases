@@ -129,6 +129,9 @@ alias gom='go mod'
 # SYSTEM ALIASES
 # ============================================================================
 
+# Terminal shortcuts
+alias c='clear'
+
 # Navigation shortcuts
 alias ..='cd ..'
 alias ...='cd ../..'

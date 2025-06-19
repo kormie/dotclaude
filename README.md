@@ -28,7 +28,7 @@ cd ~/.dotfiles
 ./scripts/setup-tools.sh
 
 # Launch Claude Code workspace (4-pane layout with git worktrees)
-cw myproject feature-1 feature-2
+cw myproject feature-1 feature-2  # Using 'cw' alias for tmux-claude-workspace
 
 # Apply configurations gradually
 ./scripts/stow-package.sh git      # Enhanced git config

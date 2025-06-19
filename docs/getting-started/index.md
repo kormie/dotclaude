@@ -63,7 +63,7 @@ cat2 --help # Should show bat help with syntax highlighting info
 git lg     # Should show your preferred git log format
 
 # Test Claude Code workspace (if claude-code is installed)
-cw test-project feature-1 feature-2
+cw test-project feature-1 feature-2  # 'cw' is an alias for 'tmux-claude-workspace'
 ```
 
 ## Troubleshooting
