@@ -153,9 +153,8 @@ setup_pane_1() {
     
     if [[ "$claude_available" == "true" ]]; then
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
-        tmux send-keys -t "$pane" "echo 'Claude Code Session 1: $FEATURE1'" Enter
-        tmux send-keys -t "$pane" "echo 'Ready to start claude .'" Enter
-        tmux send-keys -t "$pane" "clear" Enter
+        tmux send-keys -t "$pane" "echo 'Starting Claude Code Session 1: $FEATURE1'" Enter
+        tmux send-keys -t "$pane" "claude ." Enter
     else
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
         tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE1 (claude not available)'" Enter
@@ -171,9 +170,8 @@ setup_pane_2() {
     
     if [[ "$claude_available" == "true" ]]; then
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
-        tmux send-keys -t "$pane" "echo 'Claude Code Session 2: $FEATURE2'" Enter
-        tmux send-keys -t "$pane" "echo 'Ready to start claude .'" Enter
-        tmux send-keys -t "$pane" "clear" Enter
+        tmux send-keys -t "$pane" "echo 'Starting Claude Code Session 2: $FEATURE2'" Enter
+        tmux send-keys -t "$pane" "claude ." Enter
     else
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
         tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE2 (claude not available)'" Enter
