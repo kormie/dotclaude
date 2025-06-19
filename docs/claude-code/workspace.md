@@ -19,7 +19,7 @@ tmux-claude-workspace myproject auth-system
 # Launch with multiple features (horizontal layout)
 tmux-claude-workspace myproject auth-system payment-api notifications dashboard
 
-# Quick alias (if configured)
+# Quick alias (available with aliases package)
 cw myproject auth-system payment-api
 ```
 
@@ -106,10 +106,11 @@ tmux-claude-workspace project-name auth-system payment-api notifications
 # Maximum features (5 limit)
 tmux-claude-workspace my-app auth api notify dash admin
 
-# Get help
+# Get detailed help and usage information
 tmux-claude-workspace --help
+tmux-claude-workspace -h
 
-# Quick alias (if configured)
+# Quick alias (available with aliases package)
 cw project-name auth-system payment-api
 ```
 
