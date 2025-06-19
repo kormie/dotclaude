@@ -26,6 +26,7 @@ Single source of truth for all aliases:
 - Located in `~/.config/dotfiles/aliases`
 - Consistent across all shell sessions
 - Easy to maintain and extend
+- Includes convenience shortcuts like `c` for `clear`
 
 ## Configuration Files
 
@@ -71,6 +72,9 @@ cat2 file  # Syntax-highlighted cat
 find2 -n   # Fast find with fd
 grep2      # Ultra-fast search with ripgrep
 z project  # Smart directory jumping
+
+# Convenience shortcuts
+c          # Clear terminal (alias for clear)
 ```
 
 ## Safety Features

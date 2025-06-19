@@ -2,18 +2,34 @@
 
 Launch 1-5 parallel Claude Code sessions with git worktrees for conflict-free AI development.
 
+::: tip Script Features
+The `tmux-claude-workspace` script includes:
+- ✅ **Auto-validation**: Checks git repo, tmux, and Claude CLI availability
+- ✅ **Colored output**: Status messages with color-coded logging
+- ✅ **Auto-cleanup**: Prompts to remove worktrees when session ends
+- ✅ **Help support**: Use `-h` or `--help` for detailed usage information
+:::
+
 ## Quick Start
 
 ```bash
 # Launch workspace with single feature
-cw myproject auth-system
+tmux-claude-workspace myproject auth-system
 
 # Launch with multiple features (horizontal layout)
-cw myproject auth-system payment-api notifications dashboard
+tmux-claude-workspace myproject auth-system payment-api notifications dashboard
 
-# Alternative command  
-tmux-claude-workspace myproject auth-system payment-api
+# Quick alias (if configured)
+cw myproject auth-system payment-api
 ```
+
+::: info Command Aliases
+The `cw` command is an alias for `tmux-claude-workspace` defined in the aliases package:
+```bash
+alias cw='tmux-claude-workspace'
+```
+This alias is available after applying the aliases configuration with `./scripts/stow-package.sh aliases`.
+:::
 
 ## Workspace Layout
 
@@ -82,16 +98,19 @@ C-hjkl       # Smart vim/tmux navigation (with CapsLock→Ctrl)
 ### Launch Commands
 ```bash
 # Single feature workspace
-cw project-name auth-system
+tmux-claude-workspace project-name auth-system
 
 # Multiple features (2-5 supported)
-cw project-name auth-system payment-api notifications
+tmux-claude-workspace project-name auth-system payment-api notifications
 
-# Maximum features
-cw my-app auth api notify dash admin
+# Maximum features (5 limit)
+tmux-claude-workspace my-app auth api notify dash admin
 
-# Custom session name  
-tmux-claude-workspace my-app user-mgmt api-refactor ui-redesign
+# Get help
+tmux-claude-workspace --help
+
+# Quick alias (if configured)
+cw project-name auth-system payment-api
 ```
 
 ### Session Management
@@ -113,7 +132,7 @@ C-a ,q
 
 ### 1. Start Workspace
 ```bash
-cw myapp user-auth payment-api
+tmux-claude-workspace myapp user-auth payment-api
 ```
 
 ### 2. Claude Code Sessions Auto-Start
@@ -205,10 +224,11 @@ git worktree remove .worktrees/feature-name
 ```
 
 **Claude Code not found?**
-- The workspace will still create the layout with placeholder messages
-- Claude Code sessions won't auto-start, but panes are ready
-- Manual `claude .` command needed in each pane if auto-start fails
-- Install Claude Code CLI and relaunch workspace for auto-start feature
+- The script automatically detects Claude CLI availability
+- If found: `claude .` auto-starts in each top pane
+- If not found: Panes display helpful message and wait for manual commands
+- Install Claude Code CLI and relaunch workspace for full auto-start feature
+- Script provides colored status messages about Claude CLI detection
 
 **Too many features?**
 - Maximum 5 features supported for optimal screen space
