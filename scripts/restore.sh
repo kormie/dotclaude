@@ -118,9 +118,15 @@ restore_component() {
         "tmux")
             restore_file "$backup_dir/.tmux.conf" "$HOME/.tmux.conf"
             ;;
+        "environment"|"env")
+            restore_file "$backup_dir/.zshenv" "$HOME/.zshenv"
+            ;;
+        "aliases")
+            restore_file "$backup_dir/.aliases" "$HOME/.aliases"
+            ;;
         *)
             log_error "Unknown component: $component"
-            log_info "Available components: zsh, git, nvim, tmux"
+            log_info "Available components: zsh, git, nvim, tmux, environment, aliases"
             exit 1
             ;;
     esac
