@@ -98,8 +98,8 @@ export PATH="$PATH:/Users/david.kormushoff/.lmstudio/bin"
 # ============================================================================
 
 # Load dotfiles environment and centralized aliases
-[[ -f ~/.config/dotfiles/environment ]] && source ~/.config/dotfiles/environment
-[[ -f ~/.config/dotfiles/aliases ]] && source ~/.config/dotfiles/aliases
+[[ -f ~/.zshenv ]] && source ~/.zshenv
+[[ -f ~/.aliases ]] && source ~/.aliases
 
 # Enhanced prompt with git status (fallback if Oh-My-Zsh theme doesn't work)
 if [[ "$ZSH_THEME" == "clean" ]]; then
@@ -118,31 +118,12 @@ if [[ "$ZSH_THEME" == "clean" ]]; then
 fi
 
 # ============================================================================
-# MODERN CLI TOOLS (aliases for testing, not replacements)
+# MODERN CLI TOOLS
 # ============================================================================
 
-# Only create aliases if modern tools are installed
-if command -v eza >/dev/null; then
-  alias ll2='eza -la --icons --git'
-  alias ls2='eza --icons'
-  alias tree2='eza --tree --icons'
-fi
-
-if command -v bat >/dev/null; then
-  alias cat2='bat --style=numbers,changes,header'
-fi
-
-if command -v fd >/dev/null; then
-  alias find2='fd'
-fi
-
-if command -v rg >/dev/null; then
-  alias grep2='rg'
-fi
-
+# Initialize zoxide for smart directory navigation
 if command -v zoxide >/dev/null; then
   eval "$(zoxide init zsh)"
-  alias cd2='z'
 fi
 
 # ============================================================================
@@ -169,3 +150,59 @@ setopt GLOB_DOTS
 # Performance optimizations
 DISABLE_AUTO_UPDATE="true"
 DISABLE_UPDATE_PROMPT="true"
+
+# ============================================================================
+# PROJECT-SPECIFIC ENVIRONMENT MANAGEMENT
+# ============================================================================
+
+# Auto-load project-specific configurations
+autoload_project_config() {
+    local dir="$PWD"
+    while [[ "$dir" != "/" ]]; do
+        if [[ -f "$dir/.env" ]]; then
+            echo "Loading project environment from $dir/.env"
+            source "$dir/.env"
+            break
+        fi
+        if [[ -f "$dir/.nvmrc" ]] && command -v nvm >/dev/null; then
+            echo "Loading Node.js version from $dir/.nvmrc"
+            nvm use
+            break
+        fi
+        dir="$(dirname "$dir")"
+    done
+}
+
+# Hook to run on directory change
+chpwd() {
+    autoload_project_config
+}
+
+# ============================================================================
+# ADVANCED SHELL FEATURES
+# ============================================================================
+
+# Enhanced command correction
+setopt CORRECT
+setopt CORRECT_ALL
+
+# Better process handling
+setopt MONITOR
+setopt HUP
+
+# Advanced completion
+zstyle ':completion:*' menu select
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*:descriptions' format '[%d]'
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' special-dirs true
+
+# Smart URL handling
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
+# Enhanced editing
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^xe' edit-command-line
+bindkey '^x^e' edit-command-line

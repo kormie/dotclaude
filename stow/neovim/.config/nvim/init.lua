@@ -16,6 +16,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- Load core configuration
+require('user.performance')  -- Load performance optimizations first
 require('user.options')
 require('user.keymaps')
 
