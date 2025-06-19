@@ -226,12 +226,24 @@ test_component() {
             test_stow_package "tmux"
             test_tmux_config
             ;;
+        "environment"|"env")
+            test_stow_package "environment"
+            if [[ -f "$DOTFILES_DIR/stow/environment/.zshenv" ]]; then
+                test_shell_config "$DOTFILES_DIR/stow/environment/.zshenv"
+            fi
+            ;;
+        "aliases")
+            test_stow_package "aliases"
+            if [[ -f "$DOTFILES_DIR/stow/aliases/.aliases" ]]; then
+                test_shell_config "$DOTFILES_DIR/stow/aliases/.aliases"
+            fi
+            ;;
         "all")
             test_all
             ;;
         *)
             log_error "Unknown component: $component"
-            log_info "Available components: stow, zsh, git, nvim, tmux, all"
+            log_info "Available components: stow, zsh, git, nvim, tmux, environment, aliases, all"
             return 1
             ;;
     esac
