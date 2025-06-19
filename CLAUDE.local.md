@@ -1,0 +1,1 @@
+- NEVER create dead links in files within the `docs` directory

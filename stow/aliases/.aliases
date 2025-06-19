@@ -20,8 +20,33 @@ alias egrep='egrep --color=auto'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
-alias ~='cd ~'
-alias -- -='cd -'
+
+# Modern tool aliases (coexisting with originals)
+# Use '2' suffix for easy adoption
+alias ll2='eza -la --icons --git'
+alias ls2='eza --icons'
+alias cat2='bat'
+alias find2='fd'
+alias grep2='rg'
+alias du2='dust'
+alias ps2='procs'
+alias top2='btm'
+
+# Shortcuts for modern tools
+alias tree='eza --tree'
+alias preview='bat'
+
+# Git aliases
+alias g='git'
+alias gs='git status'
+alias ga='git add'
+alias gc='git commit'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gco='git checkout'
+alias gb='git branch'
+alias glog='git log --oneline --graph'
 
 # Directory operations
 alias md='mkdir -p'
