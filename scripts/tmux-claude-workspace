@@ -51,10 +51,10 @@ check_tmux() {
     fi
 }
 
-# Check if claude-code is available
-check_claude_code() {
-    if ! command -v claude-code &> /dev/null; then
-        log_warn "claude-code command not found. Will use placeholders in tmux panes."
+# Check if claude is available
+check_claude() {
+    if ! command -v claude &> /dev/null; then
+        log_warn "claude command not found. Will use placeholders in tmux panes."
         return 1
     fi
     return 0
@@ -80,12 +80,12 @@ setup_worktrees() {
             # Create branch if it doesn't exist
             if ! git rev-parse --verify "$feature" >/dev/null 2>&1; then
                 log_info "Creating branch: $feature"
-                git branch "$feature"
+                git branch "$feature" >/dev/null 2>&1
             fi
             
             # Create worktree
             log_info "Creating worktree: $worktree_path"
-            git worktree add "$worktree_path" "$feature"
+            git worktree add "$worktree_path" "$feature" >/dev/null 2>&1
         fi
     done
     
@@ -109,18 +109,18 @@ create_tmux_layout() {
     log_workspace "Creating tmux session: $SESSION_NAME"
     
     # Create new session (detached)
-    tmux new-session -d -s "$SESSION_NAME" -c "$base_dir"
+    tmux new-session -d -s "$SESSION_NAME" -c "$base_dir" >/dev/null 2>&1
     
     # Rename first window
-    tmux rename-window -t "$SESSION_NAME:1" "claude-workspace"
+    tmux rename-window -t "$SESSION_NAME:1" "claude-workspace" >/dev/null 2>&1
     
     # Split into 4 panes
     # Top: Split horizontally for 2 Claude Code sessions
-    tmux split-window -h -t "$SESSION_NAME:1" -c "${worktree_dir}/${FEATURE2}"
+    tmux split-window -h -t "$SESSION_NAME:1" -c "${worktree_dir}/${FEATURE2}" >/dev/null 2>&1
     
     # Bottom: Split both panes vertically
-    tmux split-window -v -t "$SESSION_NAME:1.1" -c "$base_dir"  # Bottom left (nvim)
-    tmux split-window -v -t "$SESSION_NAME:1.2" -c "$base_dir"  # Bottom right (git ops)
+    tmux split-window -v -t "$SESSION_NAME:1.1" -c "$base_dir" >/dev/null 2>&1  # Bottom left (nvim)
+    tmux split-window -v -t "$SESSION_NAME:1.2" -c "$base_dir" >/dev/null 2>&1  # Bottom right (git ops)
     
     # Set up each pane
     setup_pane_1 "$worktree_dir" "$claude_available"  # Top left: Claude session 1
@@ -130,17 +130,17 @@ create_tmux_layout() {
     
     # Resize panes for optimal layout
     # Make top panes larger (60% height)
-    tmux resize-pane -t "$SESSION_NAME:1.1" -y 60%
-    tmux resize-pane -t "$SESSION_NAME:1.2" -y 60%
+    tmux resize-pane -t "$SESSION_NAME:1.1" -y 60% >/dev/null 2>&1
+    tmux resize-pane -t "$SESSION_NAME:1.2" -y 60% >/dev/null 2>&1
     
     # Set pane titles
-    tmux select-pane -t "$SESSION_NAME:1.1" -T "Claude: $FEATURE1"
-    tmux select-pane -t "$SESSION_NAME:1.2" -T "Claude: $FEATURE2"
-    tmux select-pane -t "$SESSION_NAME:1.3" -T "Neovim: $(basename "$base_dir")"
-    tmux select-pane -t "$SESSION_NAME:1.4" -T "Git Operations"
+    tmux select-pane -t "$SESSION_NAME:1.1" -T "Claude: $FEATURE1" >/dev/null 2>&1
+    tmux select-pane -t "$SESSION_NAME:1.2" -T "Claude: $FEATURE2" >/dev/null 2>&1
+    tmux select-pane -t "$SESSION_NAME:1.3" -T "Neovim: $(basename "$base_dir")" >/dev/null 2>&1
+    tmux select-pane -t "$SESSION_NAME:1.4" -T "Git Operations" >/dev/null 2>&1
     
     # Start in the first Claude Code pane
-    tmux select-pane -t "$SESSION_NAME:1.1"
+    tmux select-pane -t "$SESSION_NAME:1.1" >/dev/null 2>&1
 }
 
 # Set up individual panes
@@ -154,11 +154,11 @@ setup_pane_1() {
     if [[ "$claude_available" == "true" ]]; then
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
         tmux send-keys -t "$pane" "echo 'Claude Code Session 1: $FEATURE1'" Enter
-        tmux send-keys -t "$pane" "echo 'Ready to start claude-code .'" Enter
+        tmux send-keys -t "$pane" "echo 'Ready to start claude .'" Enter
         tmux send-keys -t "$pane" "clear" Enter
     else
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
-        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE1 (claude-code not available)'" Enter
+        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE1 (claude not available)'" Enter
     fi
 }
 
@@ -172,11 +172,11 @@ setup_pane_2() {
     if [[ "$claude_available" == "true" ]]; then
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
         tmux send-keys -t "$pane" "echo 'Claude Code Session 2: $FEATURE2'" Enter
-        tmux send-keys -t "$pane" "echo 'Ready to start claude-code .'" Enter
+        tmux send-keys -t "$pane" "echo 'Ready to start claude .'" Enter
         tmux send-keys -t "$pane" "clear" Enter
     else
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
-        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE2 (claude-code not available)'" Enter
+        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE2 (claude not available)'" Enter
     fi
 }
 
@@ -236,8 +236,8 @@ show_workspace_info() {
     echo
     echo -e "${YELLOW}Quick Start:${NC}"
     echo "  1. Attach to session"
-    echo "  2. In pane 1: claude-code ."
-    echo "  3. In pane 2: claude-code ."
+    echo "  2. In pane 1: claude ."
+    echo "  3. In pane 2: claude ."
     echo "  4. In pane 3: nvim"
     echo "  5. In pane 4: git operations"
 }
@@ -265,7 +265,7 @@ main() {
     check_git_repo
     check_tmux
     local claude_available="false"
-    if check_claude_code; then
+    if check_claude; then
         claude_available="true"
     fi
     
