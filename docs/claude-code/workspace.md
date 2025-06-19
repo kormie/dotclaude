@@ -1,45 +1,59 @@
 # Claude Code Workspace Setup
 
-Launch parallel Claude Code sessions with git worktrees for conflict-free AI development.
+Launch 1-5 parallel Claude Code sessions with git worktrees for conflict-free AI development.
 
 ## Quick Start
 
 ```bash
-# Launch workspace with 4-pane layout
-cw myproject feature-auth feature-api
+# Launch workspace with single feature
+cw myproject auth-system
 
-# Alternative command
-claude-workspace myproject feature-auth feature-api
+# Launch with multiple features (horizontal layout)
+cw myproject auth-system payment-api notifications dashboard
+
+# Alternative command  
+tmux-claude-workspace myproject auth-system payment-api
 ```
 
 ## Workspace Layout
 
-The `tmux-claude-workspace` script creates an optimized 4-pane layout:
+The `tmux-claude-workspace` script creates a horizontal layout with 1-5 Claude Code sessions on top and a worktree-switching terminal at the bottom:
 
+**2 Features:**
 ```
 ┌─────────────────┬─────────────────┐  
 │ Claude: auth    │ Claude: api     │  ← Parallel Claude Code sessions
-├─────────────────┼─────────────────┤
-│ Neovim          │ Git Operations  │  ← Code editing + git operations
-└─────────────────┴─────────────────┘
+├─────────────────┴─────────────────┤
+│        Terminal (Worktree Switcher)│  ← Switch between worktrees
+└─────────────────────────────────────┘
+```
+
+**5 Features:**
+```
+┌──────┬──────┬──────┬──────┬──────┐  
+│Claude│Claude│Claude│Claude│Claude│  ← Up to 5 parallel sessions
+│ auth │ api  │notify│dash  │admin │
+├──────┴──────┴──────┴──────┴──────┤
+│     Terminal (Worktree Switcher)  │  ← Navigate all worktrees
+└───────────────────────────────────┘
 ```
 
 ### Pane Breakdown
 
-1. **Top Left**: Claude Code session for first feature (uses git worktree)
-2. **Top Right**: Claude Code session for second feature (separate worktree)  
-3. **Bottom Left**: Neovim for code editing in main repository
-4. **Bottom Right**: Git operations and general terminal commands
+1. **Top Row**: 1-5 Claude Code sessions, each in its own git worktree
+2. **Bottom Pane**: Terminal with `cw-switch` command for worktree navigation
 
 ## Git Worktree Integration
 
 Each Claude Code session works in its own git worktree:
 
 ```bash
-# Automatic worktree creation
+# Automatic worktree creation for all features
 .worktrees/
-├── feature-auth/     # First Claude session workspace
-└── feature-api/      # Second Claude session workspace
+├── auth-system/      # First Claude session workspace
+├── payment-api/      # Second Claude session workspace
+├── notifications/    # Third Claude session workspace
+└── dashboard/        # Fourth Claude session workspace
 ```
 
 **Benefits:**
@@ -67,14 +81,17 @@ C-hjkl       # Smart vim/tmux navigation (with CapsLock→Ctrl)
 
 ### Launch Commands
 ```bash
-# Basic workspace
-cw project-name
+# Single feature workspace
+cw project-name auth-system
 
-# With feature branches
-cw project-name auth-system payment-flow
+# Multiple features (2-5 supported)
+cw project-name auth-system payment-api notifications
+
+# Maximum features
+cw my-app auth api notify dash admin
 
 # Custom session name  
-tmux-claude-workspace my-app user-mgmt api-refactor
+tmux-claude-workspace my-app user-mgmt api-refactor ui-redesign
 ```
 
 ### Session Management
@@ -101,32 +118,24 @@ cw myapp user-auth payment-api
 
 ### 2. In Each Claude Code Pane
 ```bash
-# Pane 1 (user-auth worktree):
-claude-code .
-
-# Pane 2 (payment-api worktree):  
-claude-code .
+# All top panes automatically start in their worktree:
+claude .
 ```
 
-### 3. Use Neovim Pane
+### 3. Use Bottom Terminal Pane
 ```bash
-# Open project in neovim
-nvim src/
+# Switch between worktrees
+cw-switch           # List all available worktrees
+cw-switch 1         # Switch to first worktree (auth-system)
+cw-switch 3         # Switch to third worktree (notifications)
 
-# Quick file editing
-C-a ,e    # Split with neovim
-```
-
-### 4. Git Operations Pane
-```bash
-# Check overall project status
+# Git operations in any worktree
 git status
-git lg
+git commit -m "feature implementation"
+git push
 
-# Merge completed features
-git checkout main
-git merge feature-auth
-git merge feature-api
+# Navigate back to main repo
+cd ..
 ```
 
 ## Advanced Features
@@ -145,9 +154,11 @@ Sessions automatically restore with tmux-resurrect:
 
 ### Workspace Cleanup
 ```bash
-# Remove worktrees when done
-git worktree remove .worktrees/feature-auth
-git worktree remove .worktrees/feature-api
+# Automatic cleanup prompt when exiting workspace
+# Or manual cleanup:
+git worktree remove .worktrees/auth-system
+git worktree remove .worktrees/payment-api
+# ... remove all feature worktrees
 rmdir .worktrees
 ```
 
@@ -192,8 +203,13 @@ git worktree remove .worktrees/feature-name
 
 **Claude Code not found?**
 - The workspace will still create the layout
-- Manual `claude-code .` command needed in each pane
+- Manual `claude .` command needed in each pane
 - Install Claude Code CLI if needed
+
+**Too many features?**
+- Maximum 5 features supported for optimal screen space
+- Use multiple workspaces for larger projects
+- Consider grouping related features
 
 ## Tips & Best Practices
 
