@@ -261,6 +261,8 @@ done
 # Test before reapplying
 ./scripts/test-config.sh COMPONENT
 
+# Available test components: stow, zsh, git, nvim, tmux, environment, aliases, all
+
 # Reapply if needed
 ./scripts/stow-package.sh COMPONENT
 ```
