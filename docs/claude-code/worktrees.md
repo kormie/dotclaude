@@ -21,8 +21,8 @@ git checkout feature-api
 ### Worktree Solution
 ```bash
 # Worktree workflow - no conflicts
-# Claude session 1: .worktrees/feature-auth (auth branch)
-# Claude session 2: .worktrees/feature-api (api branch)  
+gwt feature-auth    # Creates worktree and switches to it
+gwt feature-api     # Creates another worktree in parallel
 # ✅ Parallel development, no git conflicts, independent sessions
 ```
 
@@ -43,16 +43,13 @@ cw myproject feature-auth feature-api
 ### Manual Worktree Creation
 
 ```bash
-# Create main worktree directory
-mkdir -p .worktrees
+# Using the gwt alias (recommended)
+gwt feature-auth    # Creates branch and worktree, switches to it
+gwt feature-api     # Creates another branch and worktree
 
-# Create feature branches if they don't exist
-git branch feature-auth
-git branch feature-api
-
-# Create worktrees
-git worktree add .worktrees/feature-auth feature-auth
-git worktree add .worktrees/feature-api feature-api
+# Traditional git commands
+git worktree add -b feature-auth .worktrees/feature-auth
+git worktree add -b feature-api .worktrees/feature-api
 
 # Verify creation
 git worktree list

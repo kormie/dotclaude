@@ -75,6 +75,9 @@ z project  # Smart directory jumping
 
 # Convenience shortcuts
 c          # Clear terminal (alias for clear)
+
+# Git workflow shortcuts
+gwt branch # Create git worktree with new branch and cd to it
 ```
 
 ## Safety Features
