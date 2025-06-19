@@ -105,9 +105,15 @@ backup_component() {
         "tmux")
             backup_file "$HOME/.tmux.conf" "$backup_session_dir/.tmux.conf"
             ;;
+        "environment"|"env")
+            backup_file "$HOME/.zshenv" "$backup_session_dir/.zshenv"
+            ;;
+        "aliases")
+            backup_file "$HOME/.aliases" "$backup_session_dir/.aliases"
+            ;;
         *)
             log_error "Unknown component: $component"
-            log_info "Available components: zsh, git, nvim, tmux"
+            log_info "Available components: zsh, git, nvim, tmux, environment, aliases"
             exit 1
             ;;
     esac
