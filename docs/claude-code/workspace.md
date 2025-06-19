@@ -99,13 +99,14 @@ C-a ,q
 cw myapp user-auth payment-api
 ```
 
-### 2. In Each Claude Code Pane
+### 2. Claude Code Sessions Auto-Start
 ```bash
-# Pane 1 (user-auth worktree):
-claude-code .
+# Claude Code sessions start automatically when workspace launches:
+# Pane 1 (user-auth worktree): claude . is executed automatically
+# Pane 2 (payment-api worktree): claude . is executed automatically
 
-# Pane 2 (payment-api worktree):  
-claude-code .
+# Manual startup only needed if claude command unavailable
+claude .  # If auto-start failed or claude was not found
 ```
 
 ### 3. Use Neovim Pane
@@ -191,9 +192,9 @@ git worktree remove .worktrees/feature-name
 ```
 
 **Claude Code not found?**
-- The workspace will still create the layout
-- Manual `claude-code .` command needed in each pane
-- Install Claude Code CLI if needed
+- The workspace will still create the layout with placeholder messages
+- Claude Code sessions won't auto-start, but panes are ready
+- Install Claude Code CLI and relaunch workspace for auto-start feature
 
 ## Tips & Best Practices
 
