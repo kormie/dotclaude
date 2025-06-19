@@ -116,10 +116,13 @@ C-a ,q
 cw myapp user-auth payment-api
 ```
 
-### 2. In Each Claude Code Pane
+### 2. Claude Code Sessions Auto-Start
 ```bash
-# All top panes automatically start in their worktree:
-claude .
+# Claude Code sessions start automatically when workspace launches:
+# All top panes automatically execute: claude .
+
+# Manual startup only needed if claude command unavailable
+claude .  # If auto-start failed or claude was not found
 ```
 
 ### 3. Use Bottom Terminal Pane
@@ -202,9 +205,10 @@ git worktree remove .worktrees/feature-name
 ```
 
 **Claude Code not found?**
-- The workspace will still create the layout
-- Manual `claude .` command needed in each pane
-- Install Claude Code CLI if needed
+- The workspace will still create the layout with placeholder messages
+- Claude Code sessions won't auto-start, but panes are ready
+- Manual `claude .` command needed in each pane if auto-start fails
+- Install Claude Code CLI and relaunch workspace for auto-start feature
 
 **Too many features?**
 - Maximum 5 features supported for optimal screen space

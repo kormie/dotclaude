@@ -184,9 +184,8 @@ setup_claude_pane() {
     
     if [[ "$claude_available" == "true" ]]; then
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${feature}" Enter
-        tmux send-keys -t "$pane" "echo 'Claude Code Session: $feature'" Enter
-        tmux send-keys -t "$pane" "echo 'Ready to start claude .'" Enter
-        tmux send-keys -t "$pane" "clear" Enter
+        tmux send-keys -t "$pane" "echo 'Starting Claude Code Session: $feature'" Enter
+        tmux send-keys -t "$pane" "claude ." Enter
     else
         tmux send-keys -t "$pane" "cd ${worktree_dir}/${feature}" Enter
         tmux send-keys -t "$pane" "echo 'Worktree: $feature (claude not available)'" Enter
