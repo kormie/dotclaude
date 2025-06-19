@@ -1,7 +1,11 @@
 #!/bin/bash
 
 # tmux-claude-workspace - Set up optimized tmux workspace for Claude Code development
-# Usage: tmux-claude-workspace [project-name] [feature1] [feature2]
+# Usage: tmux-claude-workspace [project-name] [feature1] [feature2] [feature3] [feature4] [feature5]
+#
+# project-name: Used for tmux session naming (claude-dev-${project-name})
+#               Defaults to current directory name if not provided
+#               Allows multiple workspaces and easy session identification
 
 set -e
 
@@ -31,9 +35,26 @@ log_workspace() {
 
 # Default configuration
 PROJECT_NAME="${1:-$(basename "$(pwd)")}"
-FEATURE1="${2:-feature-1}"
-FEATURE2="${3:-feature-2}"
+FEATURES=()
 SESSION_NAME="claude-dev-${PROJECT_NAME}"
+
+# Parse feature arguments (2-6 features supported)
+for i in {2..6}; do
+    if [[ -n "${!i}" ]]; then
+        FEATURES+=("${!i}")
+    fi
+done
+
+# Default to single feature if none provided
+if [[ ${#FEATURES[@]} -eq 0 ]]; then
+    FEATURES=("feature-1")
+fi
+
+# Validate feature count (1-5 features)
+if [[ ${#FEATURES[@]} -gt 5 ]]; then
+    log_error "Maximum 5 features supported. Provided: ${#FEATURES[@]}"
+    exit 1
+fi
 
 # Check if we're in a git repository
 check_git_repo() {
@@ -71,7 +92,7 @@ setup_worktrees() {
     mkdir -p "$worktree_dir"
     
     # Create worktrees for each feature
-    for feature in "$FEATURE1" "$FEATURE2"; do
+    for feature in "${FEATURES[@]}"; do
         local worktree_path="${worktree_dir}/${feature}"
         
         if [[ -d "$worktree_path" ]]; then
@@ -105,8 +126,9 @@ create_tmux_layout() {
     local base_dir="$(pwd)"
     local worktree_dir="$1"
     local claude_available="$2"
+    local num_features=${#FEATURES[@]}
     
-    log_workspace "Creating tmux session: $SESSION_NAME"
+    log_workspace "Creating tmux session: $SESSION_NAME with $num_features features"
     
     # Create new session (detached)
     tmux new-session -d -s "$SESSION_NAME" -c "$base_dir" >/dev/null 2>&1
@@ -114,130 +136,156 @@ create_tmux_layout() {
     # Rename first window
     tmux rename-window -t "$SESSION_NAME:1" "claude-workspace" >/dev/null 2>&1
     
-    # Split into 4 panes
-    # Top: Split horizontally for 2 Claude Code sessions
-    tmux split-window -h -t "$SESSION_NAME:1" -c "${worktree_dir}/${FEATURE2}" >/dev/null 2>&1
-    
-    # Bottom: Split both panes vertically
-    tmux split-window -v -t "$SESSION_NAME:1.1" -c "$base_dir" >/dev/null 2>&1  # Bottom left (nvim)
-    tmux split-window -v -t "$SESSION_NAME:1.2" -c "$base_dir" >/dev/null 2>&1  # Bottom right (git ops)
-    
-    # Set up each pane
-    setup_pane_1 "$worktree_dir" "$claude_available"  # Top left: Claude session 1
-    setup_pane_2 "$worktree_dir" "$claude_available"  # Top right: Claude session 2  
-    setup_pane_3 "$base_dir"                          # Bottom left: Neovim
-    setup_pane_4 "$base_dir"                          # Bottom right: Git ops
-    
-    # Resize panes for optimal layout
-    # Make top panes larger (60% height)
-    tmux resize-pane -t "$SESSION_NAME:1.1" -y 60% >/dev/null 2>&1
-    tmux resize-pane -t "$SESSION_NAME:1.2" -y 60% >/dev/null 2>&1
-    
-    # Set pane titles
-    tmux select-pane -t "$SESSION_NAME:1.1" -T "Claude: $FEATURE1" >/dev/null 2>&1
-    tmux select-pane -t "$SESSION_NAME:1.2" -T "Claude: $FEATURE2" >/dev/null 2>&1
-    tmux select-pane -t "$SESSION_NAME:1.3" -T "Neovim: $(basename "$base_dir")" >/dev/null 2>&1
-    tmux select-pane -t "$SESSION_NAME:1.4" -T "Git Operations" >/dev/null 2>&1
+    # Create horizontal layout: features across top, single terminal at bottom
+    setup_horizontal_layout "$worktree_dir" "$claude_available" "$num_features"
     
     # Start in the first Claude Code pane
     tmux select-pane -t "$SESSION_NAME:1.1" >/dev/null 2>&1
 }
 
-# Set up individual panes
-setup_pane_1() {
+# Set up horizontal layout with features across top and terminal at bottom
+setup_horizontal_layout() {
     local worktree_dir="$1"
     local claude_available="$2"
-    local pane="$SESSION_NAME:1.1"
+    local num_features="$3"
     
-    log_workspace "Setting up Claude Code session 1: $FEATURE1"
+    # Create horizontal splits for each feature (top row)
+    for ((i=1; i<num_features; i++)); do
+        tmux split-window -h -t "$SESSION_NAME:1" -c "${worktree_dir}/${FEATURES[$i]}" >/dev/null 2>&1
+    done
+    
+    # Create bottom terminal pane (spans full width)
+    tmux split-window -v -t "$SESSION_NAME:1.1" -c "$(pwd)" >/dev/null 2>&1
+    
+    # Resize to give Claude panes 75% of height
+    tmux resize-pane -t "$SESSION_NAME:1.$((num_features + 1))" -y 25% >/dev/null 2>&1
+    
+    # Set up each pane
+    for ((i=0; i<num_features; i++)); do
+        setup_claude_pane "$((i+1))" "${FEATURES[$i]}" "$worktree_dir" "$claude_available"
+    done
+    
+    # Set up bottom terminal pane with worktree switching
+    setup_terminal_pane "$((num_features + 1))" "$worktree_dir"
+}
+
+# Set up individual panes
+setup_claude_pane() {
+    local pane_num="$1"
+    local feature="$2"
+    local worktree_dir="$3"
+    local claude_available="$4"
+    local pane="$SESSION_NAME:1.$pane_num"
+    
+    log_workspace "Setting up Claude Code session $pane_num: $feature"
+    
+    # Set pane title
+    tmux select-pane -t "$pane" -T "Claude: $feature" >/dev/null 2>&1
     
     if [[ "$claude_available" == "true" ]]; then
-        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
-        tmux send-keys -t "$pane" "echo 'Starting Claude Code Session 1: $FEATURE1'" Enter
+        tmux send-keys -t "$pane" "cd ${worktree_dir}/${feature}" Enter
+        tmux send-keys -t "$pane" "echo 'Starting Claude Code Session: $feature'" Enter
         tmux send-keys -t "$pane" "claude ." Enter
     else
-        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE1}" Enter
-        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE1 (claude not available)'" Enter
+        tmux send-keys -t "$pane" "cd ${worktree_dir}/${feature}" Enter
+        tmux send-keys -t "$pane" "echo 'Worktree: $feature (claude not available)'" Enter
     fi
 }
 
-setup_pane_2() {
-    local worktree_dir="$1"
-    local claude_available="$2" 
-    local pane="$SESSION_NAME:1.2"
+setup_terminal_pane() {
+    local pane_num="$1"
+    local worktree_dir="$2"
+    local pane="$SESSION_NAME:1.$pane_num"
     
-    log_workspace "Setting up Claude Code session 2: $FEATURE2"
+    log_workspace "Setting up terminal with worktree switching"
     
-    if [[ "$claude_available" == "true" ]]; then
-        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
-        tmux send-keys -t "$pane" "echo 'Starting Claude Code Session 2: $FEATURE2'" Enter
-        tmux send-keys -t "$pane" "claude ." Enter
-    else
-        tmux send-keys -t "$pane" "cd ${worktree_dir}/${FEATURE2}" Enter
-        tmux send-keys -t "$pane" "echo 'Worktree: $FEATURE2 (claude not available)'" Enter
-    fi
-}
-
-setup_pane_3() {
-    local base_dir="$1"
-    local pane="$SESSION_NAME:1.3"
+    # Set pane title
+    tmux select-pane -t "$pane" -T "Terminal (Worktree Switcher)" >/dev/null 2>&1
     
-    log_workspace "Setting up Neovim session"
+    # Create worktree switching function
+    local switch_function="cw-switch() {
+        if [[ \$# -eq 0 ]]; then
+            echo 'Available worktrees:'
+            for i in \${!FEATURES[@]}; do
+                echo \"  \$((i+1)). \${FEATURES[\$i]}\"
+            done
+            echo 'Usage: cw-switch <number>'
+            return
+        fi
+        
+        local choice=\$1
+        if [[ \$choice -ge 1 && \$choice -le \${#FEATURES[@]} ]]; then
+            local feature=\${FEATURES[\$((choice-1))]}
+            cd \"${worktree_dir}/\${feature}\"
+            echo \"Switched to worktree: \${feature}\"
+            git status
+        else
+            echo \"Invalid choice. Use 1-\${#FEATURES[@]}\"
+        fi
+    }"
     
-    tmux send-keys -t "$pane" "cd $base_dir" Enter
-    
-    # Check if neovim is available
-    if command -v nvim &> /dev/null; then
-        tmux send-keys -t "$pane" "echo 'Neovim ready. Type nvim to start editing.'" Enter
-    elif command -v vim &> /dev/null; then
-        tmux send-keys -t "$pane" "echo 'Vim available. Neovim preferred but not installed.'" Enter
-    else
-        tmux send-keys -t "$pane" "echo 'No vim/neovim found. Please install neovim.'" Enter
-    fi
-    
-    tmux send-keys -t "$pane" "clear" Enter
-}
-
-setup_pane_4() {
-    local base_dir="$1"
-    local pane="$SESSION_NAME:1.4"
-    
-    log_workspace "Setting up Git operations pane"
-    
-    tmux send-keys -t "$pane" "cd $base_dir" Enter
-    tmux send-keys -t "$pane" "echo 'Git Operations - Repository Root'" Enter
-    tmux send-keys -t "$pane" "git status" Enter
+    # Set up the terminal pane
+    tmux send-keys -t "$pane" "cd $(pwd)" Enter
+    tmux send-keys -t "$pane" "FEATURES=(${FEATURES[*]})" Enter
+    tmux send-keys -t "$pane" "$switch_function" Enter
+    tmux send-keys -t "$pane" "echo 'Terminal ready - use cw-switch <1-${#FEATURES[@]}> to switch worktrees'" Enter
+    tmux send-keys -t "$pane" "cw-switch" Enter
 }
 
 # Display usage information
 show_workspace_info() {
     local worktree_dir="$1"
+    local num_features=${#FEATURES[@]}
     
     log_info "Claude Code Development Workspace Ready!"
     echo
-    echo -e "${BLUE}Session:${NC} $SESSION_NAME"
-    echo -e "${BLUE}Project:${NC} $PROJECT_NAME"
+    echo -e "${BLUE}Session:${NC} $SESSION_NAME (project: $PROJECT_NAME)"
+    echo -e "${BLUE}Features:${NC} ${FEATURES[*]}"
     echo -e "${BLUE}Worktrees:${NC} $worktree_dir"
     echo
     echo -e "${PURPLE}Pane Layout:${NC}"
-    echo "  ┌─────────────────┬─────────────────┐"
-    echo "  │ Claude: $FEATURE1   │ Claude: $FEATURE2   │"
-    echo "  ├─────────────────┼─────────────────┤"
-    echo "  │ Neovim          │ Git Operations  │"
-    echo "  └─────────────────┴─────────────────┘"
+    
+    # Dynamic layout display based on number of features
+    local top_line="  ┌"
+    local feature_line="  │"
+    local bottom_line="  └"
+    
+    for ((i=0; i<num_features; i++)); do
+        if [[ $i -eq 0 ]]; then
+            top_line+="─────────────────"
+            feature_line+=" Claude: ${FEATURES[$i]}"
+            bottom_line+="─────────────────"
+        else
+            top_line+="┬─────────────────"
+            feature_line+=" │ Claude: ${FEATURES[$i]}"
+            bottom_line+="┴─────────────────"
+        fi
+    done
+    
+    top_line+="┐"
+    feature_line+=" │"
+    bottom_line+="┐"
+    
+    echo "$top_line"
+    echo "$feature_line"
+    echo "  ├$(printf '─%.0s' $(seq 1 $((17 * num_features + num_features - 1))))┤"
+    echo "  │$(printf ' %.0s' $(seq 1 $((17 * num_features + num_features - 1))))│"
+    echo "  │          Terminal (Worktree Switcher)$(printf ' %.0s' $(seq 1 $((17 * num_features + num_features - 1 - 35))))│"
+    echo "  │$(printf ' %.0s' $(seq 1 $((17 * num_features + num_features - 1))))│"
+    echo "  └$(printf '─%.0s' $(seq 1 $((17 * num_features + num_features - 1))))┘"
     echo
     echo -e "${GREEN}Commands:${NC}"
     echo "  Attach: tmux attach-session -t $SESSION_NAME"
     echo "  Detach: Ctrl-a + d"
-    echo "  Switch panes: Ctrl-a + arrow keys"
+    echo "  Switch panes: Ctrl-a + hjkl (vim-style)"
     echo "  Sync panes: Ctrl-a + S (toggle)"
+    echo "  Worktree switch: cw-switch <1-$num_features> (in terminal pane)"
     echo
     echo -e "${YELLOW}Quick Start:${NC}"
     echo "  1. Attach to session"
-    echo "  2. In pane 1: claude ."
-    echo "  3. In pane 2: claude ."
-    echo "  4. In pane 3: nvim"
-    echo "  5. In pane 4: git operations"
+    echo "  2. Top panes: claude . (parallel Claude Code sessions)"
+    echo "  3. Bottom pane: Use cw-switch to navigate between worktrees"
+    echo "  4. Use Ctrl-a + hjkl to navigate between panes"
 }
 
 # Clean up worktrees (optional)
@@ -247,8 +295,9 @@ cleanup_worktrees() {
     read -p "Remove worktrees when done? (y/N): " cleanup_choice
     if [[ "$cleanup_choice" =~ ^[Yy]$ ]]; then
         log_info "Cleaning up worktrees..."
-        git worktree remove "${worktree_dir}/${FEATURE1}" 2>/dev/null || true
-        git worktree remove "${worktree_dir}/${FEATURE2}" 2>/dev/null || true
+        for feature in "${FEATURES[@]}"; do
+            git worktree remove "${worktree_dir}/${feature}" 2>/dev/null || true
+        done
         rmdir "$worktree_dir" 2>/dev/null || true
         log_info "Worktrees cleaned up"
     fi
@@ -257,7 +306,7 @@ cleanup_worktrees() {
 # Main function
 main() {
     log_info "Setting up Claude Code development workspace"
-    log_info "Project: $PROJECT_NAME | Features: $FEATURE1, $FEATURE2"
+    log_info "Project: $PROJECT_NAME | Features: ${FEATURES[*]}"
     
     # Validation
     check_git_repo
@@ -287,17 +336,23 @@ main() {
 # Handle script arguments
 case "${1:-}" in
     -h|--help)
-        echo "Usage: tmux-claude-workspace [project-name] [feature1] [feature2]"
+        echo "Usage: tmux-claude-workspace [project-name] [feature1] [feature2] [feature3] [feature4] [feature5]"
         echo
         echo "Creates an optimized tmux workspace for Claude Code development with:"
-        echo "  - 2 parallel Claude Code sessions in separate git worktrees"
-        echo "  - 1 Neovim session for code editing"
-        echo "  - 1 Git operations pane"
+        echo "  - 1-5 horizontal Claude Code sessions in separate git worktrees"
+        echo "  - 1 bottom terminal pane with worktree switching capability"
         echo
         echo "Arguments:"
-        echo "  project-name    Name for the tmux session (default: current directory)"
-        echo "  feature1        Name for first feature branch/worktree (default: feature-1)"
-        echo "  feature2        Name for second feature branch/worktree (default: feature-2)"
+        echo "  project-name    Name for tmux session (claude-dev-PROJECT_NAME)"
+        echo "                  Used for session identification and multi-project support"
+        echo "                  Defaults to current directory name if not provided"
+        echo "  feature1-5      Names for feature branches/worktrees"
+        echo "                  Creates git branches and worktrees automatically"
+        echo "                  Defaults to 'feature-1' if no features provided"
+        echo
+        echo "Terminal Commands (available in bottom pane):"
+        echo "  cw-switch       List available worktrees"
+        echo "  cw-switch <N>   Switch to worktree N (1-based index)"
         exit 0
         ;;
     *)
