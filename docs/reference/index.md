@@ -18,13 +18,14 @@ Complete reference for commands, configurations, and troubleshooting.
 ./scripts/stow-package.sh [package] status  # Check package status
 
 # Tool Installation
-./scripts/setup-tools.sh                 # Install all modern tools
-./scripts/setup-tools.sh rust-tools      # Install just Rust tools
+./scripts/setup-tools.sh                 # Install modern tools
+./scripts/setup-zsh-enhanced.sh         # Set up enhanced Zsh
+
+# Configuration Management
+./scripts/toggle-neovim.sh [enhanced|original|status]  # Toggle Neovim config
 
 # Claude Code Workflows
-cw project feature1 feature2             # Launch Claude workspace
-claude-workspace project f1 f2           # Alternative command
-tmux-claude-workspace project f1 f2      # Full command
+./scripts/tmux-claude-workspace project f1 f2    # Launch Claude workspace
 ```
 
 ### Modern Tool Aliases
@@ -118,12 +119,14 @@ stow/
 
 ```
 scripts/
-├── backup.sh            # Comprehensive backup system
-├── restore.sh           # Interactive restore functionality
-├── test-config.sh       # Pre-deployment testing
-├── stow-package.sh      # Safe package deployment
-├── setup-tools.sh       # Modern tool installation
-└── tmux-claude-workspace # Claude Code workspace automation
+├── backup.sh                # Comprehensive backup system
+├── restore.sh               # Interactive restore functionality
+├── test-config.sh           # Pre-deployment testing
+├── stow-package.sh          # Safe package deployment
+├── setup-tools.sh           # Modern tool installation
+├── setup-zsh-enhanced.sh    # Enhanced Zsh setup
+├── toggle-neovim.sh         # Neovim configuration toggle
+└── tmux-claude-workspace    # Claude Code workspace automation
 ```
 
 ## Project Phases

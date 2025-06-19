@@ -23,9 +23,9 @@ Located in `scripts/`
 ./scripts/stow-package.sh neovim
 ```
 
-#### `unstow-package.sh`
+#### `stow-package.sh remove`
 **Purpose**: Remove stow packages safely
-**Usage**: `./scripts/unstow-package.sh <package-name>`
+**Usage**: `./scripts/stow-package.sh <package-name> remove`
 **Features**:
 - Clean removal of symlinks
 - Preservation of user modifications
@@ -69,25 +69,7 @@ Located in `scripts/`
 - Functionality testing
 - Performance benchmarking
 
-#### `health-check.sh`
-**Purpose**: Comprehensive system health validation
-**Usage**: `./scripts/health-check.sh`
-**Features**:
-- Configuration file validation
-- Symlink integrity checking
-- Tool availability verification
-- Performance metrics
-
 ## Toggle Scripts
-
-### `toggle-shell.sh`
-**Purpose**: Switch between original and enhanced shell configurations
-**Usage**: `./scripts/toggle-shell.sh [enhanced|original|status]`
-
-States:
-- **enhanced** - Use Oh-My-Zsh with modern tools
-- **original** - Revert to system defaults
-- **status** - Show current configuration state
 
 ### `toggle-neovim.sh`
 **Purpose**: Switch between Neovim configurations
@@ -129,15 +111,15 @@ Features:
 - Configuration integration
 - Alias setup
 
-### `setup-system.sh`
-**Purpose**: Complete system setup and configuration
-**Usage**: `./scripts/setup-system.sh`
+### `setup-zsh-enhanced.sh`
+**Purpose**: Set up enhanced Zsh configuration with Oh-My-Zsh
+**Usage**: `./scripts/setup-zsh-enhanced.sh`
 
-Phases:
-1. Dependency installation
-2. Tool setup and configuration
-3. Package application
-4. Verification and testing
+Features:
+- Oh-My-Zsh installation
+- Plugin configuration
+- Theme setup
+- Integration with modern tools
 
 ## Automation Scripts
 
@@ -160,69 +142,18 @@ Layout:
 └─────────────┴─────────────┘
 ```
 
-### `create-worktree.sh`
-**Purpose**: Automate git worktree creation for parallel development
-**Usage**: `./scripts/create-worktree.sh <branch-name> [base-branch]`
+## Available Scripts Summary
 
-Features:
-- Automatic worktree directory creation
-- Branch creation and checkout
-- Integration with tmux workspaces
-- Cleanup automation
+The following scripts are currently available and documented:
 
-## Utility Scripts
-
-### `check-package.sh`
-**Purpose**: Verify package installation and status
-**Usage**: `./scripts/check-package.sh <package-name>`
-
-Checks:
-- Symlink integrity
-- Configuration file presence
-- Tool availability
-- Functionality testing
-
-### `validate-package.sh`
-**Purpose**: Comprehensive package validation
-**Usage**: `./scripts/validate-package.sh <package-name>`
-
-Validation:
-- Syntax checking
-- Dependency verification
-- Security validation
-- Performance testing
-
-### `cleanup.sh`
-**Purpose**: Clean up temporary files and broken symlinks
-**Usage**: `./scripts/cleanup.sh`
-
-Features:
-- Broken symlink removal
-- Temporary file cleanup
-- Backup directory management
-- Cache clearing
-
-## Development Scripts
-
-### `dev-setup.sh`
-**Purpose**: Set up development environment for DotClaude
-**Usage**: `./scripts/dev-setup.sh`
-
-Features:
-- Git hooks installation
-- Pre-commit configuration
-- Testing environment setup
-- Documentation generation
-
-### `run-tests.sh`
-**Purpose**: Execute comprehensive test suite
-**Usage**: `./scripts/run-tests.sh [component]`
-
-Test categories:
-- Unit tests for individual scripts
-- Integration tests for package interactions
-- Performance benchmarks
-- Security validation
+- **`backup.sh`** - Create backups of configurations
+- **`restore.sh`** - Restore from backups
+- **`test-config.sh`** - Test configurations before applying
+- **`stow-package.sh`** - Apply and manage stow packages
+- **`setup-tools.sh`** - Install modern CLI tools
+- **`setup-zsh-enhanced.sh`** - Set up enhanced Zsh
+- **`toggle-neovim.sh`** - Toggle Neovim configurations
+- **`tmux-claude-workspace`** - Launch Claude Code workspace
 
 ## Script Configuration
 
@@ -260,40 +191,31 @@ Scripts implement robust error handling:
 ### Daily Workflow
 ```bash
 # Morning setup
-./scripts/health-check.sh
-tmux-claude-workspace daily
+./scripts/tmux-claude-workspace daily
 
 # Apply new configurations
 ./scripts/stow-package.sh new-feature
 
-# End of day cleanup
-./scripts/cleanup.sh
+# End of day backup
 ./scripts/backup.sh
 ```
 
 ### Emergency Recovery
 ```bash
-# Quick health check
-./scripts/health-check.sh
-
 # Restore from backup
 ./scripts/restore.sh shell 2024-06-18
 
-# Reset to known good state
-./scripts/toggle-shell.sh original
+# Reset Neovim to original
+./scripts/toggle-neovim.sh original
 ```
 
 ### Development Workflow
 ```bash
-# Set up development environment
-./scripts/dev-setup.sh
-
 # Test changes
 ./scripts/test-config.sh modified-package
 
 # Apply and verify
 ./scripts/stow-package.sh modified-package
-./scripts/health-check.sh
 ```
 
 ## Customization
