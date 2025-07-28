@@ -94,15 +94,9 @@ fi
 alias tree='eza --tree'
 alias preview='bat'
 
-# zoxide (smart cd) - different pattern since it's an enhancement, not replacement
+# zoxide (smart cd) - different pattern since it's an enhancement, not replacement  
+# Note: zoxide is initialized in .zshrc, we just need the alias here
 if command -v zoxide &> /dev/null; then
-    # Initialize zoxide based on shell type - this creates the 'z' function
-    if [[ -n "$ZSH_VERSION" ]]; then
-        eval "$(zoxide init zsh)"
-    elif [[ -n "$BASH_VERSION" ]]; then
-        eval "$(zoxide init bash)"
-    fi
-    # Don't alias z - it's already created by zoxide init
     # Make zoxide the default cd for transparent smart navigation
     alias cd_original='command cd'
     alias cd='z'

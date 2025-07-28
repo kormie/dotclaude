@@ -97,6 +97,13 @@ export PATH="$PATH:/Users/david.kormushoff/.lmstudio/bin"
 # ENHANCED FEATURES (new additions)
 # ============================================================================
 
+# Initialize zoxide for smart directory navigation (must happen before loading aliases)
+if command -v zoxide >/dev/null; then
+  # Ensure no conflicting z function exists
+  unset -f z 2>/dev/null
+  eval "$(zoxide init zsh)"
+fi
+
 # Load dotfiles environment and centralized aliases
 [[ -f ~/.zshenv ]] && source ~/.zshenv
 [[ -f ~/.aliases ]] && source ~/.aliases
@@ -120,11 +127,6 @@ fi
 # ============================================================================
 # MODERN CLI TOOLS
 # ============================================================================
-
-# Initialize zoxide for smart directory navigation
-if command -v zoxide >/dev/null; then
-  eval "$(zoxide init zsh)"
-fi
 
 # ============================================================================
 # USER EXPERIENCE ENHANCEMENTS
