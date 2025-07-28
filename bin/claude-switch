@@ -1,0 +1,256 @@
+#!/usr/bin/env bash
+
+# claude-switch - Beautiful CLI tool for switching Claude Code settings
+# Usage: claude-switch [profile] or claude-switch --help
+
+set -euo pipefail
+
+# Configuration
+CLAUDE_DIR="$HOME/.claude"
+SETTINGS_FILE="$CLAUDE_DIR/settings.json"
+
+# Colors and styling
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly WHITE='\033[1;37m'
+readonly GRAY='\033[0;90m'
+readonly BOLD='\033[1m'
+readonly DIM='\033[2m'
+readonly RESET='\033[0m'
+
+# Unicode symbols
+readonly CHECK="✓"
+readonly ARROW="→"
+readonly STAR="★"
+readonly DOT="•"
+
+# Print styled header
+print_header() {
+    echo -e "${PURPLE}${BOLD}"
+    echo "╭─────────────────────────────────────────╮"
+    echo "│  ${STAR} Claude Code Settings Switcher ${STAR}  │"
+    echo "╰─────────────────────────────────────────╯"
+    echo -e "${RESET}"
+}
+
+# Print help
+print_help() {
+    print_header
+    echo -e "${WHITE}${BOLD}USAGE:${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET}              ${GRAY}# Interactive mode${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET} ${YELLOW}<profile>${RESET}    ${GRAY}# Switch to profile${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET} ${YELLOW}--list${RESET}       ${GRAY}# List available profiles${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET} ${YELLOW}--status${RESET}     ${GRAY}# Show current profile${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET} ${YELLOW}--help${RESET}       ${GRAY}# Show this help${RESET}"
+    echo
+    echo -e "${WHITE}${BOLD}EXAMPLES:${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET} ${YELLOW}sonnet${RESET}       ${GRAY}# Switch to Sonnet profile${RESET}"
+    echo -e "  ${CYAN}claude-switch${RESET} ${YELLOW}opus${RESET}         ${GRAY}# Switch to Opus profile${RESET}"
+    echo
+}
+
+# Get available profiles
+get_profiles() {
+    find "$CLAUDE_DIR" -name "settings.*.json" -exec basename {} \; | \
+        sed 's/settings\.\(.*\)\.json/\1/' | \
+        sort
+}
+
+# Get current profile
+get_current_profile() {
+    if [[ ! -f "$SETTINGS_FILE" ]]; then
+        echo "none"
+        return
+    fi
+    
+    local current_hash
+    current_hash=$(shasum -a 256 "$SETTINGS_FILE" | cut -d' ' -f1)
+    
+    for profile in $(get_profiles); do
+        local profile_file="$CLAUDE_DIR/settings.$profile.json"
+        if [[ -f "$profile_file" ]]; then
+            local profile_hash
+            profile_hash=$(shasum -a 256 "$profile_file" | cut -d' ' -f1)
+            if [[ "$current_hash" == "$profile_hash" ]]; then
+                echo "$profile"
+                return
+            fi
+        fi
+    done
+    
+    echo "custom"
+}
+
+# Get profile description
+get_profile_description() {
+    local profile="$1"
+    local profile_file="$CLAUDE_DIR/settings.$profile.json"
+    
+    if [[ ! -f "$profile_file" ]]; then
+        echo "Unknown profile"
+        return
+    fi
+    
+    # Extract model info
+    local model=""
+    local provider=""
+    
+    if grep -q "CLAUDE_CODE_USE_BEDROCK.*true" "$profile_file"; then
+        provider="AWS Bedrock"
+    elif grep -q "ANTHROPIC_API_KEY" "$profile_file"; then
+        provider="Anthropic API"
+    fi
+    
+    if grep -q "claude-opus" "$profile_file"; then
+        model="Claude Opus"
+    elif grep -q "claude-sonnet" "$profile_file"; then
+        model="Claude Sonnet"
+    fi
+    
+    echo "$model via $provider"
+}
+
+# List profiles
+list_profiles() {
+    print_header
+    echo -e "${WHITE}${BOLD}Available Profiles:${RESET}"
+    echo
+    
+    local current_profile
+    current_profile=$(get_current_profile)
+    
+    for profile in $(get_profiles); do
+        local description
+        description=$(get_profile_description "$profile")
+        
+        if [[ "$profile" == "$current_profile" ]]; then
+            echo -e "  ${GREEN}${CHECK} ${BOLD}$profile${RESET} ${GRAY}$description${RESET} ${GREEN}${DIM}(current)${RESET}"
+        else
+            echo -e "  ${GRAY}${DOT}${RESET} ${WHITE}$profile${RESET} ${GRAY}$description${RESET}"
+        fi
+    done
+    echo
+}
+
+# Show current status
+show_status() {
+    print_header
+    local current_profile
+    current_profile=$(get_current_profile)
+    
+    echo -e "${WHITE}${BOLD}Current Profile:${RESET}"
+    echo
+    
+    if [[ "$current_profile" == "none" ]]; then
+        echo -e "  ${RED}${DOT} No settings file found${RESET}"
+    elif [[ "$current_profile" == "custom" ]]; then
+        echo -e "  ${YELLOW}${DOT} Custom configuration${RESET}"
+    else
+        local description
+        description=$(get_profile_description "$current_profile")
+        echo -e "  ${GREEN}${CHECK} ${BOLD}$current_profile${RESET} ${GRAY}$description${RESET}"
+    fi
+    echo
+}
+
+# Switch to profile
+switch_profile() {
+    local profile="$1"
+    local profile_file="$CLAUDE_DIR/settings.$profile.json"
+    
+    if [[ ! -f "$profile_file" ]]; then
+        echo -e "${RED}${BOLD}Error:${RESET} Profile '$profile' not found"
+        echo -e "${GRAY}Available profiles: $(get_profiles | tr '\n' ' ')${RESET}"
+        exit 1
+    fi
+    
+    # Create backup
+    if [[ -f "$SETTINGS_FILE" ]]; then
+        cp "$SETTINGS_FILE" "$SETTINGS_FILE.bak.$(date +%Y%m%d_%H%M%S)"
+    fi
+    
+    # Switch settings
+    cp "$profile_file" "$SETTINGS_FILE"
+    
+    local description
+    description=$(get_profile_description "$profile")
+    
+    echo -e "${GREEN}${CHECK} ${BOLD}Switched to profile:${RESET} ${WHITE}$profile${RESET}"
+    echo -e "${GRAY}  $description${RESET}"
+}
+
+# Interactive mode
+interactive_mode() {
+    print_header
+    echo -e "${WHITE}${BOLD}Select a profile:${RESET}"
+    echo
+    
+    local profiles
+    mapfile -t profiles < <(get_profiles)
+    local current_profile
+    current_profile=$(get_current_profile)
+    
+    local i=1
+    for profile in "${profiles[@]}"; do
+        local description
+        description=$(get_profile_description "$profile")
+        
+        if [[ "$profile" == "$current_profile" ]]; then
+            echo -e "  ${GREEN}$i) ${BOLD}$profile${RESET} ${GRAY}$description${RESET} ${GREEN}${DIM}(current)${RESET}"
+        else
+            echo -e "  ${BLUE}$i)${RESET} ${WHITE}$profile${RESET} ${GRAY}$description${RESET}"
+        fi
+        ((i++))
+    done
+    
+    echo
+    echo -e "${GRAY}Enter number (1-${#profiles[@]}) or 'q' to quit:${RESET}"
+    read -r choice
+    
+    if [[ "$choice" == "q" || "$choice" == "Q" ]]; then
+        echo -e "${GRAY}Cancelled${RESET}"
+        exit 0
+    fi
+    
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [[ "$choice" -ge 1 ]] && [[ "$choice" -le "${#profiles[@]}" ]]; then
+        local selected_profile="${profiles[$((choice-1))]}"
+        echo
+        switch_profile "$selected_profile"
+    else
+        echo -e "${RED}Invalid choice${RESET}"
+        exit 1
+    fi
+}
+
+# Main logic
+main() {
+    # Check if Claude directory exists
+    if [[ ! -d "$CLAUDE_DIR" ]]; then
+        echo -e "${RED}${BOLD}Error:${RESET} Claude directory not found at $CLAUDE_DIR"
+        exit 1
+    fi
+    
+    case "${1:-}" in
+        --help|-h|help)
+            print_help
+            ;;
+        --list|-l|list)
+            list_profiles
+            ;;
+        --status|-s|status)
+            show_status
+            ;;
+        "")
+            interactive_mode
+            ;;
+        *)
+            switch_profile "$1"
+            ;;
+    esac
+}
+
+main "$@"
