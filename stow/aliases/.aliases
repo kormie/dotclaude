@@ -1,40 +1,111 @@
 # Centralized Alias Management
 # Single source of truth for all shell aliases
 
+# Convenience terminal aliases
+alias c='clear'
+
 # Safety aliases - require confirmation for destructive operations
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 alias ln='ln -i'
 
-# Enhanced basic commands
-alias ls='ls -G'  # Enable colors on macOS
-alias ll='ls -la'
-alias la='ls -A'
-alias l='ls -CF'
-alias grep='grep --color=auto'
-alias fgrep='fgrep --color=auto'
-alias egrep='egrep --color=auto'
+# Enhanced basic commands with modern tools as defaults
+# Modern tools (eza, bat, fd, rg) are now the defaults
+# Legacy tools available with _original suffix
+
+# Legacy tool fallbacks (original commands)
+alias ls_original='command ls -G'
+alias ll_original='command ls -la'
+alias la_original='command ls -A'
+alias l_original='command ls -CF'
+alias cat_original='command cat'
+alias find_original='command find'
+alias grep_original='command grep --color=auto'
+alias fgrep_original='command fgrep --color=auto'
+alias egrep_original='command egrep --color=auto'
+alias du_original='command du -ch'
+alias ps_original='command ps'
+alias top_original='command top'
+
+# Modern tools as defaults (with fallbacks if tools not available)
+if command -v eza &> /dev/null; then
+    alias ls='eza --icons'
+    alias ll='eza -la --icons --git --header --group-directories-first'
+    alias la='eza -la --icons --git --header --group-directories-first'
+    alias l='eza -l --icons --git --header --group-directories-first'
+else
+    alias ls='ls -G'  # Fallback to original with colors
+    alias ll='ls -la'
+    alias la='ls -A'
+    alias l='ls -CF'
+fi
+
+if command -v bat &> /dev/null; then
+    alias cat='bat'
+    alias less='bat'
+else
+    alias cat='cat'  # Fallback to original
+fi
+
+if command -v fd &> /dev/null; then
+    alias find='fd'
+else
+    alias find='find'  # Fallback to original
+fi
+
+if command -v rg &> /dev/null; then
+    alias grep='rg'
+    alias fgrep='rg -F'
+    alias egrep='rg'
+else
+    alias grep='grep --color=auto'  # Fallback to original
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
 
 # Directory navigation
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 
-# Modern tool aliases (coexisting with originals)
-# Use '2' suffix for easy adoption
-alias ll2='eza -la --icons --git'
-alias ls2='eza --icons'
-alias cat2='bat'
-alias find2='fd'
-alias grep2='rg'
-alias du2='dust'
-alias ps2='procs'
-alias top2='btm'
+# Additional modern tool aliases
+if command -v dust &> /dev/null; then
+    alias du='dust'
+else
+    alias du='du -ch'  # Keep original fallback defined above
+fi
+
+if command -v procs &> /dev/null; then
+    alias ps='procs'
+    # Keep myps as legacy ps command for specific use case
+    alias myps='command ps -f -u $USER'
+else
+    alias ps='ps'  # Fallback to original
+fi
+
+if command -v btm &> /dev/null; then
+    alias top='btm'
+else
+    alias top='top'  # Fallback to original
+fi
 
 # Shortcuts for modern tools
 alias tree='eza --tree'
 alias preview='bat'
+
+# zoxide (smart cd) - different pattern since it's an enhancement, not replacement
+if command -v zoxide &> /dev/null; then
+    # Initialize zoxide based on shell type
+    if [[ -n "$ZSH_VERSION" ]]; then
+        eval "$(zoxide init zsh)"
+    elif [[ -n "$BASH_VERSION" ]]; then
+        eval "$(zoxide init bash)"
+    fi
+    alias z='zoxide'
+    alias cd='z'  # Make zoxide the default cd
+    alias cd_original='command cd'
+fi
 
 # Git aliases
 alias g='git'
@@ -60,8 +131,9 @@ alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
 
 # Process management
+# Note: ps is now handled by modern tools section (procs if available)
 alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
-alias myps='ps -f -u $USER'
+# myps is now handled by modern tools section above
 
 # Network
 alias ping='ping -c 5'
@@ -72,7 +144,7 @@ alias ports='netstat -tulanp'
 alias meminfo='free -m -l -t'
 alias cpuinfo='lscpu'
 alias df='df -H'
-alias du='du -ch'
+# du is now handled by modern tools section above
 alias free='free -m'
 
 # Git aliases (complement .gitconfig)
@@ -194,9 +266,50 @@ if command -v tmux &> /dev/null; then
     alias claude-tmux='tmux-claude-workspace'
 fi
 
-# Include modern tool aliases if available
-if [[ -f "$HOME/.dotfiles/stow/rust-tools/.aliases" ]]; then
-    source "$HOME/.dotfiles/stow/rust-tools/.aliases"
+# Additional modern tool aliases - Extended functionality
+# Additional eza aliases for specific use cases
+if command -v eza &> /dev/null; then
+    alias ll_git='eza -la --git --header --group-directories-first --git-ignore'
+    alias ll_all='eza -la --git --header --group-directories-first --all'
+    alias tree_git='eza --tree --git-ignore'
+    alias tree_all='eza --tree --all'
+    alias tree_depth='eza --tree --level'
+fi
+
+# Additional bat aliases for specific use cases  
+if command -v bat &> /dev/null; then
+    alias bat_plain='bat --plain'
+    alias bat_no_pager='bat --paging=never'
+    alias catp='bat --plain --paging=never'  # Plain cat replacement
+fi
+
+# Additional fd aliases for specific use cases
+if command -v fd &> /dev/null; then
+    alias fd_hidden='fd --hidden'
+    alias fd_no_ignore='fd --no-ignore'
+    alias fd_all='fd --hidden --no-ignore'
+fi
+
+# Additional ripgrep aliases for specific use cases
+if command -v rg &> /dev/null; then
+    alias rg_hidden='rg --hidden'
+    alias rg_all='rg --hidden --no-ignore'
+    alias rg_files='rg --files'
+fi
+
+# Additional modern tool shortcuts
+if command -v dust &> /dev/null; then
+    alias dust_depth='dust --depth'
+fi
+
+if command -v procs &> /dev/null; then
+    alias procs_tree='procs --tree'
+    alias procs_watch='procs --watch'
+fi
+
+if command -v btm &> /dev/null; then
+    alias btm_basic='btm --basic'
+    alias btm_tree='btm --tree'
 fi
 
 # Include local/private aliases if they exist
