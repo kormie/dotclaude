@@ -52,9 +52,17 @@ fi
 
 # zoxide (smart cd) - initialize if available
 if command -v zoxide &> /dev/null; then
-    eval "$(zoxide init zsh)"
-    alias cd2='z'
-    alias cdi='zi'  # interactive zoxide
+    # Initialize zoxide based on shell type - this creates the 'z' function
+    if [[ -n "$ZSH_VERSION" ]]; then
+        eval "$(zoxide init zsh)"
+    elif [[ -n "$BASH_VERSION" ]]; then
+        eval "$(zoxide init bash)"
+    fi
+    # Don't alias z - it's already created by zoxide init
+    # Just provide fallback for original cd
+    alias cd_original='command cd'
+    # Optional: Make zoxide the default cd (comment out if you prefer traditional cd)
+    # alias cd='z'
 fi
 
 # ============================================================================
