@@ -87,6 +87,11 @@ if [[ -d "$HOME/bin" ]]; then
     export PATH="$HOME/bin:$PATH"
 fi
 
+# Dotfiles bin directory
+if [[ -d "$HOME/Documents/Repos/dotfiles/bin" ]]; then
+    export PATH="$HOME/Documents/Repos/dotfiles/bin:$PATH"
+fi
+
 # Include local environment overrides if they exist
 if [[ -f "$HOME/.zshenv.local" ]]; then
     source "$HOME/.zshenv.local"

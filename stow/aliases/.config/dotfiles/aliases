@@ -179,6 +179,10 @@ alias dotfiles='cd ~/Documents/Repos/dotfiles'
 alias cw='tmux-claude-workspace'
 alias claude-workspace='tmux-claude-workspace'
 
+# Claude Code settings switcher
+alias cs='claude-switch'
+alias claude-settings='claude-switch'
+
 # File operations with safety
 alias rm='rm -i'
 alias cp='cp -i'
