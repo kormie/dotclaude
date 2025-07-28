@@ -96,15 +96,17 @@ alias preview='bat'
 
 # zoxide (smart cd) - different pattern since it's an enhancement, not replacement
 if command -v zoxide &> /dev/null; then
-    # Initialize zoxide based on shell type
+    # Initialize zoxide based on shell type - this creates the 'z' function
     if [[ -n "$ZSH_VERSION" ]]; then
         eval "$(zoxide init zsh)"
     elif [[ -n "$BASH_VERSION" ]]; then
         eval "$(zoxide init bash)"
     fi
-    alias z='zoxide'
-    alias cd='z'  # Make zoxide the default cd
+    # Don't alias z - it's already created by zoxide init
+    # Just provide fallback for original cd
     alias cd_original='command cd'
+    # Optional: Make zoxide the default cd (comment out if you prefer traditional cd)
+    # alias cd='z'
 fi
 
 # Git aliases
