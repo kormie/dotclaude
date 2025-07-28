@@ -86,10 +86,11 @@ Key features:
 **Purpose**: Single source of truth for all aliases
 
 Categories:
-- Modern tool aliases (ll2, cat2, find2)
-- Git workflow shortcuts
-- Development conveniences
-- System utilities
+- Modern tool defaults (ls→eza, cat→bat, find→fd, grep→ripgrep, cd→zoxide)
+- Legacy tool fallbacks (ls_original, cat_original, find_original, etc.)
+- Git workflow shortcuts and difftastic integration
+- Development conveniences and Claude Code integration
+- System utilities and safety features
 
 ### Environment Variables
 **Location**: `stow/environment/.config/dotfiles/environment`

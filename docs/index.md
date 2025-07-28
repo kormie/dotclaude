@@ -23,7 +23,7 @@ features:
     
   - icon: ⚡
     title: Modern Tooling
-    details: Rust-based CLI replacements with coexisting aliases. Upgrade your workflow without breaking existing habits.
+    details: Rust-based CLI tools now as defaults with automatic fallbacks. Complete migration from traditional tools while maintaining safety.
     
   - icon: 🤖
     title: Claude Code Optimized
@@ -76,7 +76,7 @@ cw myproject feature-1 feature-2  # 'cw' alias for tmux-claude-workspace
 
 **Shell Enhancement**
 - Enhanced Zsh configuration with Oh-My-Zsh and essential plugins
-- Modern tool integration with coexisting aliases (ll2, cat2, etc.)
+- Modern tool migration: tools now default with automatic fallbacks
 - Safety toggle system for easy configuration switching
 - Centralized alias management with single source of truth
 
@@ -101,7 +101,9 @@ cw myproject feature-1 feature-2  # 'cw' alias for tmux-claude-workspace
 - ✅ Enhanced configurations deployed as primary setup
 - ✅ Performance optimized: Neovim ~47ms, Zsh ~380ms startup
 - ✅ Advanced shell features: project environments, command correction
-- ✅ Modern tool integration: ll2, cat2, find2, grep2, and more
+- ✅ **Modern tool migration complete**: eza, bat, fd, ripgrep, zoxide, dust, procs, bottom now defaults
+- ✅ **Smart navigation**: cd now uses zoxide for transparent smart directory jumping
+- ✅ **Automatic fallbacks**: Legacy tools available with _original suffix
 - ✅ Comprehensive testing and validation complete
 - ✅ Production-ready with complete safety systems
 
@@ -116,7 +118,7 @@ Built specifically for developers using Claude Code and other AI tools, DotClaud
 - **Parallel Development**: Work on multiple features simultaneously with git worktrees
 - **Vim Integration**: Seamless navigation between vim and tmux with consistent keybindings  
 - **Safety Systems**: Comprehensive backup and rollback procedures for peace of mind
-- **Modern Tools**: Latest Rust-based CLI tools with gradual migration paths
+- **Modern Tools**: Latest Rust-based CLI tools now as defaults with automatic fallbacks
 - **AI-Optimized Workflows**: Purpose-built for agentic development patterns
 
 Perfect for developers who want a powerful, safe, and modern CLI environment optimized for AI-assisted development workflows.

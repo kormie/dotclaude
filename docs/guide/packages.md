@@ -21,9 +21,8 @@ Essential configurations for primary tools:
 
 #### Support Packages
 Infrastructure and utilities:
-- **aliases** - Centralized alias management
+- **aliases** - Centralized alias management with modern CLI tools as defaults
 - **environment** - PATH and environment variables
-- **rust-tools** - Modern CLI tool configurations
 
 ## Package Structure
 

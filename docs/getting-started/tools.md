@@ -1,6 +1,6 @@
 # Modern CLI Tools
 
-Discover the Rust-based CLI tools that enhance your development workflow.
+Discover the Rust-based CLI tools that have replaced traditional Unix commands as defaults in DotClaude.
 
 ## Installation
 
@@ -13,22 +13,36 @@ Discover the Rust-based CLI tools that enhance your development workflow.
 ./scripts/setup-tools.sh additional     # Additional utilities
 ```
 
+::: tip Modern Tools Are Now Default
+As of commit `4559798`, modern CLI tools are now the default commands. Legacy tools are available with `_original` suffix (e.g., `ls_original`, `cat_original`).
+:::
+
 ## Tool Categories
 
 ### File Operations
 
-#### **exa/eza** - Enhanced `ls`
+#### **eza** - Enhanced `ls` (Now Default)
 Better directory listings with colors, git integration, and icons.
 
 ```bash
-# Traditional command
-ls -la
+# These now use eza by default (with fallback to ls if not installed)
+ls          # eza with icons
+ll          # eza with long format, git status, icons
+la          # eza with all files, git status, icons
+l           # eza with long format, git status, icons
+tree        # eza tree view
 
-# Modern alternatives
-ll2         # exa/eza with long format
-l2          # exa/eza with git status
-tree2       # Directory tree view
+# Legacy command (if you need original ls)
+ls_original  # Original ls command
+ll_original  # Original ls -la command
 ```
+
+**Additional eza aliases for power users:**
+- `ll_git` - Long format with git-ignore respect
+- `ll_all` - Long format showing all files
+- `tree_git` - Tree view respecting git-ignore
+- `tree_all` - Tree view showing all files
+- `tree_depth` - Tree view with depth control
 
 **Features:**
 - Git status integration
@@ -37,17 +51,23 @@ tree2       # Directory tree view
 - Human-readable file sizes
 - Directory-first sorting
 
-#### **bat** - Enhanced `cat`
+#### **bat** - Enhanced `cat` (Now Default)
 Syntax-highlighted file viewing with line numbers and git integration.
 
 ```bash
-# Traditional command
-cat config.json
+# These now use bat by default (with fallback to cat if not installed)
+cat config.json     # Syntax highlighting + line numbers
+less config.json    # Paged viewing with highlighting
+preview config.json # Alias for bat
 
-# Modern alternative
-cat2 config.json    # Syntax highlighting + line numbers
-less2 config.json   # Paged viewing with highlighting
+# Legacy command (if you need original cat)
+cat_original config.json  # Original cat command
 ```
+
+**Additional bat aliases for power users:**
+- `bat_plain` - Plain output without decorations
+- `bat_no_pager` - No paging for long files
+- `catp` - Plain cat replacement (no decorations, no paging)
 
 **Features:**
 - Syntax highlighting for 200+ languages
@@ -55,18 +75,23 @@ less2 config.json   # Paged viewing with highlighting
 - Automatic paging for long files
 - Theme support (matches delta git diffs)
 
-#### **fd** - Fast `find`
+#### **fd** - Fast `find` (Now Default)
 Faster, more intuitive file searching with regex support.
 
 ```bash
-# Traditional command
-find . -name "*.js" -type f
+# These now use fd by default (with fallback to find if not installed)
+find "js$"              # Regex pattern (fd syntax)
+find -e js              # File extension
+find config             # Partial name match
 
-# Modern alternative
-find2 "\.js$"           # Regex pattern
-find2 -e js             # File extension
-find2 config            # Partial name match
+# Legacy command (if you need original find)
+find_original . -name "*.js" -type f  # Original find command
 ```
+
+**Additional fd aliases for power users:**
+- `fd_hidden` - Include hidden files
+- `fd_no_ignore` - Don't respect .gitignore
+- `fd_all` - Include hidden files and don't respect .gitignore
 
 **Features:**
 - 5-10x faster than traditional find
@@ -77,17 +102,25 @@ find2 config            # Partial name match
 
 ### Text Processing
 
-#### **ripgrep** - Ultra-fast `grep`
+#### **ripgrep** - Ultra-fast `grep` (Now Default)
 Blazingly fast text search with smart defaults.
 
 ```bash
-# Traditional command
-grep -r "function" src/
+# These now use ripgrep by default (with fallback to grep if not installed)
+grep "function" src/     # Ultra-fast search
+fgrep "literal" src/     # Fixed string search (rg -F)
+egrep "pattern" src/     # Extended regex search (rg)
 
-# Modern alternative
-grep2 "function" src/    # Faster with better output
-rg "function" src/       # Direct ripgrep usage
+# Legacy command (if you need original grep)
+grep_original -r "function" src/  # Original grep command
+fgrep_original "literal" src/     # Original fgrep command
+egrep_original "pattern" src/     # Original egrep command
 ```
+
+**Additional ripgrep aliases for power users:**
+- `rg_hidden` - Include hidden files
+- `rg_all` - Include hidden files and don't respect .gitignore
+- `rg_files` - List matching files only
 
 **Features:**
 - 2-10x faster than grep
@@ -98,17 +131,19 @@ rg "function" src/       # Direct ripgrep usage
 
 ### System Monitoring
 
-#### **dust** - Better `du`
+#### **dust** - Better `du` (Now Default)
 More intuitive disk usage visualization.
 
 ```bash
-# Traditional command
-du -sh * | sort -hr
+# These now use dust by default (with fallback to du if not installed)
+du               # Interactive disk usage tree
 
-# Modern alternative
-du2              # Interactive disk usage tree
-dust             # Direct usage
+# Legacy command (if you need original du)
+du_original -sh *  # Original du command
 ```
+
+**Additional dust aliases for power users:**
+- `dust_depth` - Control tree depth
 
 **Features:**
 - Visual tree representation
@@ -116,17 +151,22 @@ dust             # Direct usage
 - Colored output
 - Faster scanning
 
-#### **procs** - Modern `ps`
+#### **procs** - Modern `ps` (Now Default)
 Better process viewer with tree structure and search.
 
 ```bash
-# Traditional command
-ps aux | grep node
+# These now use procs by default (with fallback to ps if not installed)
+ps               # Enhanced process tree
+ps node          # Search for node processes
+myps             # Traditional ps for current user (ps -f -u $USER)
 
-# Modern alternative
-ps2              # Enhanced process tree
-ps2 node         # Search for node processes
+# Legacy command (if you need original ps)
+ps_original aux  # Original ps command
 ```
+
+**Additional procs aliases for power users:**
+- `procs_tree` - Tree view of processes
+- `procs_watch` - Watch process changes
 
 **Features:**
 - Tree view of process relationships
@@ -134,17 +174,20 @@ ps2 node         # Search for node processes
 - Search and filter capabilities
 - Better memory/CPU display
 
-#### **bottom** - Enhanced `top`
+#### **bottom** - Enhanced `top` (Now Default)
 Cross-platform system monitor with graphs and customization.
 
 ```bash
-# Traditional command
-top
+# These now use bottom by default (with fallback to top if not installed)
+top              # Enhanced system monitor
 
-# Modern alternative
-top2             # Enhanced system monitor
-btm              # Direct bottom usage
+# Legacy command (if you need original top)
+top_original     # Original top command
 ```
+
+**Additional bottom aliases for power users:**
+- `btm_basic` - Basic mode
+- `btm_tree` - Tree view
 
 **Features:**
 - CPU, memory, disk, and network graphs
@@ -154,17 +197,24 @@ btm              # Direct bottom usage
 
 ### Navigation
 
-#### **zoxide** - Smart `cd`
+#### **zoxide** - Smart `cd` (Now Default)
 Learns your habits and jumps to frequently used directories.
 
 ```bash
 # After visiting directories frequently
 cd ~/Documents/Projects/myapp
 
-# Smart navigation (after setup)
-z myapp          # Jumps to most likely directory
-cd2 myapp        # Alias for zoxide
+# Smart navigation (zoxide is now the default cd)
+cd myapp         # Jumps to most likely directory (transparently uses zoxide)
+z myapp          # Direct zoxide usage (also available)
+
+# Legacy command (if you need original cd)
+cd_original ~/path  # Original cd command
 ```
+
+::: tip Transparent Smart Navigation
+As of commit `84f49a9`, `cd` now uses zoxide for smart directory jumping while maintaining full compatibility with traditional cd patterns. Use `cd_original` if you need the shell builtin.
+:::
 
 **Features:**
 - Learns from your navigation patterns
@@ -266,25 +316,26 @@ http POST api.example.com/users name=john email=john@example.com
 
 ## Usage Patterns
 
-### Gradual Adoption
+### Migration and Fallbacks
 
-1. **Try with `2` suffix**: Use `ll2`, `cat2`, `find2` to test
-2. **Compare with originals**: Run both to see differences  
-3. **Adopt when comfortable**: Create your own aliases when ready
+1. **Modern tools are now defaults**: `ls`, `cat`, `find`, `grep`, etc. use modern tools
+2. **Automatic fallbacks**: If modern tools aren't installed, aliases fall back to original commands
+3. **Access originals**: Use `_original` suffix (e.g., `ls_original`, `cat_original`) when needed
+4. **Power user aliases**: Extended functionality available (e.g., `ll_git`, `bat_plain`, `fd_hidden`)
 
 ### Integration Examples
 
 ```bash
-# File exploration workflow
-ll2                    # List directory with git status
-find2 "\.js$" | head   # Find JS files
-cat2 app.js            # View with syntax highlighting
-grep2 "function" app.js # Search within file
+# File exploration workflow (modern tools as defaults)
+ll                     # List directory with git status (eza)
+find "js$" | head      # Find JS files (fd)
+cat app.js             # View with syntax highlighting (bat)
+grep "function" app.js # Search within file (ripgrep)
 
-# System monitoring workflow  
-ps2 node               # Find node processes
-du2                    # Check disk usage
-top2                   # Monitor system resources
+# System monitoring workflow (modern tools as defaults)
+ps node                # Find node processes (procs)
+du                     # Check disk usage (dust)
+top                    # Monitor system resources (bottom)
 
 # Git workflow
 git lg                 # Beautiful log
@@ -294,32 +345,35 @@ git dtl -5             # Recent commits with structural diffs
 
 ## Tool Comparison
 
-| Category | Traditional | Modern | Speed Improvement |
-|----------|------------|--------|-------------------|
-| File listing | `ls` | `exa/eza` | Similar |
-| File viewing | `cat` | `bat` | Similar + features |
-| File search | `find` | `fd` | 5-10x faster |
-| Text search | `grep` | `ripgrep` | 2-10x faster |
-| Disk usage | `du` | `dust` | 2-3x faster |
-| Process view | `ps` | `procs` | Similar + features |
-| System monitor | `top` | `bottom` | Similar + features |
-| Navigation | `cd` | `zoxide` | Smarter |
+| Category | Traditional | Modern (Now Default) | Speed Improvement |
+|----------|------------|---------------------|-------------------|
+| File listing | `ls_original` | `ls` (eza) | Similar + features |
+| File viewing | `cat_original` | `cat` (bat) | Similar + features |
+| File search | `find_original` | `find` (fd) | 5-10x faster |
+| Text search | `grep_original` | `grep` (ripgrep) | 2-10x faster |
+| Disk usage | `du_original` | `du` (dust) | 2-3x faster |
+| Process view | `ps_original` | `ps` (procs) | Similar + features |
+| System monitor | `top_original` | `top` (bottom) | Similar + features |
+| Navigation | `cd_original` | `cd` (zoxide) | Smarter |
 
 ## Customization
 
 ### Aliases
 
-All tools are available with safe aliases in `~/.aliases`:
+Modern tools are now the defaults with fallbacks in `~/.aliases`:
 
 ```bash
-# Modern tool aliases (coexist with originals)
-alias ll2='exa -la --git --header --group-directories-first'
-alias cat2='bat'
-alias find2='fd'
-alias grep2='rg'
-alias du2='dust'
-alias ps2='procs'
-alias top2='btm'
+# Modern tools as defaults (with automatic fallbacks)
+alias ls='eza --icons'  # Falls back to 'ls -G' if eza not available
+alias cat='bat'         # Falls back to 'cat' if bat not available
+alias find='fd'         # Falls back to 'find' if fd not available
+alias grep='rg'         # Falls back to 'grep --color=auto' if rg not available
+
+# Legacy tools available with _original suffix
+alias ls_original='command ls -G'
+alias cat_original='command cat'
+alias find_original='command find'
+alias grep_original='command grep --color=auto'
 ```
 
 ### Configuration
@@ -371,12 +425,13 @@ exec $SHELL
 echo $PATH | grep -o '[^:]*' | grep -E "(\.local/bin|\.cargo/bin)"
 ```
 
-**Want to use tools as defaults?**
+**Want to use original tools as defaults?**
 ```bash
-# Edit ~/.aliases to create your own aliases
-alias ls='exa'
-alias cat='bat'
-alias find='fd'
+# Edit ~/.aliases to override with original commands
+alias ls='command ls -G'
+alias cat='command cat'
+alias find='command find'
+# Or use the _original aliases directly
 ```
 
 **Performance issues?**
