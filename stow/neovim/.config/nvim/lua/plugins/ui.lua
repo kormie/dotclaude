@@ -179,7 +179,25 @@ return {
       end,
     },
     init = function()
+      -- Store the original notify function for filtering
+      local orig_notify = vim.notify
+      
+      -- Set up nvim-notify
       vim.notify = require("notify")
+      
+      -- Apply filtering on top of nvim-notify
+      local notify_with_filter = vim.notify
+      vim.notify = function(msg, level, opts)
+        -- Suppress Mason duplicate registry warnings
+        if type(msg) == "string" and msg:match("duplicate registry entry") then
+          return
+        end
+        -- Suppress noice lazyredraw compatibility warnings
+        if type(msg) == "string" and (msg:match("lazyredraw") or msg:match("noice.*redraw")) then
+          return
+        end
+        notify_with_filter(msg, level, opts)
+      end
     end,
   },
 
@@ -206,6 +224,22 @@ return {
             },
           },
           view = "mini",
+        },
+        {
+          -- Hide "search hit BOTTOM" messages
+          filter = {
+            event = "msg_show",
+            kind = "search_count",
+          },
+          opts = { skip = true },
+        },
+        {
+          -- Hide "written" messages
+          filter = {
+            event = "msg_show",
+            find = "written",
+          },
+          opts = { skip = true },
         },
       },
       presets = {

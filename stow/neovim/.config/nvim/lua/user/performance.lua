@@ -31,6 +31,18 @@ vim.opt.timeoutlen = 500  -- Faster key sequence timeout
 vim.opt.redrawtime = 1500  -- Prevent very slow redrawing
 vim.opt.synmaxcol = 240   -- Don't syntax highlight very long lines
 
+-- Terminal handling improvements to prevent device errors
+if vim.fn.has('termguicolors') == 1 then
+  vim.opt.termguicolors = true
+end
+
+-- Prevent terminal-related UI errors during startup
+vim.schedule(function()
+  if vim.fn.exists('g:loaded_ui') == 0 then
+    vim.g.loaded_ui = 1
+  end
+end)
+
 -- Better search performance
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
@@ -46,7 +58,8 @@ vim.opt.backup = false    -- Disable backup files
 vim.opt.writebackup = false -- But keep writebackup disabled too
 
 -- Better scrolling performance
-vim.opt.lazyredraw = true
+-- Note: lazyredraw disabled due to compatibility issues with Noice.nvim
+-- vim.opt.lazyredraw = true
 vim.opt.ttyfast = true
 
 -- UI performance

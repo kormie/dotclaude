@@ -60,7 +60,12 @@ return {
 
       -- mason-lspconfig requires that these setup functions are called in this order
       -- before setting up the servers.
-      require('mason').setup()
+      require('mason').setup({
+        registries = {
+          "github:mason-org/mason-registry"
+        },
+        log_level = vim.log.levels.WARN  -- Reduce log verbosity
+      })
       require('mason-lspconfig').setup()
 
       -- Enable the following language servers
