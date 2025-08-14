@@ -15,6 +15,20 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Suppress certain error popups during initialization
+local orig_notify = vim.notify
+vim.notify = function(msg, level, opts)
+  -- Suppress Mason duplicate registry warnings during startup
+  if type(msg) == "string" and msg:match("duplicate registry entry") then
+    return
+  end
+  -- Suppress noice lazyredraw compatibility warnings
+  if type(msg) == "string" and (msg:match("lazyredraw") or msg:match("noice.*redraw")) then
+    return
+  end
+  orig_notify(msg, level, opts)
+end
+
 -- Load core configuration
 require('user.performance')  -- Load performance optimizations first
 require('user.options')
