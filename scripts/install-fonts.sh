@@ -1,12 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # install-fonts.sh - Install Nerd Fonts for terminal configuration
 # Usage: ./scripts/install-fonts.sh [font|all|list]
 #
 # This script is idempotent - safe to run multiple times.
 # Fonts already installed will be skipped.
+#
+# Requires Bash 4+ for associative arrays (macOS ships with Bash 3.2)
+# Install modern Bash with: brew install bash
 
 set -e
+
+# Check Bash version (need 4+ for associative arrays)
+if [[ "${BASH_VERSINFO[0]}" -lt 4 ]]; then
+    echo "Error: This script requires Bash 4.0 or later"
+    echo "Your version: $BASH_VERSION"
+    echo ""
+    echo "On macOS, install modern Bash with:"
+    echo "  brew install bash"
+    echo ""
+    echo "Then run this script again (it will use Homebrew's Bash automatically)"
+    exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
@@ -211,11 +226,11 @@ show_summary() {
         local check_name="${cask_and_check#*:}"
         local display_name="${FONT_NAMES[$key]}"
 
-        ((total++))
+        total=$((total + 1))
 
         if is_font_installed "$check_name"; then
             echo -e "  ✅ ${GREEN}$display_name${NC}"
-            ((installed++))
+            installed=$((installed + 1))
         fi
     done
 

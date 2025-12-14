@@ -56,8 +56,11 @@ fi
 
 if command -v rg &> /dev/null; then
     alias grep='rg'
-    alias fgrep='rg -F'
-    alias egrep='rg'
+    # Note: Don't alias fgrep/egrep to rg - their flags are incompatible
+    # rg's -E means --encoding, not extended regex like egrep
+    # fgrep -F works but users expect other fgrep flags to work
+    alias fgrep='command fgrep --color=auto'
+    alias egrep='command egrep --color=auto'
 else
     alias grep='grep --color=auto'  # Fallback to original
     alias fgrep='fgrep --color=auto'

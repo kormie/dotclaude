@@ -157,7 +157,8 @@ alias psg='ps aux | grep'
 # Network
 alias ports='netstat -tulanp'
 alias myip='curl -s http://whatismyip.akamai.com/'
-alias localip="ifconfig | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'"
+# Use 'command grep' to bypass rg alias since rg has different flags
+alias localip="ifconfig | command grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | command grep -Eo '([0-9]*\.){3}[0-9]*' | command grep -v '127.0.0.1'"
 
 # ============================================================================
 # UTILITY ALIASES

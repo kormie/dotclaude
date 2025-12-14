@@ -280,6 +280,71 @@ setup_secrets_file() {
 # Deploy Stow Packages
 #######################################
 
+setup_oh_my_zsh_customizations() {
+    log_step "Setting up Oh-My-Zsh custom themes and plugins..."
+
+    local omz_custom="$HOME/.oh-my-zsh/custom"
+    local stow_omz_custom="$DOTFILES_DIR/stow/zsh/.oh-my-zsh/custom"
+
+    # Ensure Oh-My-Zsh is installed first
+    if [[ ! -d "$HOME/.oh-my-zsh" ]]; then
+        log_warn "Oh-My-Zsh not installed, skipping customizations"
+        return 0
+    fi
+
+    # Create custom directories if they don't exist
+    mkdir -p "$omz_custom/themes"
+    mkdir -p "$omz_custom/plugins"
+
+    # Symlink custom themes
+    if [[ -d "$stow_omz_custom/themes" ]]; then
+        for theme in "$stow_omz_custom/themes/"*.zsh-theme; do
+            if [[ -f "$theme" ]]; then
+                local theme_name=$(basename "$theme")
+                local target="$omz_custom/themes/$theme_name"
+
+                if [[ -L "$target" ]]; then
+                    # Already a symlink, check if it points to the right place
+                    if [[ "$(readlink "$target")" == "$theme" ]]; then
+                        log_skip "Theme already linked: $theme_name"
+                    else
+                        rm "$target"
+                        ln -s "$theme" "$target"
+                        log_success "Re-linked theme: $theme_name"
+                    fi
+                elif [[ -f "$target" ]]; then
+                    # Regular file exists, back it up
+                    mv "$target" "$target.backup"
+                    ln -s "$theme" "$target"
+                    log_success "Linked theme (backed up existing): $theme_name"
+                else
+                    ln -s "$theme" "$target"
+                    log_success "Linked theme: $theme_name"
+                fi
+            fi
+        done
+    fi
+
+    # Symlink custom plugins (if any exist in stow package)
+    if [[ -d "$stow_omz_custom/plugins" ]]; then
+        for plugin_dir in "$stow_omz_custom/plugins/"*/; do
+            if [[ -d "$plugin_dir" ]]; then
+                local plugin_name=$(basename "$plugin_dir")
+                local target="$omz_custom/plugins/$plugin_name"
+
+                if [[ -L "$target" ]]; then
+                    log_skip "Plugin already linked: $plugin_name"
+                elif [[ -d "$target" ]]; then
+                    log_skip "Plugin already exists: $plugin_name"
+                else
+                    ln -s "$plugin_dir" "$target"
+                    log_success "Linked plugin: $plugin_name"
+                fi
+            fi
+        done
+    fi
+}
+
 deploy_stow_packages() {
     log_step "Deploying Stow packages..."
 
@@ -420,6 +485,7 @@ run_interactive() {
     echo
     if prompt_yes_no "Deploy Stow packages (configurations)?"; then
         deploy_stow_packages
+        setup_oh_my_zsh_customizations
     fi
 
     echo
@@ -449,6 +515,7 @@ run_minimal() {
     install_core_dependencies
     backup_existing_configs
     deploy_stow_packages
+    setup_oh_my_zsh_customizations
     setup_secrets_file
     validate_installation
 }
@@ -469,6 +536,7 @@ run_full() {
     install_fonts
     setup_oh_my_zsh
     deploy_stow_packages
+    setup_oh_my_zsh_customizations
     setup_secrets_file
     apply_macos_defaults
     validate_installation

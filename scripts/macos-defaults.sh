@@ -290,10 +290,11 @@ configure_development() {
     defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
     # Enable developer menu and Web Inspector in Safari
+    # Note: Safari settings may fail due to sandboxing - ignore errors
     log_setting "Safari developer tools"
-    defaults write com.apple.Safari IncludeDevelopMenu -bool true
-    defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
-    defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+    defaults write com.apple.Safari IncludeDevelopMenu -bool true 2>/dev/null || true
+    defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true 2>/dev/null || true
+    defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true 2>/dev/null || true
 
     # Add a context menu item for showing the Web Inspector
     log_setting "Web Inspector context menu"
