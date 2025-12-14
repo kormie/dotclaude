@@ -8,6 +8,21 @@ This is a modern dotfiles repository using GNU Stow for symlink management. The 
 ## Critical Safety Requirements
 **This repository is being developed on a primary development machine - all changes must be non-destructive and easily reversible.**
 
+### Idempotent Setup (New/Existing Macs)
+```bash
+# Full idempotent installation - safe to run multiple times
+./scripts/install.sh --all
+
+# Interactive mode (choose components)
+./scripts/install.sh
+
+# Minimal installation (core only)
+./scripts/install.sh --minimal
+
+# Validate installation
+./scripts/validate-setup.sh
+```
+
 ### Safety-First Development Commands
 ```bash
 # Always backup before making changes
@@ -21,6 +36,9 @@ This is a modern dotfiles repository using GNU Stow for symlink management. The 
 
 # Emergency rollback
 ./scripts/restore.sh [component]
+
+# Apply macOS system defaults
+./scripts/macos-defaults.sh
 ```
 
 ### Testing Protocol

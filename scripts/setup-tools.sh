@@ -39,12 +39,64 @@ check_macos() {
     fi
 }
 
-# Check if Homebrew is installed
+# Detect architecture for Homebrew path
+detect_arch() {
+    case "$(uname -m)" in
+        arm64|aarch64)
+            echo "arm64"
+            ;;
+        x86_64)
+            echo "x86_64"
+            ;;
+        *)
+            echo "unknown"
+            ;;
+    esac
+}
+
+# Install Homebrew if not present (idempotent)
+install_homebrew() {
+    if command -v brew &> /dev/null; then
+        log_info "Homebrew is already installed"
+        return 0
+    fi
+
+    log_install "Installing Homebrew..."
+
+    # Install Homebrew non-interactively
+    NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Add Homebrew to PATH for this session
+    local arch
+    arch=$(detect_arch)
+
+    if [[ "$arch" == "arm64" ]]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    else
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+
+    if command -v brew &> /dev/null; then
+        log_info "Homebrew installed successfully"
+        return 0
+    else
+        log_error "Homebrew installation failed"
+        return 1
+    fi
+}
+
+# Check if Homebrew is installed, install if not
 check_homebrew() {
     if ! command -v brew &> /dev/null; then
-        log_error "Homebrew is not installed"
-        log_info "Install Homebrew first: https://brew.sh"
-        exit 1
+        log_warn "Homebrew is not installed"
+        read -rp "Install Homebrew now? [Y/n]: " response
+        response="${response:-y}"
+        if [[ "$response" =~ ^[Yy]$ ]]; then
+            install_homebrew
+        else
+            log_error "Homebrew is required. Install from: https://brew.sh"
+            exit 1
+        fi
     fi
 }
 
