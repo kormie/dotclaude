@@ -4,13 +4,14 @@
 # Path to Oh-My-Zsh installation
 export ZSH="$HOME/.oh-my-zsh"
 
-# Theme configuration - using minimal theme similar to current prompt
-# robbyrussell is clean and Git-aware like the original setup
-ZSH_THEME="robbyrussell"
+# Theme configuration - KOHO branded theme with responsive layout
+# Features: exit code emojis, battery indicator, git status, KOHO brand colors
+ZSH_THEME="koho"
 
 # Plugins (start with essential set, can expand based on user preferences)
 plugins=(
   git
+  battery
   brew
   docker
   golang
