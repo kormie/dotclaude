@@ -19,21 +19,67 @@
 
 ## 🚀 Quick Start
 
+### One-Line Installation (New Mac)
+
+```bash
+# Full idempotent setup - safe to run multiple times
+git clone git@github.com:kormie/dotclaude.git ~/.dotfiles && cd ~/.dotfiles && ./scripts/install.sh --all
+```
+
+### Interactive Installation
+
 ```bash
 # Clone the repository
 git clone git@github.com:kormie/dotclaude.git ~/.dotfiles
 cd ~/.dotfiles
 
-# Install modern tools (safe, non-destructive)
-./scripts/setup-tools.sh
+# Run interactive installer (prompts for each component)
+./scripts/install.sh
 
-# Launch Claude Code workspace (4-pane layout with git worktrees)
-cw myproject feature-1 feature-2  # Using 'cw' alias for tmux-claude-workspace
+# Or run full installation non-interactively
+./scripts/install.sh --all
+```
 
-# Apply configurations gradually
+### Minimal Installation
+
+```bash
+# Install only core dependencies and deploy configs
+./scripts/install.sh --minimal
+```
+
+### Verify Installation
+
+```bash
+# Validate your setup
+./scripts/validate-setup.sh
+
+# Check with verbose output
+./scripts/validate-setup.sh --verbose
+```
+
+## 🔧 What Gets Installed
+
+| Component | Minimal | Full |
+|-----------|---------|------|
+| Homebrew (if not present) | ✅ | ✅ |
+| Core tools (stow, git, zsh, nvim, tmux) | ✅ | ✅ |
+| Configuration backup | ✅ | ✅ |
+| Stow package deployment | ✅ | ✅ |
+| Modern CLI tools (eza, bat, fd, rg, etc.) | ❌ | ✅ |
+| Nerd Fonts | ❌ | ✅ |
+| Oh-My-Zsh with plugins | ❌ | ✅ |
+| macOS system defaults | ❌ | ✅ |
+
+### Apply Configurations Manually
+
+```bash
+# Deploy individual packages
 ./scripts/stow-package.sh git      # Enhanced git config
 ./scripts/stow-package.sh tmux     # Vim-optimized tmux
 ./scripts/stow-package.sh aliases  # Centralized aliases
+
+# Launch Claude Code workspace (4-pane layout with git worktrees)
+cw myproject feature-1 feature-2
 ```
 
 ## 🏗️ Architecture
@@ -53,11 +99,18 @@ stow/
 ### Management Scripts
 ```
 scripts/
+├── install.sh           ✅ Main idempotent bootstrap (NEW)
+├── validate-setup.sh    ✅ Installation verification (NEW)
+├── macos-defaults.sh    ✅ macOS system settings (NEW)
 ├── backup.sh            ✅ Comprehensive backup system
-├── restore.sh           ✅ Safe rollback functionality  
+├── restore.sh           ✅ Safe rollback functionality
 ├── test-config.sh       ✅ Pre-deployment testing
 ├── stow-package.sh      ✅ Safe package deployment
-├── setup-tools.sh       ✅ Modern tool installation
+├── setup-tools.sh       ✅ Modern tool installation (with Homebrew auto-install)
+├── install-fonts.sh     ✅ Nerd Font installation
+├── setup-zsh-enhanced.sh ✅ Oh-My-Zsh setup
+├── toggle-neovim.sh     ✅ Neovim config toggle
+├── toggle-modern-tools.sh ✅ Modern tools toggle
 └── tmux-claude-workspace ✅ Automated Claude Code workspace
 ```
 
@@ -117,6 +170,44 @@ glogdifft        # Shell alias for difftastic log
 - ✅ Git LFS configuration
 - ✅ macOS keychain integration
 - ✅ Colima Docker support
+
+## 🔄 Idempotent Setup
+
+This repository is designed as a **fully idempotent setup utility** for new and existing Macs:
+
+### Key Features
+
+- **Safe to run multiple times**: Every script checks current state before making changes
+- **Works on fresh Macs**: Automatically installs Homebrew, Xcode CLT, and dependencies
+- **Works on existing setups**: Detects what's already installed and skips accordingly
+- **Automatic backups**: All existing configurations backed up before any changes
+- **Validation built-in**: Verify your setup with `./scripts/validate-setup.sh`
+
+### Install Modes
+
+```bash
+./scripts/install.sh --all         # Full installation, no prompts
+./scripts/install.sh --minimal     # Core only (stow, configs)
+./scripts/install.sh --interactive # Choose each component (default)
+```
+
+### macOS System Settings
+
+The installer can optionally configure macOS defaults optimized for development:
+
+```bash
+./scripts/macos-defaults.sh        # Apply all settings
+./scripts/macos-defaults.sh --keyboard  # Keyboard only (fast key repeat)
+./scripts/macos-defaults.sh --capslock  # CapsLock → Control remapping
+./scripts/macos-defaults.sh --status    # View current settings
+```
+
+**Key settings applied:**
+- CapsLock remapped to Control (great for vim/tmux users)
+- Fast key repeat rate for efficient editing
+- Finder shows hidden files and full paths
+- Dock auto-hides with no delay
+- Screenshots saved to `~/Screenshots`
 
 ## 🛡️ Safety System
 

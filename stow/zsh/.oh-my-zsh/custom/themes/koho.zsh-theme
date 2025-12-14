@@ -42,7 +42,7 @@ setopt PROMPT_SUBST
 # KOHO Brand Colors
 # ─────────────────────────────────────────────────────────────────────────────
 
-# True color (24-bit) - works in iTerm2, Alacritty, Windows Terminal, etc.
+# True color (24-bit) - works in Ghostty, Alacritty, Windows Terminal, etc.
 KOHO_LIME='%F{#D1F300}'
 KOHO_LIME_TINT='%F{#E8FA80}'
 KOHO_LPURPLE='%F{#6B4D9E}'

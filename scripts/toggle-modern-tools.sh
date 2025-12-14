@@ -3,6 +3,9 @@
 # Toggle Modern Tools Script
 # Safely switch between modern tools as defaults and legacy tools
 #
+# This script is idempotent - safe to run multiple times.
+# It checks current state before making changes.
+#
 # Usage: ./toggle-modern-tools.sh [modern|legacy|status]
 
 set -euo pipefail
@@ -10,108 +13,423 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 BACKUP_DIR="$DOTFILES_DIR/backups"
-ALIASES_FILE="$DOTFILES_DIR/stow/aliases/.aliases"
-RUST_TOOLS_FILE="$DOTFILES_DIR/stow/rust-tools/.aliases"
+CONFIG_DIR="$HOME/.config/dotfiles"
+STATUS_FILE="$CONFIG_DIR/modern-tools-status"
+
+# Source files
+ALIASES_SOURCE="$DOTFILES_DIR/stow/aliases/.config/dotfiles/aliases"
+ALIASES_DEPLOYED="$HOME/.config/dotfiles/aliases"
 
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-usage() {
-    echo "Usage: $0 [modern|legacy|status]"
-    echo ""
-    echo "  modern  - Enable modern tools as defaults (eza, bat, fd, rg, etc.)"
-    echo "  legacy  - Restore legacy tools as defaults (ls, cat, find, grep, etc.)"
-    echo "  status  - Show current configuration"
-    echo ""
+log_info() {
+    echo -e "${GREEN}[INFO]${NC} $1"
 }
 
-show_status() {
-    echo -e "${BLUE}=== Current Tool Configuration ===${NC}"
-    
-    # Check what ls points to
-    if source "$ALIASES_FILE" 2>/dev/null && alias ls 2>/dev/null | grep -q "eza"; then
-        echo -e "${GREEN}✓ Modern tools are active${NC}"
-        echo "  - ls → eza"
-        echo "  - cat → bat"
-        echo "  - find → fd"
-        echo "  - grep → rg"
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+}
+
+log_skip() {
+    echo -e "${CYAN}[SKIP]${NC} $1"
+}
+
+#######################################
+# Status Management
+#######################################
+
+ensure_config_dir() {
+    mkdir -p "$CONFIG_DIR"
+}
+
+get_current_status() {
+    if [[ -f "$STATUS_FILE" ]]; then
+        cat "$STATUS_FILE"
     else
-        echo -e "${YELLOW}○ Legacy tools are active${NC}"
-        echo "  - ls → command ls"
-        echo "  - cat → command cat"
-        echo "  - find → command find" 
-        echo "  - grep → command grep"
+        # Detect current status by checking if modern aliases are active
+        if [[ -f "$ALIASES_DEPLOYED" ]] && grep -q "alias ls='eza" "$ALIASES_DEPLOYED" 2>/dev/null; then
+            echo "modern"
+        else
+            echo "legacy"
+        fi
     fi
-    
-    echo ""
-    echo -e "${BLUE}=== Fallback aliases available ===${NC}"
-    echo "  - ls_original, cat_original, find_original, grep_original, etc."
-    echo ""
 }
 
-restore_from_backup() {
-    local backup_pattern="$1"
-    local latest_backup
-    
-    latest_backup=$(find "$BACKUP_DIR" -name "*$backup_pattern*" -type d | sort -r | head -1)
-    
-    if [[ -z "$latest_backup" ]]; then
-        echo -e "${RED}Error: No backup found matching pattern '$backup_pattern'${NC}"
-        return 1
-    fi
-    
-    echo -e "${YELLOW}Restoring from backup: $latest_backup${NC}"
-    
-    if [[ -f "$latest_backup/main-aliases.backup" ]]; then
-        cp "$latest_backup/main-aliases.backup" "$ALIASES_FILE"
-        echo "✓ Restored main aliases"
-    fi
-    
-    if [[ -f "$latest_backup/rust-tools-aliases.backup" ]]; then
-        cp "$latest_backup/rust-tools-aliases.backup" "$RUST_TOOLS_FILE"
-        echo "✓ Restored rust-tools aliases"
-    fi
+set_status() {
+    local status="$1"
+    ensure_config_dir
+    echo "$status" > "$STATUS_FILE"
+    log_info "Tool configuration status set to: $status"
 }
+
+#######################################
+# Backup Management
+#######################################
+
+create_backup() {
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_path="$BACKUP_DIR/modern-tools-$timestamp"
+
+    mkdir -p "$backup_path"
+
+    if [[ -f "$ALIASES_DEPLOYED" ]]; then
+        cp "$ALIASES_DEPLOYED" "$backup_path/aliases.backup"
+        log_info "Backed up aliases to: $backup_path"
+    fi
+
+    echo "$backup_path"
+}
+
+get_latest_backup() {
+    find "$BACKUP_DIR" -name "modern-tools-*" -type d 2>/dev/null | sort -r | head -1
+}
+
+#######################################
+# Tool Detection
+#######################################
+
+check_modern_tools_installed() {
+    local tools=("eza" "bat" "fd" "rg" "zoxide" "delta" "dust" "procs" "btm")
+    local installed=0
+    local total=${#tools[@]}
+
+    for tool in "${tools[@]}"; do
+        if command -v "$tool" &>/dev/null; then
+            ((installed++))
+        fi
+    done
+
+    echo "$installed/$total"
+}
+
+#######################################
+# Switch Functions
+#######################################
 
 enable_modern_tools() {
-    echo -e "${GREEN}Enabling modern tools as defaults...${NC}"
-    
-    # The current files should already have modern tools enabled
-    # This is a no-op if already enabled, or could restore from a "modern" backup
-    
-    echo "✓ Modern tools are now active"
-    echo ""
-    echo "Modern tools now available as:"
-    echo "  - ls (eza with icons)"
-    echo "  - ll (eza with git info)" 
-    echo "  - cat (bat with syntax highlighting)"
-    echo "  - find (fd - fast file finder)"
-    echo "  - grep (ripgrep - fast text search)"
-    echo "  - du (dust - better disk usage)"
-    echo "  - ps (procs - modern process viewer)"
-    echo "  - top (bottom/btm - better system monitor)"
-    echo ""
-    echo "Legacy tools available with _original suffix:"
+    local current_status
+    current_status=$(get_current_status)
+
+    if [[ "$current_status" == "modern" ]]; then
+        # Verify the configuration is correct
+        if [[ -f "$ALIASES_DEPLOYED" ]] && grep -q "alias ls='eza" "$ALIASES_DEPLOYED" 2>/dev/null; then
+            log_skip "Modern tools are already active"
+            return 0
+        fi
+        log_warn "Status says modern but aliases don't match, fixing..."
+    fi
+
+    log_info "Enabling modern tools as defaults..."
+
+    # Check if modern tools are installed
+    local tools_status
+    tools_status=$(check_modern_tools_installed)
+    log_info "Modern tools installed: $tools_status"
+
+    # Create backup of current aliases
+    create_backup
+
+    # Create modern aliases configuration
+    ensure_config_dir
+
+    cat > "$ALIASES_DEPLOYED" << 'EOF'
+# Modern CLI Tool Aliases
+# Generated by toggle-modern-tools.sh
+# These replace traditional tools with modern alternatives
+
+# Preserve original tools with _original suffix
+alias ls_original='command ls'
+alias cat_original='command cat'
+alias find_original='command find'
+alias grep_original='command grep'
+alias du_original='command du'
+alias ps_original='command ps'
+alias top_original='command top'
+
+# eza (better ls - modern fork of exa)
+if command -v eza &> /dev/null; then
+    alias ls='eza --icons --group-directories-first'
+    alias ll='eza -la --git --header --icons --group-directories-first'
+    alias l='eza -l --git --header --icons --group-directories-first'
+    alias la='eza -la --git --header --icons --group-directories-first'
+    alias lt='eza --tree --icons'
+    alias tree='eza --tree --icons'
+fi
+
+# bat (better cat)
+if command -v bat &> /dev/null; then
+    alias cat='bat --paging=never'
+    alias less='bat'
+fi
+
+# fd (better find)
+if command -v fd &> /dev/null; then
+    alias find='fd'
+fi
+
+# ripgrep (better grep)
+if command -v rg &> /dev/null; then
+    alias grep='rg'
+fi
+
+# dust (better du)
+if command -v dust &> /dev/null; then
+    alias du='dust'
+fi
+
+# procs (better ps)
+if command -v procs &> /dev/null; then
+    alias ps='procs'
+fi
+
+# bottom (better top)
+if command -v btm &> /dev/null; then
+    alias top='btm'
+fi
+
+# zoxide (smart cd)
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh 2>/dev/null || zoxide init bash 2>/dev/null)"
+    alias cd='z'
+fi
+
+# Keep fallback aliases with '2' suffix for explicit modern tool access
+if command -v eza &> /dev/null; then
+    alias ll2='eza -la --git --header --icons --group-directories-first'
+    alias tree2='eza --tree --icons'
+fi
+
+if command -v bat &> /dev/null; then
+    alias cat2='bat'
+fi
+
+if command -v fd &> /dev/null; then
+    alias find2='fd'
+fi
+
+if command -v rg &> /dev/null; then
+    alias grep2='rg'
+fi
+
+if command -v dust &> /dev/null; then
+    alias du2='dust'
+fi
+
+if command -v procs &> /dev/null; then
+    alias ps2='procs'
+fi
+
+if command -v btm &> /dev/null; then
+    alias top2='btm'
+fi
+EOF
+
+    set_status "modern"
+
+    log_info "Modern tools are now active"
+    echo
+    echo "Modern tools now replace defaults:"
+    echo "  - ls  → eza (with icons and git info)"
+    echo "  - ll  → eza (detailed listing)"
+    echo "  - cat → bat (with syntax highlighting)"
+    echo "  - find → fd (fast file finder)"
+    echo "  - grep → rg (ripgrep)"
+    echo "  - du  → dust (better disk usage)"
+    echo "  - ps  → procs (modern process viewer)"
+    echo "  - top → btm (better system monitor)"
+    echo "  - cd  → z (zoxide smart navigation)"
+    echo
+    echo "Original tools available with _original suffix:"
     echo "  - ls_original, cat_original, find_original, etc."
+    echo
+    log_info "Run: source ~/.zshrc  (or restart shell) to apply changes"
 }
 
 enable_legacy_tools() {
-    echo -e "${YELLOW}Enabling legacy tools as defaults...${NC}"
-    
-    # Look for the most recent backup to restore from
-    restore_from_backup "aliases-migration"
-    
-    echo "✓ Legacy tools are now active"
-    echo ""
-    echo "Traditional tools restored:"
+    local current_status
+    current_status=$(get_current_status)
+
+    if [[ "$current_status" == "legacy" ]]; then
+        # Verify the configuration is correct
+        if [[ -f "$ALIASES_DEPLOYED" ]] && ! grep -q "alias ls='eza" "$ALIASES_DEPLOYED" 2>/dev/null; then
+            log_skip "Legacy tools are already active"
+            return 0
+        fi
+        log_warn "Status says legacy but aliases don't match, fixing..."
+    fi
+
+    log_info "Enabling legacy tools as defaults..."
+
+    # Create backup of current aliases
+    create_backup
+
+    # Create legacy aliases configuration
+    ensure_config_dir
+
+    cat > "$ALIASES_DEPLOYED" << 'EOF'
+# Legacy CLI Tool Aliases
+# Generated by toggle-modern-tools.sh
+# Traditional tools as defaults, modern tools with '2' suffix
+
+# Standard shell aliases
+alias ll='ls -la'
+alias l='ls -l'
+alias la='ls -la'
+
+# Modern tools available with '2' suffix (coexisting)
+if command -v eza &> /dev/null; then
+    alias ll2='eza -la --git --header --icons --group-directories-first'
+    alias l2='eza -l --git --header --icons --group-directories-first'
+    alias la2='eza -la --git --header --icons --group-directories-first'
+    alias tree2='eza --tree --icons'
+fi
+
+if command -v bat &> /dev/null; then
+    alias cat2='bat'
+    alias less2='bat'
+fi
+
+if command -v fd &> /dev/null; then
+    alias find2='fd'
+fi
+
+if command -v rg &> /dev/null; then
+    alias grep2='rg'
+fi
+
+if command -v dust &> /dev/null; then
+    alias du2='dust'
+fi
+
+if command -v procs &> /dev/null; then
+    alias ps2='procs'
+fi
+
+if command -v btm &> /dev/null; then
+    alias top2='btm'
+fi
+
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init zsh 2>/dev/null || zoxide init bash 2>/dev/null)"
+    alias cd2='z'
+fi
+EOF
+
+    set_status "legacy"
+
+    log_info "Legacy tools are now active"
+    echo
+    echo "Traditional tools are now defaults:"
     echo "  - ls, ll, cat, find, grep, du, ps, top"
-    echo ""
-    echo "Modern tools still available with '2' suffix:"
-    echo "  - ll2, cat2, find2, grep2, etc."
+    echo
+    echo "Modern tools available with '2' suffix:"
+    echo "  - ll2, cat2, find2, grep2, du2, ps2, top2, cd2"
+    echo
+    log_info "Run: source ~/.zshrc  (or restart shell) to apply changes"
+}
+
+show_status() {
+    local current_status
+    current_status=$(get_current_status)
+    local tools_installed
+    tools_installed=$(check_modern_tools_installed)
+
+    echo
+    echo -e "${BLUE}=== Modern Tools Configuration ===${NC}"
+    echo
+
+    case "$current_status" in
+        "modern")
+            echo -e "Status: ${GREEN}Modern tools as defaults${NC}"
+            echo
+            echo "Default mappings:"
+            echo "  ls  → eza      cat → bat      find → fd"
+            echo "  grep → rg      du  → dust     ps   → procs"
+            echo "  top → btm      cd  → z (zoxide)"
+            echo
+            echo "Original tools: ls_original, cat_original, etc."
+            ;;
+        "legacy")
+            echo -e "Status: ${YELLOW}Legacy tools as defaults${NC}"
+            echo
+            echo "Default mappings:"
+            echo "  ls, cat, find, grep, du, ps, top (standard)"
+            echo
+            echo "Modern tools: ll2, cat2, find2, grep2, etc."
+            ;;
+        *)
+            echo -e "Status: ${RED}Unknown${NC}"
+            ;;
+    esac
+
+    echo
+    echo -e "${BLUE}=== Installation Status ===${NC}"
+    echo "Modern tools installed: $tools_installed"
+    echo
+    echo "Individual tools:"
+    local tools=("eza" "bat" "fd" "rg" "zoxide" "delta" "dust" "procs" "btm")
+    for tool in "${tools[@]}"; do
+        if command -v "$tool" &>/dev/null; then
+            echo -e "  ✅ ${GREEN}$tool${NC}"
+        else
+            echo -e "  ❌ ${RED}$tool${NC} (not installed)"
+        fi
+    done
+
+    echo
+    echo -e "${BLUE}=== Backups ===${NC}"
+    local backups
+    backups=$(find "$BACKUP_DIR" -name "modern-tools-*" -type d 2>/dev/null | sort -r | head -5)
+    if [[ -n "$backups" ]]; then
+        echo "$backups" | while read -r backup; do
+            echo "  • $(basename "$backup")"
+        done
+    else
+        echo "  No backups found"
+    fi
+    echo
+}
+
+usage() {
+    cat << EOF
+Toggle Modern Tools Script
+
+USAGE:
+    $(basename "$0") [COMMAND]
+
+COMMANDS:
+    modern      Enable modern tools as defaults (eza, bat, fd, rg, etc.)
+    legacy      Restore legacy tools as defaults (ls, cat, find, grep, etc.)
+    status      Show current configuration and installation status
+
+EXAMPLES:
+    $(basename "$0") modern    # Replace ls, cat, etc. with modern alternatives
+    $(basename "$0") legacy    # Restore traditional tool behavior
+    $(basename "$0") status    # Check current configuration
+
+IDEMPOTENCY:
+    This script is idempotent - running the same command multiple times
+    will have the same effect as running it once. The script checks
+    current state before making changes.
+
+SAFETY:
+    - Configuration is backed up before each change
+    - Backups stored in: $BACKUP_DIR
+    - Original tools always available with _original suffix
+    - Can toggle back and forth safely
+
+EOF
 }
 
 main() {
@@ -129,8 +447,8 @@ main() {
             usage
             ;;
         *)
-            echo -e "${RED}Error: Invalid option '$1'${NC}"
-            echo ""
+            log_error "Invalid option: $1"
+            echo
             usage
             exit 1
             ;;

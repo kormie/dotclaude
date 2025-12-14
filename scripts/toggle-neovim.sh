@@ -5,9 +5,13 @@
 
 set -euo pipefail
 
+# Calculate paths relative to script location for portability
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
+
 NVIM_CONFIG_DIR="$HOME/.config/nvim"
 BACKUP_DIR="$HOME/backups"
-ENHANCED_CONFIG_DIR="$HOME/Documents/Repos/dotfiles/stow/neovim/.config/nvim"
+ENHANCED_CONFIG_DIR="$DOTFILES_DIR/stow/neovim/.config/nvim"
 CURRENT_STATUS_FILE="$HOME/.config/dotfiles/nvim-config-status"
 
 # Colors for output
@@ -67,43 +71,69 @@ backup_current_config() {
 switch_to_enhanced() {
     local current_status
     current_status=$(get_current_status)
-    
+
+    # Check if already using enhanced config
     if [[ "$current_status" == "enhanced" ]]; then
-        log_info "Already using enhanced Neovim configuration"
-        return 0
+        # Verify the symlink is correct
+        if [[ -L "$NVIM_CONFIG_DIR" ]] && [[ "$(readlink "$NVIM_CONFIG_DIR")" == "$ENHANCED_CONFIG_DIR" ]]; then
+            log_info "Already using enhanced Neovim configuration"
+            return 0
+        fi
+        log_warn "Status says enhanced but symlink is incorrect, fixing..."
     fi
-    
+
+    # Verify enhanced config exists
+    if [[ ! -d "$ENHANCED_CONFIG_DIR" ]]; then
+        log_error "Enhanced configuration not found at: $ENHANCED_CONFIG_DIR"
+        log_info "Make sure you're running this script from the dotfiles directory"
+        return 1
+    fi
+
     log_info "Switching to enhanced Neovim configuration..."
-    
+
     # Backup current config
     backup_current_config
-    
-    # Remove current config
-    if [[ -d "$NVIM_CONFIG_DIR" ]]; then
+
+    # Remove current config (symlink or directory)
+    if [[ -L "$NVIM_CONFIG_DIR" ]]; then
+        rm "$NVIM_CONFIG_DIR"
+    elif [[ -d "$NVIM_CONFIG_DIR" ]]; then
         rm -rf "$NVIM_CONFIG_DIR"
     fi
-    
+
+    # Ensure parent directory exists
+    mkdir -p "$(dirname "$NVIM_CONFIG_DIR")"
+
     # Create symlink to enhanced config
     ln -sf "$ENHANCED_CONFIG_DIR" "$NVIM_CONFIG_DIR"
-    
-    set_status "enhanced"
-    
-    log_info "✅ Switched to enhanced Neovim configuration"
-    log_info "Run 'nvim' to start with the new configuration"
-    log_info "First startup will install plugins automatically"
+
+    # Verify symlink was created correctly
+    if [[ -L "$NVIM_CONFIG_DIR" ]] && [[ "$(readlink "$NVIM_CONFIG_DIR")" == "$ENHANCED_CONFIG_DIR" ]]; then
+        set_status "enhanced"
+        log_info "✅ Switched to enhanced Neovim configuration"
+        log_info "Run 'nvim' to start with the new configuration"
+        log_info "First startup will install plugins automatically"
+    else
+        log_error "Failed to create symlink"
+        return 1
+    fi
 }
 
 switch_to_original() {
     local current_status
     current_status=$(get_current_status)
-    
+
+    # Check if already using original config (and it's not a symlink)
     if [[ "$current_status" == "original" ]]; then
-        log_info "Already using original Neovim configuration"
-        return 0
+        if [[ -d "$NVIM_CONFIG_DIR" ]] && [[ ! -L "$NVIM_CONFIG_DIR" ]]; then
+            log_info "Already using original Neovim configuration"
+            return 0
+        fi
+        log_warn "Status says original but config is a symlink, fixing..."
     fi
-    
+
     log_info "Switching to original Neovim configuration..."
-    
+
     # Remove enhanced config symlink
     if [[ -L "$NVIM_CONFIG_DIR" ]]; then
         rm "$NVIM_CONFIG_DIR"
@@ -111,10 +141,13 @@ switch_to_original() {
         backup_current_config
         rm -rf "$NVIM_CONFIG_DIR"
     fi
-    
+
+    # Ensure parent directory exists
+    mkdir -p "$(dirname "$NVIM_CONFIG_DIR")"
+
     # Find most recent original backup
     local latest_backup
-    latest_backup=$(find "$BACKUP_DIR" -name "nvim-backup-*" -type d | sort | tail -1)
+    latest_backup=$(find "$BACKUP_DIR" -name "nvim-backup-*" -type d 2>/dev/null | sort | tail -1)
     
     if [[ -n "$latest_backup" && -d "$latest_backup" ]]; then
         log_info "Restoring original configuration from $latest_backup"
