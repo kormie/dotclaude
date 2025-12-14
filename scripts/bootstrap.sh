@@ -3,17 +3,16 @@
 # bootstrap.sh - Bootstrap dotfiles on a fresh Mac (no SSH keys required)
 #
 # Usage:
-#   curl -fsSL kormie.link/dotfiles | bash
-#   curl -fsSL https://raw.githubusercontent.com/kormie/dotclaude/main/scripts/bootstrap.sh | bash
+#   curl -fsSL bootstrap.kormie.link | bash
 #
 # Options (via environment variables):
 #   DOTFILES_DIR   - Where to clone dotfiles (default: ~/.dotfiles)
 #   INSTALL_MODE   - Install mode: all, minimal, interactive (default: all)
 #
 # Examples:
-#   curl -fsSL kormie.link/dotfiles | bash
-#   curl -fsSL kormie.link/dotfiles | INSTALL_MODE=minimal bash
-#   curl -fsSL kormie.link/dotfiles | DOTFILES_DIR=~/dotfiles bash
+#   curl -fsSL bootstrap.kormie.link | bash
+#   curl -fsSL bootstrap.kormie.link | INSTALL_MODE=minimal bash
+#   curl -fsSL bootstrap.kormie.link | DOTFILES_DIR=~/dotfiles bash
 
 set -e
 
