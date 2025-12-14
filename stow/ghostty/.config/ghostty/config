@@ -1,0 +1,101 @@
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                         KOHO Ghostty Configuration                        ║
+# ║                   Optimized for charcoal grey backgrounds                 ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Font Configuration (Nerd Font for extended glyphs + ligatures)
+# ─────────────────────────────────────────────────────────────────────────────
+
+font-family = "JetBrainsMono Nerd Font"
+# Alternative Nerd Font options (all support ligatures + tech brand icons):
+# font-family = "FiraCode Nerd Font"
+# font-family = "CaskaydiaCove Nerd Font"
+# font-family = "Hack Nerd Font"
+# font-family = "MesloLGS NF"
+
+font-size = 14
+font-feature = calt
+font-feature = liga
+
+# ─────────────────────────────────────────────────────────────────────────────
+# KOHO Color Scheme
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Background: Charcoal grey (recommended) or Haiti purple
+background = #2D2D2D
+# Alternative: Full KOHO Haiti purple background
+# background = #1D123C
+
+foreground = #FFFFFF
+
+# Cursor in Electric Lime
+cursor-color = #D1F300
+cursor-style = block
+cursor-style-blink = true
+
+# Selection in Scarlet Gum
+selection-background = #36186B
+selection-foreground = #FFFFFF
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ANSI Color Palette (KOHO branded)
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Normal colors (0-7)
+palette = 0=#1D123C
+palette = 1=#36186B
+palette = 2=#D1F300
+palette = 3=#E8FA80
+palette = 4=#6B4D9E
+palette = 5=#36186B
+palette = 6=#126B4E
+palette = 7=#E8E6F0
+
+# Bright colors (8-15)
+palette = 8=#36186B
+palette = 9=#6B4D9E
+palette = 10=#D1F300
+palette = 11=#FFF9E8
+palette = 12=#6B4D9E
+palette = 13=#E8E6F0
+palette = 14=#126B4E
+palette = 15=#FFFFFF
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Window Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+window-padding-x = 12
+window-padding-y = 12
+window-decoration = true
+
+# macOS specific
+macos-titlebar-style = transparent
+macos-option-as-alt = true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Shell Integration
+# ─────────────────────────────────────────────────────────────────────────────
+
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Performance & Behavior
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Scrollback
+scrollback-limit = 10000
+
+# Copy/paste behavior
+copy-on-select = clipboard
+clipboard-paste-protection = true
+
+# Bell
+visual-bell = true
+audible-bell = false
+
+# Quick terminal
+quick-terminal-position = top
+quick-terminal-animation-duration = 0.15
