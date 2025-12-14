@@ -4,14 +4,15 @@
 # ╚═══════════════════════════════════════════════════════════════════════════╝
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Font Configuration
+# Font Configuration (Nerd Font for extended glyphs + ligatures)
 # ─────────────────────────────────────────────────────────────────────────────
 
-font-family = "JetBrains Mono"
-# Alternative options:
-# font-family = "Fira Code"
-# font-family = "SF Mono"
-# font-family = "MesloLGS NF"  # If using Nerd Fonts
+font-family = "JetBrainsMono Nerd Font"
+# Alternative Nerd Font options (all support ligatures + tech brand icons):
+# font-family = "FiraCode Nerd Font"
+# font-family = "CaskaydiaCove Nerd Font"
+# font-family = "Hack Nerd Font"
+# font-family = "MesloLGS NF"
 
 font-size = 14
 font-feature = calt
