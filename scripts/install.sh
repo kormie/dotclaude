@@ -252,6 +252,31 @@ setup_oh_my_zsh() {
 }
 
 #######################################
+# Setup Secrets File
+#######################################
+
+setup_secrets_file() {
+    log_step "Setting up secrets file..."
+
+    local secrets_template="$DOTFILES_DIR/stow/environment/.secrets.template"
+    local secrets_file="$HOME/.secrets"
+
+    if [[ -f "$secrets_file" ]]; then
+        log_skip "Secrets file already exists at ~/.secrets"
+        return 0
+    fi
+
+    if [[ -f "$secrets_template" ]]; then
+        cp "$secrets_template" "$secrets_file"
+        chmod 600 "$secrets_file"  # Restrict permissions
+        log_success "Created ~/.secrets from template"
+        log_info "Edit ~/.secrets to add your API keys and tokens"
+    else
+        log_warn "Secrets template not found"
+    fi
+}
+
+#######################################
 # Deploy Stow Packages
 #######################################
 
@@ -398,6 +423,11 @@ run_interactive() {
     fi
 
     echo
+    if prompt_yes_no "Setup secrets file for API keys/tokens?"; then
+        setup_secrets_file
+    fi
+
+    echo
     if prompt_yes_no "Apply macOS system defaults?"; then
         apply_macos_defaults
     fi
@@ -419,6 +449,7 @@ run_minimal() {
     install_core_dependencies
     backup_existing_configs
     deploy_stow_packages
+    setup_secrets_file
     validate_installation
 }
 
@@ -438,6 +469,7 @@ run_full() {
     install_fonts
     setup_oh_my_zsh
     deploy_stow_packages
+    setup_secrets_file
     apply_macos_defaults
     validate_installation
 }

@@ -92,6 +92,10 @@ secring.*
 .env.local
 .env.*.local
 
+# User secrets file (NEVER commit - contains API keys, tokens, etc.)
+.secrets
+*/.secrets
+
 # ============================================================================
 # DEVELOPMENT AND BUILD ARTIFACTS
 # ============================================================================

@@ -96,3 +96,9 @@ fi
 if [[ -f "$HOME/.zshenv.local" ]]; then
     source "$HOME/.zshenv.local"
 fi
+
+# Load secrets (API keys, tokens, etc.) - NEVER commit ~/.secrets
+# Copy ~/.secrets.template to ~/.secrets to get started
+if [[ -f "$HOME/.secrets" ]]; then
+    source "$HOME/.secrets"
+fi
