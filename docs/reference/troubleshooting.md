@@ -222,10 +222,10 @@ git config --get commit.gpgsign
 git config --get gpg.format
 ```
 
-2. **Test GPG signing:**
+2. **Test SSH key signing:**
 ```bash
 # Test SSH key signing
-ssh-add -L | grep ""
+ssh-add -L
 ```
 
 3. **Temporary disable signing:**

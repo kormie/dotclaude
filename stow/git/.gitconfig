@@ -2,9 +2,10 @@
 # This configuration uses modern tools and best practices
 
 [user]
-    name = 
-    email = kormie@gmail.com
-	signingkey = /Users/david.kormushoff/.ssh/id_ed25519.pub
+    # Configure these in ~/.gitconfig.local
+    # name = Your Name
+    # email = your@email.com
+	signingkey = ~/.ssh/id_ed25519.pub
 
 [init]
     defaultBranch = main
@@ -147,4 +148,4 @@
 [include]
     path = ~/.gitconfig.local
 [gpg "ssh"]
-	allowedSignersFile = /Users/david.kormushoff/.ssh/allowed_signers
+	allowedSignersFile = ~/.ssh/allowed_signers

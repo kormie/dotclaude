@@ -91,8 +91,8 @@ if command -v go >/dev/null; then
   export PATH="$GOPATH/bin:$PATH"
 fi
 
-# LM Studio CLI (preserve user's addition)
-export PATH="$PATH:/Users/david.kormushoff/.lmstudio/bin"
+# LM Studio CLI (if installed)
+[[ -d "$HOME/.lmstudio/bin" ]] && export PATH="$PATH:$HOME/.lmstudio/bin"
 
 # ============================================================================
 # ENHANCED FEATURES (new additions)

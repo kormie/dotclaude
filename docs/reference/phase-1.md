@@ -173,7 +173,7 @@ C-hjkl       # Smart vim/tmux navigation (CapsLock→Ctrl optimized)
 ### User Settings Preserved
 
 **Existing Configuration Maintained:**
-- SSH GPG signing with key 
+- SSH GPG signing with user's SSH key
 - GitHub SSH URL rewriting (`git@github.com:` instead of HTTPS)
 - Git LFS configuration for large file handling
 - macOS keychain credential integration

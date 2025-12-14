@@ -42,7 +42,7 @@ Key features:
 [gpg]
     format = ssh
 [user]
-    signingkey = 
+    signingkey = ~/.ssh/id_ed25519.pub
 ```
 
 ### Zsh Configuration

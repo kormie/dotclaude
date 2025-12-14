@@ -96,7 +96,7 @@ When implementing Rust-based CLI tool replacements:
 
 ### User-Specific Requirements
 - **Docker**: Uses colima instead of Docker Desktop (aliases updated accordingly)
-- **Git Signing**: SSH GPG signing enabled with key 
+- **Git Signing**: SSH GPG signing enabled (configure key in ~/.gitconfig.local)
 - **Git Preferences**: GitHub SSH URL rewriting, Git LFS, macOS keychain integration
 - **Development Environment**: Primary development machine requiring non-destructive changes
 - **Vim Workflow**: CapsLock rebound to Ctrl, mapleader is comma, prefers hjkl navigation and netrw patterns
@@ -176,7 +176,7 @@ When implementing Rust-based CLI tool replacements:
 **Technical Achievements**:
 - Fixed LSP telescope integration by wrapping function calls to prevent loading conflicts
 - Replaced netrw with Neo-tree for modern file navigation while preserving `-` key workflow  
-- Resolved SSH commit signing configuration to eliminate  GPG key errors
+- Resolved SSH commit signing configuration to eliminate GPG key errors
 - Enhanced plugin loading with proper error handling and deferred initialization
 - Comprehensive test coverage and user feedback integration
 

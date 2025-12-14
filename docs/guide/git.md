@@ -23,7 +23,7 @@ Syntax-aware diff tool for advanced comparisons:
 ### SSH Signing
 Secure commit signing with SSH keys:
 - GPG-style signing with SSH keys
-- Key: 
+- Uses your `~/.ssh/id_ed25519.pub` key
 - Automatic signature verification
 
 ## Configuration Files

@@ -178,7 +178,7 @@ glogdifft        # Shell alias for difftastic log
 ```
 
 ### Your Settings Preserved
-- ✅ SSH GPG signing (key: )
+- ✅ SSH GPG signing (configure in ~/.gitconfig.local)
 - ✅ GitHub SSH URL rewriting
 - ✅ Git LFS configuration
 - ✅ macOS keychain integration

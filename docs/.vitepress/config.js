@@ -116,7 +116,7 @@ export default defineConfig({
     // Footer
     footer: {
       message: 'Built for the future of AI-assisted development',
-      copyright: 'Copyright © 2024-2025 '
+      copyright: 'Copyright © 2024-2025'
     },
 
     // Search

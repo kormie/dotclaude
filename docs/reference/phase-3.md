@@ -65,14 +65,14 @@ end, { desc = 'Open Neo-tree in current file directory' })
 ```
 
 ### SSH Signing Configuration
-**Issue**: `Couldn't load public key : No such file or directory`
+**Issue**: GPG key errors when signing commits
 
 **Solution**: Configured SSH signing instead of GPG key ID:
 ```ini
 [user]
-    signingkey = /Users/david.kormushoff/.ssh/id_ed25519.pub
+    signingkey = ~/.ssh/id_ed25519.pub
 [gpg "ssh"]
-    allowedSignersFile = /Users/david.kormushoff/.ssh/allowed_signers
+    allowedSignersFile = ~/.ssh/allowed_signers
 ```
 
 ## Plugin Ecosystem
