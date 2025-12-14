@@ -23,13 +23,13 @@
 
 ```bash
 # One-liner bootstrap - works without SSH keys configured
-curl -fsSL https://raw.githubusercontent.com/kormie/dotclaude/main/scripts/bootstrap.sh | bash
-
-# Or with custom domain (once configured)
-curl -fsSL kormie.link/dotfiles | bash
+curl -fsSL bootstrap.kormie.link | bash
 
 # Minimal install
-curl -fsSL kormie.link/dotfiles | INSTALL_MODE=minimal bash
+curl -fsSL bootstrap.kormie.link | INSTALL_MODE=minimal bash
+
+# Interactive install
+curl -fsSL bootstrap.kormie.link | INSTALL_MODE=interactive bash
 ```
 
 ### One-Line Installation (With SSH Keys)
