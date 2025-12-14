@@ -5,22 +5,50 @@ Get started with DotClaude in minutes with our safety-first approach.
 ## Prerequisites
 
 - **macOS** (tested on macOS Sonoma 14.5+)
-- **Git** for version control
-- **Homebrew** for package management
 - **Basic terminal familiarity**
 
-## Quick Installation
+That's it! The installer handles everything else (Homebrew, Git, Xcode CLI tools).
+
+## Quick Installation (Fresh Mac)
+
+For a brand new Mac without SSH keys configured:
 
 ```bash
-# Clone the repository to ~/.dotfiles
+# One-liner bootstrap - works without SSH keys
+curl -fsSL bootstrap.kormie.link | bash
+```
+
+### Install Options
+
+```bash
+# Full installation (default) - all features
+curl -fsSL bootstrap.kormie.link | bash
+
+# Minimal installation - core only
+curl -fsSL bootstrap.kormie.link | INSTALL_MODE=minimal bash
+
+# Interactive installation - choose components
+curl -fsSL bootstrap.kormie.link | INSTALL_MODE=interactive bash
+```
+
+## Installation (With SSH Keys)
+
+If you already have SSH keys configured with GitHub:
+
+```bash
+# Clone and install
 git clone git@github.com:kormie/dotclaude.git ~/.dotfiles
 cd ~/.dotfiles
+./scripts/install.sh --all
+```
 
-# Install modern CLI tools (completely safe)
-./scripts/setup-tools.sh
+## Installation (HTTPS)
 
-# Test the installation
-./scripts/test-config.sh all
+```bash
+# Clone via HTTPS
+git clone https://github.com/kormie/dotclaude.git ~/.dotfiles
+cd ~/.dotfiles
+./scripts/install.sh --all
 ```
 
 ## What Gets Installed

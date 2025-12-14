@@ -359,8 +359,7 @@ cd docs && npm install && npm run docs:dev
 ```
 
 ### 📄 Quick Reference
-- **[PROJECT_PLAN.md](PROJECT_PLAN.md)**: Detailed project roadmap and milestones
-- **[CLAUDE.md](CLAUDE.md)**: Project instructions and configuration guidance  
+- **[CLAUDE.md](CLAUDE.md)**: Project instructions and configuration guidance
 - **[backups/](backups/)**: Automatic backups with timestamps
 - **[docs/](docs/)**: VitePress documentation source
 
