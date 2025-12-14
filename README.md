@@ -19,7 +19,20 @@
 
 ## 🚀 Quick Start
 
-### One-Line Installation (New Mac)
+### Fresh Mac (No SSH Keys Yet)
+
+```bash
+# One-liner bootstrap - works without SSH keys configured
+curl -fsSL https://raw.githubusercontent.com/kormie/dotclaude/main/scripts/bootstrap.sh | bash
+
+# Or with custom domain (once configured)
+curl -fsSL kormie.link/dotfiles | bash
+
+# Minimal install
+curl -fsSL kormie.link/dotfiles | INSTALL_MODE=minimal bash
+```
+
+### One-Line Installation (With SSH Keys)
 
 ```bash
 # Full idempotent setup - safe to run multiple times
@@ -29,8 +42,8 @@ git clone git@github.com:kormie/dotclaude.git ~/.dotfiles && cd ~/.dotfiles && .
 ### Interactive Installation
 
 ```bash
-# Clone the repository
-git clone git@github.com:kormie/dotclaude.git ~/.dotfiles
+# Clone the repository (HTTPS - no SSH keys needed)
+git clone https://github.com/kormie/dotclaude.git ~/.dotfiles
 cd ~/.dotfiles
 
 # Run interactive installer (prompts for each component)
