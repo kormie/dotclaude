@@ -209,3 +209,17 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
+
+# ============================================================================
+# KEYBINDING ENHANCEMENTS (Emacs mode optimized for CapsLock=Ctrl)
+# ============================================================================
+
+# Redo binding (complements Ctrl+_ for undo)
+bindkey '^Y' redo
+
+# Word navigation with Ctrl+Arrow keys
+bindkey '^[[1;5D' backward-word  # Ctrl+Left
+bindkey '^[[1;5C' forward-word   # Ctrl+Right
+
+# Delete word forward (Ctrl+Delete)
+bindkey '^[[3;5~' kill-word
