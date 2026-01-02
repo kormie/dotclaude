@@ -13,9 +13,9 @@ Discover the Rust-based CLI tools that have replaced traditional Unix commands a
 ./scripts/setup-tools.sh additional     # Additional utilities
 ```
 
-::: tip Modern Tools Are Now Default
-As of commit `4559798`, modern CLI tools are now the default commands. Legacy tools are available with `_original` suffix (e.g., `ls_original`, `cat_original`).
-:::
+> [!TIP]
+> **Modern Tools Are Now Default**
+> As of commit `4559798`, modern CLI tools are now the default commands. Legacy tools are available with `_original` suffix (e.g., `ls_original`, `cat_original`).
 
 ## Tool Categories
 
@@ -212,9 +212,9 @@ z myapp          # Direct zoxide usage (also available)
 cd_original ~/path  # Original cd command
 ```
 
-::: tip Transparent Smart Navigation
-As of commit `84f49a9`, `cd` now uses zoxide for smart directory jumping while maintaining full compatibility with traditional cd patterns. Use `cd_original` if you need the shell builtin.
-:::
+> [!TIP]
+> **Transparent Smart Navigation**
+> As of commit `84f49a9`, `cd` now uses zoxide for smart directory jumping while maintaining full compatibility with traditional cd patterns. Use `cd_original` if you need the shell builtin.
 
 **Features:**
 - Learns from your navigation patterns

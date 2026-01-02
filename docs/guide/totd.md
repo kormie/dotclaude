@@ -77,10 +77,10 @@ git|glogp — Pretty git log with graph and colors
 | **Snooze** | Tip hidden for 30 days, stored locally | "I know this, remind me later" |
 | **Remove** | Tip commented out, committed, pushed to main | "I've mastered this, never show again" |
 
-::: tip State Files
-- **Snooze state**: `~/.local/share/dotfiles/totd_state.json` (local, not synced)
-- **Removed tips**: Commented in `tips.txt` with `## REMOVED:` prefix (synced via git)
-:::
+> [!TIP]
+> **State Files**
+> - **Snooze state**: `~/.local/share/dotfiles/totd_state.json` (local, not synced)
+> - **Removed tips**: Commented in `tips.txt` with `## REMOVED:` prefix (synced via git)
 
 ## Disabling TOTD
 

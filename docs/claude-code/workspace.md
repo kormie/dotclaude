@@ -2,13 +2,13 @@
 
 Launch 1-5 parallel Claude Code sessions with git worktrees for conflict-free AI development.
 
-::: tip Script Features
-The `tmux-claude-workspace` script includes:
-- ✅ **Auto-validation**: Checks git repo, tmux, and Claude CLI availability
-- ✅ **Colored output**: Status messages with color-coded logging
-- ✅ **Auto-cleanup**: Prompts to remove worktrees when session ends
-- ✅ **Help support**: Use `-h` or `--help` for detailed usage information
-:::
+> [!TIP]
+> **Script Features**
+> The `tmux-claude-workspace` script includes:
+> - ✅ **Auto-validation**: Checks git repo, tmux, and Claude CLI availability
+> - ✅ **Colored output**: Status messages with color-coded logging
+> - ✅ **Auto-cleanup**: Prompts to remove worktrees when session ends
+> - ✅ **Help support**: Use `-h` or `--help` for detailed usage information
 
 ## Quick Start
 
@@ -23,13 +23,13 @@ tmux-claude-workspace myproject auth-system payment-api notifications dashboard
 cw myproject auth-system payment-api
 ```
 
-::: info Command Aliases
-The `cw` command is an alias for `tmux-claude-workspace` defined in the aliases package:
-```bash
-alias cw='tmux-claude-workspace'
-```
-This alias is available after applying the aliases configuration with `./scripts/stow-package.sh aliases`.
-:::
+> [!NOTE]
+> **Command Aliases**
+> The `cw` command is an alias for `tmux-claude-workspace` defined in the aliases package:
+> ```bash
+> alias cw='tmux-claude-workspace'
+> ```
+> This alias is available after applying the aliases configuration with `./scripts/stow-package.sh aliases`.
 
 ## Workspace Layout
 

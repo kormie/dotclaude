@@ -91,9 +91,9 @@ c          # Clear terminal (alias for clear)
 gwt branch # Create git worktree with new branch and cd to it
 ```
 
-::: tip Smart Navigation with zoxide
-As of commit `84f49a9`, the `cd` command now uses zoxide for smart directory jumping while maintaining full compatibility with traditional cd patterns. Use `cd_original` if you need the shell builtin.
-:::
+> [!TIP]
+> **Smart Navigation with zoxide**
+> As of commit `84f49a9`, the `cd` command now uses zoxide for smart directory jumping while maintaining full compatibility with traditional cd patterns. Use `cd_original` if you need the shell builtin.
 
 ## Safety Features
 
@@ -111,9 +111,9 @@ Easy switching between modern and original tool configurations:
 ./scripts/toggle-shell.sh status
 ```
 
-::: warning Migration Complete
-With the recent updates, the enhanced shell configuration with modern tools as defaults is now the standard setup. The toggle system remains available for users who prefer traditional tools.
-:::
+> [!WARNING]
+> **Migration Complete**
+> With the recent updates, the enhanced shell configuration with modern tools as defaults is now the standard setup. The toggle system remains available for users who prefer traditional tools.
 
 ### Backup & Restore
 Comprehensive backup system:

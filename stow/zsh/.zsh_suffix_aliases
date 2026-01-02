@@ -40,6 +40,10 @@ alias -s sh=nvim
 alias -s zsh=nvim
 alias -s bash=nvim
 
+# Make (note: 'Makefile' has no extension, so won't trigger suffix alias)
+alias -s mk=nvim
+alias -s make=nvim
+
 # ============================================================================
 # DOCUMENTATION / CONFIG → bat (read-only view with syntax highlighting)
 # ============================================================================

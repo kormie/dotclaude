@@ -1,8 +1,8 @@
 # Phase 3: Editor Enhancement - Complete Reference
 
-::: tip Phase 3 Status: ✅ COMPLETE
-Modern Neovim configuration with full LSP integration and comprehensive plugin ecosystem. All technical issues resolved and production ready.
-:::
+> [!TIP]
+> **Phase 3 Status: ✅ COMPLETE**
+> Modern Neovim configuration with full LSP integration and comprehensive plugin ecosystem. All technical issues resolved and production ready.
 
 ## Overview
 
