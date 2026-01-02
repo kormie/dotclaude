@@ -38,7 +38,7 @@ _totd_init_state() {
     fi
 }
 
-# Check if a tip is currently snoozed
+# Check if a tip is currently snoozed (and clean up expired snoozes)
 _totd_is_snoozed() {
     local tip_id="$1"
     _totd_init_state
@@ -54,9 +54,21 @@ _totd_is_snoozed() {
         local now=$(date +%s)
         if (( snooze_until > now )); then
             return 0  # Still snoozed
+        else
+            # Expired — clean it up (lazy garbage collection)
+            _totd_remove_expired_snooze "$tip_id"
         fi
     fi
-    return 1  # Not snoozed
+    return 1  # Not snoozed (or was expired and cleaned up)
+}
+
+# Remove an expired snooze from state file
+_totd_remove_expired_snooze() {
+    local tip_id="$1"
+    local tmp_file=$(mktemp)
+
+    jq "del(.snoozed[\"$tip_id\"])" "$TOTD_STATE_FILE" > "$tmp_file" 2>/dev/null && \
+        mv "$tmp_file" "$TOTD_STATE_FILE"
 }
 
 # Get a random non-snoozed tip
