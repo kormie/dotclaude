@@ -92,3 +92,11 @@ Each tip should be:
 - `Ctrl+X M` — `mix ` (Elixir)
 - `Ctrl+X I` — `iex -S mix` (Elixir REPL)
 - `Ctrl+X V` — `nvim .` (open editor in cwd)
+
+## Project Auto-Detection (chpwd hook)
+
+- Auto-activates Python `.venv` when entering a `pyproject.toml` project
+- Auto-runs `nvm use` when `.nvmrc` is present
+- Auto-sources `.env` files at project root
+- Deactivates venv when leaving a project
+- Detects project root via: `package.json`, `pyproject.toml`, `go.mod`, `mix.exs`, `.git`

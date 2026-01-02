@@ -161,22 +161,68 @@ DISABLE_UPDATE_PROMPT="true"
 # PROJECT-SPECIFIC ENVIRONMENT MANAGEMENT
 # ============================================================================
 
-# Auto-load project-specific configurations
-autoload_project_config() {
+# Find project root by walking up directory tree
+_find_project_root() {
     local dir="$PWD"
     while [[ "$dir" != "/" ]]; do
-        if [[ -f "$dir/.env" ]]; then
-            echo "Loading project environment from $dir/.env"
-            source "$dir/.env"
-            break
-        fi
-        if [[ -f "$dir/.nvmrc" ]] && command -v nvm >/dev/null; then
-            echo "Loading Node.js version from $dir/.nvmrc"
-            nvm use
-            break
+        # Check for common project markers
+        if [[ -f "$dir/package.json" ]] || \
+           [[ -f "$dir/pyproject.toml" ]] || \
+           [[ -f "$dir/go.mod" ]] || \
+           [[ -f "$dir/mix.exs" ]] || \
+           [[ -f "$dir/.env" ]] || \
+           [[ -f "$dir/.nvmrc" ]] || \
+           [[ -d "$dir/.git" ]]; then
+            echo "$dir"
+            return 0
         fi
         dir="$(dirname "$dir")"
     done
+    return 1
+}
+
+# Track current project to avoid re-loading
+_CURRENT_PROJECT_ROOT=""
+
+# Auto-load project-specific configurations (all applicable, not mutually exclusive)
+autoload_project_config() {
+    local project_root
+    project_root="$(_find_project_root)"
+
+    # If we're in the same project, don't reload
+    if [[ "$project_root" == "$_CURRENT_PROJECT_ROOT" ]]; then
+        return
+    fi
+
+    # Deactivate previous Python venv if we left a project
+    if [[ -n "$VIRTUAL_ENV" ]] && [[ "$project_root" != "$_CURRENT_PROJECT_ROOT" ]]; then
+        deactivate 2>/dev/null
+    fi
+
+    _CURRENT_PROJECT_ROOT="$project_root"
+
+    # No project found
+    if [[ -z "$project_root" ]]; then
+        return
+    fi
+
+    # Load .env if present
+    if [[ -f "$project_root/.env" ]]; then
+        echo "Loading environment from $project_root/.env"
+        source "$project_root/.env"
+    fi
+
+    # Node.js: use nvm if .nvmrc present
+    if [[ -f "$project_root/.nvmrc" ]] && command -v nvm >/dev/null; then
+        echo "Loading Node.js version from .nvmrc"
+        nvm use --silent
+    fi
+
+    # Python: activate venv if pyproject.toml + .venv exist
+    if [[ -f "$project_root/pyproject.toml" ]] && [[ -d "$project_root/.venv" ]]; then
+        source "$project_root/.venv/bin/activate"
+        echo "Activated Python venv (.venv)"
+    fi
 }
 
 # Hook to run on directory change
