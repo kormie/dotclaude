@@ -3,23 +3,23 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'DotClaude',
   description: 'Modern dotfiles optimized for AI development workflows',
-  
+
   // GitHub Pages configuration
   base: '/dotclaude/',
-  
+
   // Theme configuration
   themeConfig: {
     // Site branding
     logo: '/logo.svg',
     siteTitle: 'DotClaude',
-    
+
     // Navigation
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Quick Start', link: '/getting-started/' },
       { text: 'Guide', link: '/guide/' },
       { text: 'Reference', link: '/reference/' },
-      { 
+      {
         text: 'Claude Code',
         items: [
           { text: 'Workspace Setup', link: '/claude-code/workspace' },
@@ -42,7 +42,7 @@ export default defineConfig({
           ]
         }
       ],
-      
+
       '/guide/': [
         {
           text: 'Configuration Guide',
