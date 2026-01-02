@@ -1,0 +1,191 @@
+# Zsh Tip of the Day
+# Displays a random tip on shell startup with snooze/remove options
+
+# Configuration
+TOTD_TIPS_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/tips.txt"
+TOTD_STATE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/dotfiles"
+TOTD_STATE_FILE="$TOTD_STATE_DIR/totd_state.json"
+TOTD_SNOOZE_DAYS=30
+
+# Track the last shown tip for snooze/remove actions
+_TOTD_LAST_TIP_ID=""
+_TOTD_LAST_TIP_LINE=""
+
+# Category emoji mapping
+_totd_emoji() {
+    case "$1" in
+        nav)  echo "⌨️ " ;;
+        hist) echo "📜" ;;
+        file) echo "📂" ;;
+        git)  echo "🐙" ;;
+        tool) echo "🔧" ;;
+        py)   echo "🐍" ;;
+        node) echo "📦" ;;
+        mix)  echo "💧" ;;
+        proj) echo "📁" ;;
+        zle)  echo "⚡" ;;
+        *)    echo "💡" ;;
+    esac
+}
+
+# Initialize state file if needed
+_totd_init_state() {
+    if [[ ! -d "$TOTD_STATE_DIR" ]]; then
+        mkdir -p "$TOTD_STATE_DIR"
+    fi
+    if [[ ! -f "$TOTD_STATE_FILE" ]]; then
+        echo '{"snoozed":{}}' > "$TOTD_STATE_FILE"
+    fi
+}
+
+# Check if a tip is currently snoozed
+_totd_is_snoozed() {
+    local tip_id="$1"
+    _totd_init_state
+
+    if ! command -v jq >/dev/null; then
+        return 1  # Can't check without jq, assume not snoozed
+    fi
+
+    local snooze_until
+    snooze_until=$(jq -r ".snoozed[\"$tip_id\"] // empty" "$TOTD_STATE_FILE" 2>/dev/null)
+
+    if [[ -n "$snooze_until" ]]; then
+        local now=$(date +%s)
+        if (( snooze_until > now )); then
+            return 0  # Still snoozed
+        fi
+    fi
+    return 1  # Not snoozed
+}
+
+# Get a random non-snoozed tip
+_totd_get_random_tip() {
+    if [[ ! -f "$TOTD_TIPS_FILE" ]]; then
+        return 1
+    fi
+
+    # Read all valid tips (not comments, not removed)
+    local -a tips
+    local line_num=0
+    while IFS= read -r line; do
+        ((line_num++))
+        # Skip empty lines, comments (#), and removed tips (##)
+        [[ -z "$line" || "$line" == \#* ]] && continue
+
+        # Create tip ID from line number
+        local tip_id="line_$line_num"
+
+        # Skip if snoozed
+        if _totd_is_snoozed "$tip_id"; then
+            continue
+        fi
+
+        tips+=("$line_num|$line")
+    done < "$TOTD_TIPS_FILE"
+
+    if (( ${#tips[@]} == 0 )); then
+        return 1
+    fi
+
+    # Pick random tip
+    local random_index=$((RANDOM % ${#tips[@]}))
+    echo "${tips[$random_index]}"
+}
+
+# Display the tip of the day
+_show_tip_of_the_day() {
+    local tip_data
+    tip_data=$(_totd_get_random_tip)
+
+    if [[ -z "$tip_data" ]]; then
+        return
+    fi
+
+    # Parse tip data: line_num|category|tip_text
+    local line_num="${tip_data%%|*}"
+    local rest="${tip_data#*|}"
+    local category="${rest%%|*}"
+    local tip_text="${rest#*|}"
+
+    # Store for snooze/remove actions
+    _TOTD_LAST_TIP_ID="line_$line_num"
+    _TOTD_LAST_TIP_LINE="$line_num"
+
+    local emoji=$(_totd_emoji "$category")
+
+    # Display with colors
+    echo ""
+    print -P "%F{cyan}$emoji Tip:%f %F{white}$tip_text%f"
+    print -P "%F{240}   ╰─ [Ctrl+X ,] snooze 30d  [Ctrl+X .] remove%f"
+    echo ""
+}
+
+# Snooze the last shown tip for 30 days
+totd-snooze() {
+    if [[ -z "$_TOTD_LAST_TIP_ID" ]]; then
+        zle -M "No tip to snooze"
+        return
+    fi
+
+    _totd_init_state
+
+    if ! command -v jq >/dev/null; then
+        zle -M "jq required for snooze feature"
+        return
+    fi
+
+    local snooze_until=$(($(date +%s) + TOTD_SNOOZE_DAYS * 86400))
+    local tmp_file=$(mktemp)
+
+    jq ".snoozed[\"$_TOTD_LAST_TIP_ID\"] = $snooze_until" "$TOTD_STATE_FILE" > "$tmp_file" && \
+        mv "$tmp_file" "$TOTD_STATE_FILE"
+
+    zle -M "Tip snoozed for $TOTD_SNOOZE_DAYS days"
+    _TOTD_LAST_TIP_ID=""
+}
+zle -N totd-snooze
+
+# Remove the last shown tip permanently
+totd-remove() {
+    if [[ -z "$_TOTD_LAST_TIP_LINE" ]]; then
+        zle -M "No tip to remove"
+        return
+    fi
+
+    if [[ ! -f "$TOTD_TIPS_FILE" ]]; then
+        zle -M "Tips file not found"
+        return
+    fi
+
+    # Comment out the line with ## prefix
+    local line_num="$_TOTD_LAST_TIP_LINE"
+
+    # Use sed to add ## prefix to the line
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "${line_num}s/^/## REMOVED: /" "$TOTD_TIPS_FILE"
+    else
+        sed -i "${line_num}s/^/## REMOVED: /" "$TOTD_TIPS_FILE"
+    fi
+
+    # Get the repo root (where tips.txt lives)
+    local repo_root=$(dirname $(dirname $(dirname "$TOTD_TIPS_FILE")))
+
+    # Commit and push
+    (
+        cd "$repo_root" 2>/dev/null && \
+        git add "$TOTD_TIPS_FILE" && \
+        git commit -m "totd: remove tip (line $line_num)" && \
+        git push origin main
+    ) &>/dev/null &
+
+    zle -M "Tip removed and pushed to main"
+    _TOTD_LAST_TIP_ID=""
+    _TOTD_LAST_TIP_LINE=""
+}
+zle -N totd-remove
+
+# Manual tip display command
+totd() {
+    _show_tip_of_the_day
+}

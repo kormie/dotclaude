@@ -1,0 +1,60 @@
+# Tip of the Day - Tips Database
+# Format: category|tip text
+# Categories: nav, hist, file, git, tool, py, node, mix, proj, zle
+# Lines starting with # are comments (ignored)
+# Lines starting with ## are removed tips (kept for history)
+
+nav|Ctrl+A / Ctrl+E — Jump to beginning/end of line
+nav|Ctrl+W — Delete word backward (undo with Ctrl+_)
+nav|Ctrl+_ — Undo last edit in command buffer
+nav|Ctrl+Y — Redo (undo the undo)
+nav|Ctrl+←/→ — Navigate word by word
+nav|Ctrl+X Ctrl+E — Open current command in Neovim for complex editing
+
+hist|Ctrl+R — Reverse search through history
+hist|↑/↓ after typing — History search filtered by current prefix
+hist|!!<Space> — Expands to last command (see before running!)
+hist|sudo !!<Space> — Re-run last command with sudo, safely
+hist|!$<Space> — Last argument of previous command
+hist|!*<Space> — All arguments of previous command
+hist|!git<Space> — Last command starting with "git"
+hist|!-2<Space> — Second-to-last command
+
+tool|z <partial> — Smart cd using frecency (frequency + recency)
+tool|zi — Interactive directory picker with fzf
+tool|ll2 — Enhanced ls with git status and icons (eza)
+tool|cat2 — Syntax-highlighted file viewing (bat)
+tool|find2 — Faster, friendlier find (fd)
+tool|grep2 — Faster grep with better defaults (ripgrep)
+
+git|glogp — Pretty git log with graph and colors
+git|glogdifft — Git log with syntax-aware diffs (difftastic)
+git|gwt <branch> — Create git worktree and cd into it
+
+file|README.md — Just type a filename to open it (suffix aliases)
+file|zmvn '(*).test.ts' '$1.spec.ts' — Dry-run batch rename (always preview first!)
+file|zmv '(*).test.ts' '$1.spec.ts' — Execute batch rename
+file|zcp '(*).example' '$1' — Batch copy (e.g., config.example → config)
+file|zmv '(*)' '${(L)1}' — Lowercase all filenames in current directory
+
+zle|Ctrl+X Ctrl+C — Copy current command buffer to clipboard
+zle|Ctrl+X O — Re-run last command and copy output to clipboard
+zle|Ctrl+X L — Clear screen but keep current command
+zle|Ctrl+X S — Prepend sudo to current command
+zle|Ctrl+X ' — Wrap entire buffer in single quotes
+zle|cap <cmd> — Run command and copy output (e.g., cap ls -la)
+
+git|Ctrl+X G — Insert git commit -m "" with cursor inside quotes
+git|Ctrl+X P — Insert git push origin (ready for branch name)
+node|Ctrl+X N — Insert npm run (ready for script name)
+node|Ctrl+X T — Insert npm test
+node|Ctrl+X B — Insert npm run build
+py|Ctrl+X U — Insert uv run (ready for command)
+mix|Ctrl+X M — Insert mix (ready for task)
+mix|Ctrl+X I — Insert iex -S mix (Elixir REPL with project)
+nav|Ctrl+X V — Insert nvim . (open editor in current directory)
+
+proj|Auto-activates Python .venv when entering a pyproject.toml project
+proj|Auto-runs nvm use when .nvmrc is present in project
+proj|Auto-sources .env files at project root on cd
+proj|Deactivates Python venv automatically when leaving a project

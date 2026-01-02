@@ -60,6 +60,7 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 [[ -f ~/.zsh_suffix_aliases ]] && source ~/.zsh_suffix_aliases  # Zsh-specific suffix aliases
 [[ -f ~/.zsh_widgets ]] && source ~/.zsh_widgets  # Custom ZLE widgets
 [[ -f ~/.zsh_hotkeys ]] && source ~/.zsh_hotkeys  # Keybindings (must come after widgets)
+[[ -f ~/.zsh_totd ]] && source ~/.zsh_totd        # Tip of the day
 [[ -f ~/.zsh_local ]] && source ~/.zsh_local # For machine-specific settings
 
 # ============================================================================
@@ -287,3 +288,12 @@ alias zmv='noglob zmv'      # No need to quote patterns
 alias zcp='noglob zmv -C'   # Batch copy
 alias zln='noglob zmv -L'   # Batch symlink
 alias zmvn='noglob zmv -n'  # Dry-run (ALWAYS preview first)
+
+# ============================================================================
+# SHELL STARTUP
+# ============================================================================
+
+# Show tip of the day (non-blocking)
+if [[ -o interactive ]] && command -v _show_tip_of_the_day >/dev/null; then
+    _show_tip_of_the_day
+fi

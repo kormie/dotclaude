@@ -41,3 +41,10 @@ bindkey -s '^xi' 'iex -S mix'                     # REPL with project
 
 # Editor
 bindkey -s '^xv' 'nvim .\C-b'                     # Open nvim in cwd (V for vim)
+
+# ============================================================================
+# TIP OF THE DAY (Ctrl+X prefix)
+# ============================================================================
+
+bindkey '^x,' totd-snooze                         # Snooze tip for 30 days
+bindkey '^x.' totd-remove                         # Remove tip permanently

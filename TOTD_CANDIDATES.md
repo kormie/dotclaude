@@ -1,12 +1,23 @@
 # Tip of the Day Candidates
 
-Track tips to showcase in the terminal startup TOTD feature.
+This file documents tips shown by the TOTD feature. The actual tips database
+is in `~/.config/dotfiles/tips.txt` (stowed from `stow/zsh/.config/dotfiles/tips.txt`).
 
-## Format
-Each tip should be:
-- One-liner or max 2 lines
-- Include the keybinding/command
-- Brief explanation of what it does
+## TOTD Controls
+
+| Action | Hotkey | Effect |
+|--------|--------|--------|
+| Snooze | `Ctrl+X ,` | Hide tip for 30 days |
+| Remove | `Ctrl+X .` | Remove permanently (commits & pushes to main) |
+| Manual | `totd` | Show a random tip on demand |
+
+## Tip Format (in tips.txt)
+
+```
+category|tip text
+```
+
+Categories: `nav`, `hist`, `file`, `git`, `tool`, `py`, `node`, `mix`, `proj`, `zle`
 
 ---
 
