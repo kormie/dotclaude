@@ -80,6 +80,15 @@ Each tip should be:
 - `cap <cmd>` — Run command and copy output (e.g., `cap ls -la`)
 - `caps <cmd>` — Same but silent (no tee, just copy)
 
-## Pending (to be added as we implement)
+## Boilerplate Hotkeys (insert common commands)
 
-- Boilerplate hotkeys
+- `Ctrl+X G` — `git commit -m ""` (cursor inside quotes)
+- `Ctrl+X P` — `git push origin ` (ready for branch)
+- `Ctrl+X D` — `docker exec -it  bash` (cursor after -it)
+- `Ctrl+X N` — `npm run ` (ready for script name)
+- `Ctrl+X T` — `npm test`
+- `Ctrl+X B` — `npm run build`
+- `Ctrl+X U` — `uv run ` (Python)
+- `Ctrl+X M` — `mix ` (Elixir)
+- `Ctrl+X I` — `iex -S mix` (Elixir REPL)
+- `Ctrl+X V` — `nvim .` (open editor in cwd)

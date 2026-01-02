@@ -1,6 +1,7 @@
 # Zsh ZLE Widgets
 # Custom functions that interact with the command buffer
-# Bindings use Ctrl+X prefix for consistency
+# Function definitions and zle registrations only
+# Keybindings are in .zsh_hotkeys
 
 # ============================================================================
 # CLIPBOARD OPERATIONS
@@ -12,7 +13,6 @@ copy-buffer-to-clipboard() {
     zle -M "Buffer copied to clipboard"
 }
 zle -N copy-buffer-to-clipboard
-bindkey '^x^c' copy-buffer-to-clipboard
 
 # Re-run last command and copy output to clipboard
 # WARNING: This re-executes the command!
@@ -24,7 +24,6 @@ copy-last-output() {
     zle accept-line
 }
 zle -N copy-last-output
-bindkey '^xo' copy-last-output
 
 # ============================================================================
 # BUFFER MANIPULATION
@@ -36,7 +35,6 @@ clear-screen-keep-buffer() {
     zle redisplay
 }
 zle -N clear-screen-keep-buffer
-bindkey '^xl' clear-screen-keep-buffer
 
 # Prepend sudo to current command
 prepend-sudo() {
@@ -46,7 +44,6 @@ prepend-sudo() {
     fi
 }
 zle -N prepend-sudo
-bindkey '^xs' prepend-sudo
 
 # Wrap entire buffer in single quotes
 quote-line() {
@@ -54,4 +51,3 @@ quote-line() {
     CURSOR=$#BUFFER
 }
 zle -N quote-line
-bindkey "^x'" quote-line

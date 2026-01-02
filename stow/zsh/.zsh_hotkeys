@@ -1,0 +1,43 @@
+# Zsh Hotkeys
+# All keybindings in one place
+# Widgets are defined in .zsh_widgets, this file just binds them
+
+# ============================================================================
+# WIDGET BINDINGS (Ctrl+X prefix)
+# ============================================================================
+
+# Clipboard operations
+bindkey '^x^c' copy-buffer-to-clipboard  # Copy buffer to clipboard
+bindkey '^xo' copy-last-output           # Re-run last cmd, copy output
+
+# Buffer manipulation
+bindkey '^xl' clear-screen-keep-buffer   # Clear screen, keep buffer
+bindkey '^xs' prepend-sudo               # Prepend sudo
+bindkey "^x'" quote-line                 # Wrap in single quotes
+
+# ============================================================================
+# BOILERPLATE INSERTION (Ctrl+X prefix)
+# ============================================================================
+# These insert text and position cursor using \C-b (back) or \C-f (forward)
+
+# Git
+bindkey -s '^xg' 'git commit -m ""\C-b'           # Cursor inside quotes
+bindkey -s '^xp' 'git push origin '               # Ready for branch name
+
+# Docker
+bindkey -s '^xd' 'docker exec -it  bash\C-b\C-b\C-b\C-b\C-b'  # Cursor after -it
+
+# Node/TypeScript
+bindkey -s '^xn' 'npm run '                       # Ready for script name
+bindkey -s '^xt' 'npm test '                      # Quick test
+bindkey -s '^xb' 'npm run build'                  # Quick build
+
+# Python
+bindkey -s '^xu' 'uv run '                        # Ready for command
+
+# Elixir
+bindkey -s '^xm' 'mix '                           # Ready for task
+bindkey -s '^xi' 'iex -S mix'                     # REPL with project
+
+# Editor
+bindkey -s '^xv' 'nvim .\C-b'                     # Open nvim in cwd (V for vim)
