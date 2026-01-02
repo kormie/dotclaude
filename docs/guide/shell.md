@@ -126,6 +126,60 @@ Comprehensive backup system:
 ./scripts/restore.sh shell
 ```
 
+## Custom Hotkeys
+
+DotClaude includes a set of custom Zsh hotkeys for common operations. All hotkeys use the `Ctrl+X` prefix, following Emacs tradition.
+
+### Keybinding Convention
+
+We use a **core vs auxiliary** two-tier pattern:
+
+| Pattern | Ctrl Behavior | Purpose |
+|---------|---------------|---------|
+| `Ctrl+X, Ctrl+key` | Keep Ctrl held | **Core**: Buffer/editor operations |
+| `Ctrl+X, key` | Release Ctrl | **Auxiliary**: External tool templates |
+
+**Rationale:**
+- **Core operations** transform or act ON the current buffer (copy it, edit in `$EDITOR`, prepend sudo). These are fundamental to line-editing, so Ctrl stays held.
+- **Auxiliary operations** insert command templates for external tools (git, npm, docker). These transition you from editing to composing a new command, so Ctrl is released.
+
+This follows the spirit of Emacs's `C-x C-_` vs `C-x _` distinction, but with a clearer boundary for shell use cases.
+
+### Core: Buffer Operations
+
+| Hotkey | Action |
+|--------|--------|
+| `Ctrl+X, Ctrl+E` | Edit command in `$EDITOR` |
+| `Ctrl+X, Ctrl+C` | Copy buffer to clipboard |
+| `Ctrl+X, Ctrl+O` | Re-run last command, copy output |
+| `Ctrl+X, Ctrl+L` | Clear screen, keep buffer |
+| `Ctrl+X, Ctrl+S` | Prepend sudo |
+| `Ctrl+X, Ctrl+'` | Wrap line in single quotes |
+| `Ctrl+X, Ctrl+,` | Snooze tip of the day |
+| `Ctrl+X, Ctrl+.` | Remove tip permanently |
+
+### Auxiliary: Tool Templates
+
+| Hotkey | Inserts | Cursor Position |
+|--------|---------|-----------------|
+| `Ctrl+X, g` | `git commit -m ""` | Inside quotes |
+| `Ctrl+X, p` | `git push origin ` | After origin |
+| `Ctrl+X, d` | `docker exec -it  bash` | After `-it` |
+| `Ctrl+X, n` | `npm run ` | After run |
+| `Ctrl+X, t` | `npm test ` | After test |
+| `Ctrl+X, b` | `npm run build` | End of line |
+| `Ctrl+X, u` | `uv run ` | After run |
+| `Ctrl+X, m` | `mix ` | After mix |
+| `Ctrl+X, i` | `iex -S mix` | End of line |
+| `Ctrl+X, v` | `nvim .` | Before `.` |
+
+### Configuration
+
+Hotkeys are defined in `~/.zsh_hotkeys`, which is sourced by `.zshrc`. The file includes:
+- Detailed convention documentation in the header
+- Clear separation between core and auxiliary sections
+- Widget definitions live separately in `~/.zsh_widgets`
+
 ## Customization
 
 ### Adding New Aliases

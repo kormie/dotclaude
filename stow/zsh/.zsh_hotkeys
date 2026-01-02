@@ -1,14 +1,35 @@
 # Zsh Hotkeys
 # All keybindings in one place
 # Widgets are defined in .zsh_widgets, this file just binds them
-#
-# Pattern Convention:
-#   ^x^_ (Ctrl+X, Ctrl+key) = Editor/buffer manipulation commands
-#   ^x_  (Ctrl+X, key)      = External tool commands (git, docker, npm, etc.)
 
 # ============================================================================
-# EDITOR / BUFFER COMMANDS (Ctrl+X, Ctrl+key — keep Ctrl held)
+# KEYBINDING CONVENTION
 # ============================================================================
+#
+# All custom hotkeys use the Ctrl+X prefix, following Emacs tradition.
+# We distinguish between two tiers using a "core vs auxiliary" pattern:
+#
+#   ^x^_ (Ctrl+X, Ctrl+key)  →  CORE: Buffer/editor operations
+#   ^x_  (Ctrl+X, key)       →  AUXILIARY: External tool templates
+#
+# Rationale:
+#   - CORE operations transform or act ON the current buffer (copy it,
+#     edit it in $EDITOR, prepend sudo, etc.). These are fundamental to
+#     the line-editing experience, so we keep Ctrl held throughout.
+#
+#   - AUXILIARY operations insert command templates for external tools
+#     (git, npm, docker). These are convenience shortcuts that transition
+#     you from editing into composing a new command, so Ctrl is released.
+#
+# This follows the spirit of Emacs's C-x C-_ vs C-x _ distinction, but
+# with a clearer, more principled boundary for shell use cases.
+#
+# ============================================================================
+
+# ============================================================================
+# CORE: Buffer/Editor Operations (Ctrl+X, Ctrl+key — keep Ctrl held)
+# ============================================================================
+# These operate ON the current command line buffer itself.
 
 # Edit command in $EDITOR
 bindkey '^x^e' edit-command-line
@@ -27,8 +48,10 @@ bindkey '^x^,' totd-snooze               # Snooze tip for 30 days
 bindkey '^x^.' totd-remove               # Remove tip permanently
 
 # ============================================================================
-# EXTERNAL TOOL COMMANDS (Ctrl+X, key — release Ctrl, then key)
+# AUXILIARY: External Tool Templates (Ctrl+X, key — release Ctrl, then key)
 # ============================================================================
+# These insert command templates for external tools. Cursor is positioned
+# where you'll likely type next (inside quotes, after flags, etc.).
 
 # Git
 bindkey -s '^xg' 'git commit -m ""\C-b'           # Cursor inside quotes
