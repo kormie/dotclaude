@@ -227,3 +227,53 @@ bindkey '^[[3;5~' kill-word
 # Magic Space - expand history references (!! !$ !-2 etc.) on space
 # See what you're about to run before hitting Enter
 bindkey ' ' magic-space
+
+# ============================================================================
+# SUFFIX ALIASES (open files by typing filename alone)
+# ============================================================================
+# Only triggers when no command precedes the filename
+# e.g., "main.go" opens in nvim, but "cat main.go" still works
+
+# Source code → nvim
+alias -s ts=nvim
+alias -s tsx=nvim
+alias -s js=nvim
+alias -s jsx=nvim
+alias -s mjs=nvim
+alias -s cjs=nvim
+alias -s py=nvim
+alias -s go=nvim
+alias -s ex=nvim
+alias -s exs=nvim
+alias -s rb=nvim
+alias -s erb=nvim
+alias -s rs=nvim
+alias -s lua=nvim
+alias -s sh=nvim
+alias -s zsh=nvim
+alias -s bash=nvim
+
+# Documentation/Config → bat (read-only view)
+alias -s md=bat
+alias -s txt=bat
+alias -s yaml=bat
+alias -s yml=bat
+alias -s toml=bat
+
+# Data → jq (pretty-print)
+alias -s json='jq "."'
+
+# Media → open (macOS default app)
+alias -s mp4=open
+alias -s mov=open
+alias -s webm=open
+alias -s mkv=open
+alias -s mp3=open
+alias -s wav=open
+alias -s flac=open
+alias -s png=open
+alias -s jpg=open
+alias -s jpeg=open
+alias -s gif=open
+alias -s webp=open
+alias -s pdf=open

@@ -53,8 +53,17 @@ Each tip should be:
 - `!git<Space>` — Last command starting with "git"
 - `!-2<Space>` — Second-to-last command
 
+## Suffix Aliases (open files by typing filename)
+
+- `README.md` — Opens in bat (syntax-highlighted read-only view)
+- `main.go` — Opens in nvim for editing
+- `config.json` — Pretty-prints with jq
+- `video.mp4` — Opens in default macOS player
+- Works for: `.ts`, `.py`, `.go`, `.ex`, `.rb`, `.rs`, `.lua`, `.sh`, and more
+- Note: `cat file.md` still works — suffix aliases only trigger with no command
+
 ## Pending (to be added as we implement)
-- Suffix aliases
+
 - ZMV batch renaming
 - Custom ZLE widgets
 - Boilerplate hotkeys
