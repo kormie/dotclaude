@@ -62,8 +62,15 @@ Each tip should be:
 - Works for: `.ts`, `.py`, `.go`, `.ex`, `.rb`, `.rs`, `.lua`, `.sh`, and more
 - Note: `cat file.md` still works — suffix aliases only trigger with no command
 
+## ZMV (batch rename/move/copy)
+
+- `zmvn '(*).test.ts' '$1.spec.ts'` — Dry-run rename (ALWAYS preview first!)
+- `zmv '(*).test.ts' '$1.spec.ts'` — Execute batch rename
+- `zcp '(*).example' '$1'` — Batch copy (e.g., config.example → config)
+- `zln '(*)' '../backup/$1'` — Batch symlink
+- `zmv '(*)' '${(L)1}'` — Lowercase all filenames
+
 ## Pending (to be added as we implement)
 
-- ZMV batch renaming
 - Custom ZLE widgets
 - Boilerplate hotkeys

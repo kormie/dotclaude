@@ -228,3 +228,14 @@ bindkey '^[[3;5~' kill-word
 # Magic Space - expand history references (!! !$ !-2 etc.) on space
 # See what you're about to run before hitting Enter
 bindkey ' ' magic-space
+
+# ============================================================================
+# ZMV - Batch rename/move/copy with pattern matching
+# ============================================================================
+# Usage: zmvn '(*).test.ts' '$1.spec.ts'  (dry-run first!)
+#        zmv '(*).test.ts' '$1.spec.ts'   (execute)
+autoload -U zmv
+alias zmv='noglob zmv'      # No need to quote patterns
+alias zcp='noglob zmv -C'   # Batch copy
+alias zln='noglob zmv -L'   # Batch symlink
+alias zmvn='noglob zmv -n'  # Dry-run (ALWAYS preview first)
