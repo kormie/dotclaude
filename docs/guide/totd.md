@@ -39,32 +39,25 @@ Tips are:
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Shell Startup                            │
-└─────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  tips.txt                                                        │
-│  ~/.config/dotfiles/tips.txt                                     │
-│  Format: category|tip text                                       │
-│  Lines starting with # are comments                              │
-│  Lines starting with ## are removed tips                         │
-└─────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  totd_state.json                                                 │
-│  ~/.local/share/dotfiles/totd_state.json                         │
-│  Tracks snoozed tips with expiry timestamps                      │
-│  Auto-cleans expired entries (lazy garbage collection)           │
-└─────────────────────────────────────────────────────────────────┘
-                               │
-                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  Display random non-snoozed tip with category emoji              │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+    A[Shell Startup] --> B
+
+    subgraph B[tips.txt]
+        B1["~/.config/dotfiles/tips.txt"]
+        B2["Format: category|tip text"]
+        B3["# = comments, ## = removed"]
+    end
+
+    B --> C
+
+    subgraph C[totd_state.json]
+        C1["~/.local/share/dotfiles/totd_state.json"]
+        C2["Tracks snoozed tips with expiry timestamps"]
+        C3["Auto-cleans expired entries"]
+    end
+
+    C --> D[Display random non-snoozed tip with emoji]
 ```
 
 ## Adding New Tips
