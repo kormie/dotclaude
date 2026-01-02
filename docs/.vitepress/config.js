@@ -51,6 +51,7 @@ export default defineConfig({
             { text: 'Git Configuration', link: '/guide/git' },
             { text: 'Tmux Setup', link: '/guide/tmux' },
             { text: 'Shell Enhancement', link: '/guide/shell' },
+            { text: 'Tip of the Day', link: '/guide/totd' },
             { text: 'Editor Integration', link: '/guide/editors' }
           ]
         },
