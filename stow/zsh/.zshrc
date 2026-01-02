@@ -223,3 +223,7 @@ bindkey '^[[1;5C' forward-word   # Ctrl+Right
 
 # Delete word forward (Ctrl+Delete)
 bindkey '^[[3;5~' kill-word
+
+# Magic Space - expand history references (!! !$ !-2 etc.) on space
+# See what you're about to run before hitting Enter
+bindkey ' ' magic-space

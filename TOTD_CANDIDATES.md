@@ -44,9 +44,16 @@ Each tip should be:
 
 ---
 
-## Pending (to be added as we implement)
+## History Expansion (Magic Space)
 
-- Magic Space (history expansion)
+- `!!<Space>` — Expands to last command (see before running!)
+- `sudo !!<Space>` — Re-run last command with sudo, safely
+- `!$<Space>` — Last argument of previous command
+- `!*<Space>` — All arguments of previous command
+- `!git<Space>` — Last command starting with "git"
+- `!-2<Space>` — Second-to-last command
+
+## Pending (to be added as we implement)
 - Suffix aliases
 - ZMV batch renaming
 - Custom ZLE widgets
