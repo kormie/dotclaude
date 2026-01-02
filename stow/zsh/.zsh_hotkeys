@@ -1,0 +1,76 @@
+# Zsh Hotkeys
+# All keybindings in one place
+# Widgets are defined in .zsh_widgets, this file just binds them
+
+# ============================================================================
+# KEYBINDING CONVENTION
+# ============================================================================
+#
+# All custom hotkeys use the Ctrl+X prefix, following Emacs tradition.
+# We distinguish between two tiers using a "core vs auxiliary" pattern:
+#
+#   ^x^_ (Ctrl+X, Ctrl+key)  →  CORE: Buffer/editor operations
+#   ^x_  (Ctrl+X, key)       →  AUXILIARY: External tool templates
+#
+# Rationale:
+#   - CORE operations transform or act ON the current buffer (copy it,
+#     edit it in $EDITOR, prepend sudo, etc.). These are fundamental to
+#     the line-editing experience, so we keep Ctrl held throughout.
+#
+#   - AUXILIARY operations insert command templates for external tools
+#     (git, npm, docker). These are convenience shortcuts that transition
+#     you from editing into composing a new command, so Ctrl is released.
+#
+# This follows the spirit of Emacs's C-x C-_ vs C-x _ distinction, but
+# with a clearer, more principled boundary for shell use cases.
+#
+# ============================================================================
+
+# ============================================================================
+# CORE: Buffer/Editor Operations (Ctrl+X, Ctrl+key — keep Ctrl held)
+# ============================================================================
+# These operate ON the current command line buffer itself.
+
+# Edit command in $EDITOR
+bindkey '^x^e' edit-command-line
+
+# Clipboard operations
+bindkey '^x^c' copy-buffer-to-clipboard  # Copy current buffer
+bindkey '^x^o' copy-last-output          # Re-run last cmd, copy output
+
+# Buffer manipulation
+bindkey '^x^l' clear-screen-keep-buffer  # Clear screen, keep buffer
+bindkey '^x^s' prepend-sudo              # Prepend sudo
+bindkey "^x^'" quote-line                # Wrap in single quotes
+
+# Tip of the Day
+bindkey '^x^,' totd-snooze               # Snooze tip for 30 days
+bindkey '^x^.' totd-remove               # Remove tip permanently
+
+# ============================================================================
+# AUXILIARY: External Tool Templates (Ctrl+X, key — release Ctrl, then key)
+# ============================================================================
+# These insert command templates for external tools. Cursor is positioned
+# where you'll likely type next (inside quotes, after flags, etc.).
+
+# Git
+bindkey -s '^xg' 'git commit -m ""\C-b'           # Cursor inside quotes
+bindkey -s '^xp' 'git push origin '               # Ready for branch name
+
+# Docker
+bindkey -s '^xd' 'docker exec -it  bash\C-b\C-b\C-b\C-b\C-b'  # Cursor after -it
+
+# Node/TypeScript
+bindkey -s '^xn' 'npm run '                       # Ready for script name
+bindkey -s '^xt' 'npm test '                      # Quick test
+bindkey -s '^xb' 'npm run build'                  # Quick build
+
+# Python
+bindkey -s '^xu' 'uv run '                        # Ready for command
+
+# Elixir
+bindkey -s '^xm' 'mix '                           # Ready for task
+bindkey -s '^xi' 'iex -S mix'                     # REPL with project
+
+# Editor
+bindkey -s '^xv' 'nvim .\C-b'                     # Open nvim in cwd

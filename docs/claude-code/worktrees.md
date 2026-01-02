@@ -85,15 +85,17 @@ myproject/                    ← Main repository
 ### Multi-Session Development
 
 **Tmux Layout with Worktrees:**
-```
-┌─────────────────────┬─────────────────────┐  
-│ feature-auth/       │ feature-api/        │  
-│ claude-code .       │ claude-code .       │  
-│ (auth branch)       │ (api branch)        │
-├─────────────────────┼─────────────────────┤
-│ main repo/          │ git operations      │
-│ nvim src/           │ git status          │
-└─────────────────────┴─────────────────────┘
+```mermaid
+block-beta
+    columns 2
+    block:row1:2
+        A["feature-auth/<br/>claude-code .<br/>(auth branch)"]
+        B["feature-api/<br/>claude-code .<br/>(api branch)"]
+    end
+    block:row2:2
+        C["main repo/<br/>nvim src/"]
+        D["git operations<br/>git status"]
+    end
 ```
 
 **Development Workflow:**

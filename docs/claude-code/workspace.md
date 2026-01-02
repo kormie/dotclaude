@@ -2,13 +2,13 @@
 
 Launch 1-5 parallel Claude Code sessions with git worktrees for conflict-free AI development.
 
-::: tip Script Features
-The `tmux-claude-workspace` script includes:
-- ✅ **Auto-validation**: Checks git repo, tmux, and Claude CLI availability
-- ✅ **Colored output**: Status messages with color-coded logging
-- ✅ **Auto-cleanup**: Prompts to remove worktrees when session ends
-- ✅ **Help support**: Use `-h` or `--help` for detailed usage information
-:::
+> [!TIP]
+> **Script Features**
+> The `tmux-claude-workspace` script includes:
+> - ✅ **Auto-validation**: Checks git repo, tmux, and Claude CLI availability
+> - ✅ **Colored output**: Status messages with color-coded logging
+> - ✅ **Auto-cleanup**: Prompts to remove worktrees when session ends
+> - ✅ **Help support**: Use `-h` or `--help` for detailed usage information
 
 ## Quick Start
 
@@ -23,35 +23,44 @@ tmux-claude-workspace myproject auth-system payment-api notifications dashboard
 cw myproject auth-system payment-api
 ```
 
-::: info Command Aliases
-The `cw` command is an alias for `tmux-claude-workspace` defined in the aliases package:
-```bash
-alias cw='tmux-claude-workspace'
-```
-This alias is available after applying the aliases configuration with `./scripts/stow-package.sh aliases`.
-:::
+> [!NOTE]
+> **Command Aliases**
+> The `cw` command is an alias for `tmux-claude-workspace` defined in the aliases package:
+> ```bash
+> alias cw='tmux-claude-workspace'
+> ```
+> This alias is available after applying the aliases configuration with `./scripts/stow-package.sh aliases`.
 
 ## Workspace Layout
 
 The `tmux-claude-workspace` script creates a horizontal layout with 1-5 Claude Code sessions on top and a worktree-switching terminal at the bottom:
 
 **2 Features:**
-```
-┌─────────────────┬─────────────────┐  
-│ Claude: auth    │ Claude: api     │  ← Parallel Claude Code sessions
-├─────────────────┴─────────────────┤
-│        Terminal (Worktree Switcher)│  ← Switch between worktrees
-└─────────────────────────────────────┘
+```mermaid
+block-beta
+    columns 2
+    block:top:2
+        A["Claude: auth"] B["Claude: api"]
+    end
+    block:bottom:2
+        C["Terminal (Worktree Switcher)"]:2
+    end
 ```
 
 **5 Features:**
-```
-┌──────┬──────┬──────┬──────┬──────┐  
-│Claude│Claude│Claude│Claude│Claude│  ← Up to 5 parallel sessions
-│ auth │ api  │notify│dash  │admin │
-├──────┴──────┴──────┴──────┴──────┤
-│     Terminal (Worktree Switcher)  │  ← Navigate all worktrees
-└───────────────────────────────────┘
+```mermaid
+block-beta
+    columns 5
+    block:top:5
+        A["Claude: auth"]
+        B["Claude: api"]
+        C["Claude: notify"]
+        D["Claude: dash"]
+        E["Claude: admin"]
+    end
+    block:bottom:5
+        F["Terminal (Worktree Switcher)"]:5
+    end
 ```
 
 ### Pane Breakdown

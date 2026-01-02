@@ -35,12 +35,11 @@ The tmux package includes:
 ## Workspace Layouts
 
 ### 4-Pane Development Layout
-```
-┌─────────────┬─────────────┐
-│  Claude 1   │  Claude 2   │
-├─────────────┼─────────────┤
-│  Claude 3   │  Claude 4   │
-└─────────────┴─────────────┘
+```mermaid
+block-beta
+    columns 2
+    A["Claude 1"] B["Claude 2"]
+    C["Claude 3"] D["Claude 4"]
 ```
 
 ### Git Worktree Integration

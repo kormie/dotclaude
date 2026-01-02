@@ -1,0 +1,53 @@
+# Zsh ZLE Widgets
+# Custom functions that interact with the command buffer
+# Function definitions and zle registrations only
+# Keybindings are in .zsh_hotkeys
+
+# ============================================================================
+# CLIPBOARD OPERATIONS
+# ============================================================================
+
+# Copy current buffer to clipboard
+copy-buffer-to-clipboard() {
+    echo -n "$BUFFER" | pbcopy
+    zle -M "Buffer copied to clipboard"
+}
+zle -N copy-buffer-to-clipboard
+
+# Re-run last command and copy output to clipboard
+# WARNING: This re-executes the command!
+copy-last-output() {
+    local cmd="$(fc -ln -1)"
+    zle -M "Re-running: $cmd"
+    zle push-line
+    BUFFER="eval \"$cmd\" 2>&1 | pbcopy && echo 'Output copied to clipboard'"
+    zle accept-line
+}
+zle -N copy-last-output
+
+# ============================================================================
+# BUFFER MANIPULATION
+# ============================================================================
+
+# Clear screen but keep current buffer
+clear-screen-keep-buffer() {
+    clear
+    zle redisplay
+}
+zle -N clear-screen-keep-buffer
+
+# Prepend sudo to current command
+prepend-sudo() {
+    if [[ "$BUFFER" != sudo\ * ]]; then
+        BUFFER="sudo $BUFFER"
+        CURSOR=$#BUFFER
+    fi
+}
+zle -N prepend-sudo
+
+# Wrap entire buffer in single quotes
+quote-line() {
+    BUFFER="'$BUFFER'"
+    CURSOR=$#BUFFER
+}
+zle -N quote-line

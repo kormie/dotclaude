@@ -83,12 +83,11 @@ scripts/
 ### Multi-Session Tmux Workspace
 
 **Automated Layout Creation:**
-```
-┌─────────────────┬─────────────────┐  
-│ Claude: auth    │ Claude: api     │  ← Parallel Claude Code sessions
-├─────────────────┼─────────────────┤
-│ Neovim          │ Git Operations  │  ← Code editing + git operations
-└─────────────────┴─────────────────┘
+```mermaid
+block-beta
+    columns 2
+    A["Claude: auth"] B["Claude: api"]
+    C["Neovim"] D["Git Operations"]
 ```
 
 **Launch Commands:**

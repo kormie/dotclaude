@@ -1,0 +1,91 @@
+# Zsh Suffix Aliases
+# Open files by typing filename alone (e.g., "main.go" opens in nvim)
+# Only triggers when no command precedes the filename
+# "cat main.go" still works as expected
+
+# ============================================================================
+# SOURCE CODE → nvim
+# ============================================================================
+
+# TypeScript / JavaScript
+alias -s ts=nvim
+alias -s tsx=nvim
+alias -s js=nvim
+alias -s jsx=nvim
+alias -s mjs=nvim
+alias -s cjs=nvim
+
+# Python
+alias -s py=nvim
+
+# Go
+alias -s go=nvim
+
+# Elixir
+alias -s ex=nvim
+alias -s exs=nvim
+
+# Ruby
+alias -s rb=nvim
+alias -s erb=nvim
+
+# Rust
+alias -s rs=nvim
+
+# Lua
+alias -s lua=nvim
+
+# Shell
+alias -s sh=nvim
+alias -s zsh=nvim
+alias -s bash=nvim
+
+# Make (note: 'Makefile' has no extension, so won't trigger suffix alias)
+alias -s mk=nvim
+alias -s make=nvim
+
+# ============================================================================
+# DOCUMENTATION / CONFIG → bat (read-only view with syntax highlighting)
+# ============================================================================
+
+alias -s md='bat -l markdown'
+alias -s txt=bat
+alias -s yaml='yq "."'
+alias -s yml='yq "."'
+alias -s toml='bat -l toml'
+alias -s ini='bat -l ini'
+alias -s conf='bat -l conf'
+
+# ============================================================================
+# DATA → jq (pretty-print)
+# ============================================================================
+
+alias -s json='jq "."'
+
+# ============================================================================
+# MEDIA → open (macOS default app)
+# ============================================================================
+
+# Video
+alias -s mp4=open
+alias -s mov=open
+alias -s webm=open
+alias -s mkv=open
+alias -s avi=open
+
+# Audio
+alias -s mp3=open
+alias -s wav=open
+alias -s flac=open
+alias -s m4a=open
+
+# Images
+alias -s png=open
+alias -s jpg=open
+alias -s jpeg=open
+alias -s gif=open
+alias -s webp=open
+alias -s svg=open
+
+# Documents
+alias -s pdf=open

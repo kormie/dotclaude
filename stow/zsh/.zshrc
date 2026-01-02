@@ -57,6 +57,10 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 # Load separate config files (preserve user's modular approach)
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 [[ -f ~/.zsh_functions ]] && source ~/.zsh_functions
+[[ -f ~/.zsh_suffix_aliases ]] && source ~/.zsh_suffix_aliases  # Zsh-specific suffix aliases
+[[ -f ~/.zsh_widgets ]] && source ~/.zsh_widgets  # Custom ZLE widgets
+[[ -f ~/.zsh_hotkeys ]] && source ~/.zsh_hotkeys  # Keybindings (must come after widgets)
+[[ -f ~/.zsh_totd ]] && source ~/.zsh_totd        # Tip of the day
 [[ -f ~/.zsh_local ]] && source ~/.zsh_local # For machine-specific settings
 
 # ============================================================================
@@ -158,22 +162,68 @@ DISABLE_UPDATE_PROMPT="true"
 # PROJECT-SPECIFIC ENVIRONMENT MANAGEMENT
 # ============================================================================
 
-# Auto-load project-specific configurations
-autoload_project_config() {
+# Find project root by walking up directory tree
+_find_project_root() {
     local dir="$PWD"
     while [[ "$dir" != "/" ]]; do
-        if [[ -f "$dir/.env" ]]; then
-            echo "Loading project environment from $dir/.env"
-            source "$dir/.env"
-            break
-        fi
-        if [[ -f "$dir/.nvmrc" ]] && command -v nvm >/dev/null; then
-            echo "Loading Node.js version from $dir/.nvmrc"
-            nvm use
-            break
+        # Check for common project markers
+        if [[ -f "$dir/package.json" ]] || \
+           [[ -f "$dir/pyproject.toml" ]] || \
+           [[ -f "$dir/go.mod" ]] || \
+           [[ -f "$dir/mix.exs" ]] || \
+           [[ -f "$dir/.env" ]] || \
+           [[ -f "$dir/.nvmrc" ]] || \
+           [[ -d "$dir/.git" ]]; then
+            echo "$dir"
+            return 0
         fi
         dir="$(dirname "$dir")"
     done
+    return 1
+}
+
+# Track current project to avoid re-loading
+_CURRENT_PROJECT_ROOT=""
+
+# Auto-load project-specific configurations (all applicable, not mutually exclusive)
+autoload_project_config() {
+    local project_root
+    project_root="$(_find_project_root)"
+
+    # If we're in the same project, don't reload
+    if [[ "$project_root" == "$_CURRENT_PROJECT_ROOT" ]]; then
+        return
+    fi
+
+    # Deactivate previous Python venv if we left a project
+    if [[ -n "$VIRTUAL_ENV" ]] && [[ "$project_root" != "$_CURRENT_PROJECT_ROOT" ]]; then
+        deactivate 2>/dev/null
+    fi
+
+    _CURRENT_PROJECT_ROOT="$project_root"
+
+    # No project found
+    if [[ -z "$project_root" ]]; then
+        return
+    fi
+
+    # Load .env if present
+    if [[ -f "$project_root/.env" ]]; then
+        echo "Loading environment from $project_root/.env"
+        source "$project_root/.env"
+    fi
+
+    # Node.js: use nvm if .nvmrc present
+    if [[ -f "$project_root/.nvmrc" ]] && command -v nvm >/dev/null; then
+        echo "Loading Node.js version from .nvmrc"
+        nvm use --silent
+    fi
+
+    # Python: activate venv if pyproject.toml + .venv exist
+    if [[ -f "$project_root/pyproject.toml" ]] && [[ -d "$project_root/.venv" ]]; then
+        source "$project_root/.venv/bin/activate"
+        echo "Activated Python venv (.venv)"
+    fi
 }
 
 # Hook to run on directory change
@@ -204,8 +254,44 @@ zstyle ':completion:*' special-dirs true
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
-# Enhanced editing
+# Enhanced editing (binding in .zsh_hotkeys)
 autoload -Uz edit-command-line
 zle -N edit-command-line
-bindkey '^xe' edit-command-line
-bindkey '^x^e' edit-command-line
+
+# ============================================================================
+# KEYBINDING ENHANCEMENTS (Emacs mode optimized for CapsLock=Ctrl)
+# ============================================================================
+
+# Redo binding (complements Ctrl+_ for undo)
+bindkey '^Y' redo
+
+# Word navigation with Ctrl+Arrow keys
+bindkey '^[[1;5D' backward-word  # Ctrl+Left
+bindkey '^[[1;5C' forward-word   # Ctrl+Right
+
+# Delete word forward (Ctrl+Delete)
+bindkey '^[[3;5~' kill-word
+
+# Magic Space - expand history references (!! !$ !-2 etc.) on space
+# See what you're about to run before hitting Enter
+bindkey ' ' magic-space
+
+# ============================================================================
+# ZMV - Batch rename/move/copy with pattern matching
+# ============================================================================
+# Usage: zmvn '(*).test.ts' '$1.spec.ts'  (dry-run first!)
+#        zmv '(*).test.ts' '$1.spec.ts'   (execute)
+autoload -U zmv
+alias zmv='noglob zmv'      # No need to quote patterns
+alias zcp='noglob zmv -C'   # Batch copy
+alias zln='noglob zmv -L'   # Batch symlink
+alias zmvn='noglob zmv -n'  # Dry-run (ALWAYS preview first)
+
+# ============================================================================
+# SHELL STARTUP
+# ============================================================================
+
+# Show tip of the day (non-blocking)
+if [[ -o interactive ]] && command -v _show_tip_of_the_day >/dev/null; then
+    _show_tip_of_the_day
+fi
