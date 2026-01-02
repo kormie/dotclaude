@@ -70,7 +70,16 @@ Each tip should be:
 - `zln '(*)' '../backup/$1'` — Batch symlink
 - `zmv '(*)' '${(L)1}'` — Lowercase all filenames
 
+## Custom ZLE Widgets
+
+- `Ctrl+X Ctrl+C` — Copy current command buffer to clipboard
+- `Ctrl+X O` — Re-run last command and copy output to clipboard
+- `Ctrl+X L` — Clear screen but keep current command
+- `Ctrl+X S` — Prepend `sudo` to current command
+- `Ctrl+X '` — Wrap entire buffer in single quotes
+- `cap <cmd>` — Run command and copy output (e.g., `cap ls -la`)
+- `caps <cmd>` — Same but silent (no tee, just copy)
+
 ## Pending (to be added as we implement)
 
-- Custom ZLE widgets
 - Boilerplate hotkeys

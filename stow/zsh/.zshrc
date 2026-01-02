@@ -58,6 +58,7 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 [[ -f ~/.zsh_aliases ]] && source ~/.zsh_aliases
 [[ -f ~/.zsh_functions ]] && source ~/.zsh_functions
 [[ -f ~/.zsh_suffix_aliases ]] && source ~/.zsh_suffix_aliases  # Zsh-specific suffix aliases
+[[ -f ~/.zsh_widgets ]] && source ~/.zsh_widgets  # Custom ZLE widgets
 [[ -f ~/.zsh_local ]] && source ~/.zsh_local # For machine-specific settings
 
 # ============================================================================

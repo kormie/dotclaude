@@ -1,0 +1,20 @@
+# Zsh Functions
+# Shell functions for common operations
+
+# ============================================================================
+# OUTPUT CAPTURE
+# ============================================================================
+
+# Run command and copy output to clipboard
+# Usage: cap ls -la
+cap() {
+    "$@" 2>&1 | tee >(pbcopy)
+    echo "\n[Output copied to clipboard]"
+}
+
+# Run command and copy output to clipboard (silent, no tee)
+# Usage: caps ls -la
+caps() {
+    "$@" 2>&1 | pbcopy
+    echo "[Output copied to clipboard]"
+}
