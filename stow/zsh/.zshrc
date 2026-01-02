@@ -254,11 +254,9 @@ zstyle ':completion:*' special-dirs true
 autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
-# Enhanced editing
+# Enhanced editing (binding in .zsh_hotkeys)
 autoload -Uz edit-command-line
 zle -N edit-command-line
-bindkey '^xe' edit-command-line
-bindkey '^x^e' edit-command-line
 
 # ============================================================================
 # KEYBINDING ENHANCEMENTS (Emacs mode optimized for CapsLock=Ctrl)

@@ -1,24 +1,34 @@
 # Zsh Hotkeys
 # All keybindings in one place
 # Widgets are defined in .zsh_widgets, this file just binds them
+#
+# Pattern Convention:
+#   ^x^_ (Ctrl+X, Ctrl+key) = Editor/buffer manipulation commands
+#   ^x_  (Ctrl+X, key)      = External tool commands (git, docker, npm, etc.)
 
 # ============================================================================
-# WIDGET BINDINGS (Ctrl+X prefix)
+# EDITOR / BUFFER COMMANDS (Ctrl+X, Ctrl+key — keep Ctrl held)
 # ============================================================================
+
+# Edit command in $EDITOR
+bindkey '^x^e' edit-command-line
 
 # Clipboard operations
-bindkey '^x^c' copy-buffer-to-clipboard  # Copy buffer to clipboard
-bindkey '^xo' copy-last-output           # Re-run last cmd, copy output
+bindkey '^x^c' copy-buffer-to-clipboard  # Copy current buffer
+bindkey '^x^o' copy-last-output          # Re-run last cmd, copy output
 
 # Buffer manipulation
-bindkey '^xl' clear-screen-keep-buffer   # Clear screen, keep buffer
-bindkey '^xs' prepend-sudo               # Prepend sudo
-bindkey "^x'" quote-line                 # Wrap in single quotes
+bindkey '^x^l' clear-screen-keep-buffer  # Clear screen, keep buffer
+bindkey '^x^s' prepend-sudo              # Prepend sudo
+bindkey "^x^'" quote-line                # Wrap in single quotes
+
+# Tip of the Day
+bindkey '^x^,' totd-snooze               # Snooze tip for 30 days
+bindkey '^x^.' totd-remove               # Remove tip permanently
 
 # ============================================================================
-# BOILERPLATE INSERTION (Ctrl+X prefix)
+# EXTERNAL TOOL COMMANDS (Ctrl+X, key — release Ctrl, then key)
 # ============================================================================
-# These insert text and position cursor using \C-b (back) or \C-f (forward)
 
 # Git
 bindkey -s '^xg' 'git commit -m ""\C-b'           # Cursor inside quotes
@@ -40,11 +50,4 @@ bindkey -s '^xm' 'mix '                           # Ready for task
 bindkey -s '^xi' 'iex -S mix'                     # REPL with project
 
 # Editor
-bindkey -s '^xv' 'nvim .\C-b'                     # Open nvim in cwd (V for vim)
-
-# ============================================================================
-# TIP OF THE DAY (Ctrl+X prefix)
-# ============================================================================
-
-bindkey '^x,' totd-snooze                         # Snooze tip for 30 days
-bindkey '^x.' totd-remove                         # Remove tip permanently
+bindkey -s '^xv' 'nvim .\C-b'                     # Open nvim in cwd

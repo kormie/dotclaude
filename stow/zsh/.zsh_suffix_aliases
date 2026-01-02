@@ -50,8 +50,8 @@ alias -s make=nvim
 
 alias -s md='bat -l markdown'
 alias -s txt=bat
-alias -s yaml='bat -l yaml'
-alias -s yml='bat -l yaml'
+alias -s yaml='yq "."'
+alias -s yml='yq "."'
 alias -s toml='bat -l toml'
 alias -s ini='bat -l ini'
 alias -s conf='bat -l conf'
