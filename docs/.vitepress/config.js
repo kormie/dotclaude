@@ -81,7 +81,8 @@ export default defineConfig({
           items: [
             { text: 'Automation Scripts', link: '/claude-code/automation' },
             { text: 'Session Management', link: '/claude-code/sessions' },
-            { text: 'Best Practices', link: '/claude-code/best-practices' }
+            { text: 'Best Practices', link: '/claude-code/best-practices' },
+            { text: 'marimo Integration', link: '/claude-code/marimo' }
           ]
         }
       ],

@@ -23,6 +23,7 @@ Essential configurations for primary tools:
 Infrastructure and utilities:
 - **aliases** - Centralized alias management with modern CLI tools as defaults
 - **environment** - PATH and environment variables
+- **claude-code** - Claude Code commands, skills, and hooks for AI development
 
 ## Package Structure
 
@@ -60,6 +61,25 @@ stow/neovim/
         └── after/         # After-plugins
 ```
 
+### Example: Claude Code Package
+```
+stow/claude-code/
+├── README.md              # Claude Code package documentation
+└── .claude/
+    ├── commands/          # Slash commands
+    │   ├── marimo-check.md
+    │   ├── marimo-convert.md
+    │   ├── marimo-run.md
+    │   └── marimo-edit.md
+    ├── skills/            # Auto-triggered skills
+    │   ├── anywidget-generator/
+    │   │   └── instructions.md
+    │   └── marimo-notebook/
+    │       └── instructions.md
+    └── hooks/             # PostToolUse hooks
+        └── marimo-check.sh
+```
+
 ## Package Dependencies
 
 ### Dependency Management
@@ -81,6 +101,11 @@ neovim:
 tmux:
   dependencies: []
   enhances: [zsh, neovim]
+
+claude-code:
+  dependencies: []
+  enhances: [tmux]
+  external: [marimo, uv]  # Optional external tools
 ```
 
 ### Dependency Resolution
