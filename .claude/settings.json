@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A file was just modified. Check if documentation needs updating:\n\n**File changed**: $CLAUDE_FILE_PATHS\n\n**Documentation mapping**:\n- `scripts/*.sh` → `docs/reference/scripts.md`\n- `stow/*/` configs → `docs/guide/packages.md`\n- `CLAUDE.md` → `docs/getting-started/index.md`\n- `scripts/install.sh` → `docs/getting-started/quick-setup.md`\n- `stow/zsh/` → `docs/guide/shell.md` or `docs/reference/`\n- `stow/git/` → `docs/guide/git.md`\n- `stow/tmux/` → `docs/claude-code/tmux.md`\n- `stow/neovim/` → `docs/guide/editors.md`\n- `stow/ghostty/` or `stow/iterm2/` → `docs/guide/` (terminal config)\n\n**Action**: If the changed file maps to documentation above, silently note that docs may need updating. Do NOT interrupt the user's workflow - only mention doc updates when:\n1. The user asks to commit/push, OR\n2. The change is significant (new feature, breaking change, new script)\n\nFor minor changes (typos, small tweaks, color adjustments), no doc update is needed."
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Before ending, check if any documentation updates are needed based on changes made this session. If significant changes were made to scripts/, stow/, or CLAUDE.md that aren't reflected in docs/, remind the user with a brief note like: 'The docs may need updating to reflect [specific change].' Only mention this for meaningful changes, not cosmetic tweaks."
+          }
+        ]
+      }
+    ]
+  }
+}
