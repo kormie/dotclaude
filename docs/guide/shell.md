@@ -63,13 +63,18 @@ $ cat ~/.zshrc
 Tip (1/3): Use 'bat' instead of 'cat' for syntax highlighting
 ```
 
-On the third use in a session, the command is soft-blocked to encourage learning:
+On the third use in a session, the command is **truly blocked** - it won't execute:
 
 ```bash
 $ cat ~/.zshrc
 Blocked: You've used 'cat' 3 times this session
-   Use 'bat' instead, or 'command cat' to bypass
+   Use 'bat' instead, or prefix with 'command' to bypass
+
+# Command line is cleared, you're back at the prompt
+# The cat command did NOT run
 ```
+
+This is true blocking via ZLE's `accept-line` widget - the command is intercepted before execution, not after.
 
 #### On-Demand Commands
 
@@ -115,7 +120,7 @@ Control the tips system via environment variables in `~/.zshrc.local`:
 ```bash
 export TIPS_STARTUP=0      # Disable startup tips (keep banner)
 export TIPS_COACHING=0     # Disable context-triggered reminders
-export TIPS_BLOCK_COUNT=5  # Change soft-block threshold (default: 3)
+export TIPS_BLOCK_COUNT=5  # Change block threshold (default: 3)
 ```
 
 ## Installation & Usage
