@@ -416,6 +416,18 @@ Many tools support configuration files:
 - **bottom**: `~/.config/bottom/bottom.toml`
 - **git-delta**: configured via `.gitconfig`
 
+### DotClaude Documentation
+
+Aliases for working on this documentation site:
+
+```bash
+docs:dev      # Start VitePress dev server
+docs:build    # Build documentation site
+docs:preview  # Preview production build
+```
+
+These run from anywhere - they use bun and target the docs directory automatically.
+
 ## Performance Benefits
 
 ### Benchmarks

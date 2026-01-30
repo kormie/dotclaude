@@ -310,6 +310,11 @@ if command -v btm &> /dev/null; then
     alias btm_tree='btm --tree'
 fi
 
+# DotClaude documentation development
+alias docs:dev='bun run --cwd ~/Documents/Repos/dotfiles/docs docs:dev'
+alias docs:build='bun run --cwd ~/Documents/Repos/dotfiles/docs docs:build'
+alias docs:preview='bun run --cwd ~/Documents/Repos/dotfiles/docs docs:preview'
+
 # Include local/private aliases if they exist
 if [[ -f "$HOME/.aliases.local" ]]; then
     source "$HOME/.aliases.local"
