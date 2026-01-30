@@ -1,8 +1,25 @@
 # Zsh Advanced Tips
 # Format: alias|old_command_pattern|description|example
 
+# Shell shortcuts
+c|clear|Clear terminal screen|c
 reload|source ~/.zshrc|Reload shell configuration|reload
 reload|. ~/.zshrc|Reload shell configuration|reload
+zshrc|$EDITOR ~/.zshrc|Edit zsh configuration|zshrc
+aliases|$EDITOR ~/.aliases|Edit aliases file|aliases
+brewup|brew update|Update Homebrew and all packages|brewup
+
+# Editor shortcuts (all open nvim)
+vi|vi |Neovim (aliased from vi)|vi file.txt
+vim|vim |Neovim (aliased from vim)|vim file.txt
+nvim|nano |Neovim (aliased from nano)|nvim file.txt
+
+# Language shortcuts
+py|python3|Python 3 shortcut|py script.py
+
+# Archive shortcuts
+untar|tar -xvf|Extract tar archive|untar archive.tar.gz
+
 Ctrl-x Ctrl-e|vim|Edit current command in your editor|Type command, then Ctrl-x Ctrl-e
 Ctrl-_|undo|Undo last edit in command line|After Ctrl-w, press Ctrl-_
 !!|sudo|Repeat last command (use with sudo)|sudo !!
