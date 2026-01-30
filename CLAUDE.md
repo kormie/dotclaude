@@ -52,12 +52,14 @@ This is a modern dotfiles repository using GNU Stow for symlink management. The 
 ### GNU Stow Package Organization
 Each configuration lives in its own Stow package under `stow/`:
 - `stow/zsh/` - Zsh + Oh-My-Zsh configuration
-- `stow/neovim/` - Neovim Lua configuration  
+- `stow/neovim/` - Neovim Lua configuration
 - `stow/git/` - Git configuration
 - `stow/rust-tools/` - Modern CLI tools (bat, exa, fd, etc.)
 - `stow/tmux/` - Terminal multiplexing
 - `stow/aliases/` - Centralized alias management (single source of truth)
 - `stow/environment/` - PATH and environment variables
+- `stow/ghostty/` - Ghostty terminal configuration
+- `stow/iterm2/` - iTerm2 color scheme (KOHO.itermcolors)
 
 ### Development Workflow
 1. **Incremental Migration**: Develop configurations alongside existing setup, never replace immediately
@@ -124,75 +126,16 @@ When implementing Rust-based CLI tool replacements:
 - Document all changes in detailed git commit messages
 - Ensure easy toggle between old/new configurations during transition
 
-## Phase 1 Completion Status
-✅ **Safety Infrastructure**: Comprehensive backup/restore system tested and working
-✅ **Core Scripts**: All management scripts created and tested
-✅ **Package Structure**: Git, environment, aliases, tmux packages ready for deployment
-✅ **Modern Tools**: Installation script with coexisting aliases (ll2, cat2, etc.)
-✅ **Git Enhancement**: Delta + difftastic configured with user's preferred log format
-✅ **User Integration**: Existing settings preserved, colima support added
-✅ **Claude Code Optimization**: Multi-session tmux workspace with git worktrees
-✅ **Vim-Style Navigation**: Comprehensive keybinding integration matching user workflow
+## Project Status
+This repository is **production-ready** with all four implementation phases complete:
+- Phase 1: Safety infrastructure, core scripts, modern tools
+- Phase 2: Enhanced shell configuration with Oh-My-Zsh
+- Phase 3: Modern Neovim with Lua configuration (40+ plugins, LSP)
+- Phase 4: Full integration and performance optimization
 
-**Enhanced Phase 1 Features**:
-✅ **Automated Workspace**: `tmux-claude-workspace` script for instant setup
-✅ **Git Worktree Integration**: Parallel development without conflicts
-✅ **Vim-Optimized Keybindings**: CapsLock=Ctrl leveraged, comma leader, hjkl navigation
-✅ **Session Management**: Named sessions with persistence and switching
+See `PROJECT_PLAN.md` for detailed implementation history.
 
-## Documentation System
-✅ **VitePress Documentation**: Modern, fast documentation with GitHub Pages integration
+## Documentation
 - **Live Site**: https://kormie.github.io/dotclaude/
 - **Local Development**: `cd docs && npm run docs:dev`
-- **Auto-deployment**: GitHub Actions on every push to main
-- **Features**: Built-in search, mobile responsive, dark/light mode, edit links
-
-## Documentation Structure
-- **getting-started/**: Installation and setup guides
-- **guide/**: Configuration guides and package management
-- **claude-code/**: AI development workflows and tmux integration
-- **reference/**: Command reference and troubleshooting
-
-## Phase 2 Completion Status ✅
-✅ **Enhanced Shell Configuration**: Oh-My-Zsh with essential plugins (git, autosuggestions, syntax-highlighting)
-✅ **Safety Toggle System**: Easy switching between original and enhanced configurations
-✅ **Modern Tool Integration**: Coexisting aliases for Rust-based tools (ll2, cat2, find2, etc.)
-✅ **Centralized Alias Management**: Single source of truth at ~/.config/dotfiles/aliases
-✅ **Enhanced Shell Setup**: Comprehensive installation script with safety mechanisms
-
-## Phase 3 Completion Status ✅ FULLY COMPLETE
-✅ **Modern Neovim Configuration**: Lua-based setup with lazy.nvim plugin management (40+ plugins)
-✅ **LSP Integration**: Full language server support with Mason, completion, and diagnostics
-✅ **Advanced Git Integration**: Gitsigns, fugitive, and diffview with delta/difftastic compatibility
-✅ **Enhanced UI**: Tokyo Night theme, Lualine status bar, Neo-tree file explorer
-✅ **Telescope Integration**: Fuzzy finding for files, text, git operations, and LSP functions
-✅ **Safety Toggle System**: `./scripts/toggle-neovim.sh [enhanced|original|status]`
-✅ **User Preferences Preserved**: Comma leader, hjkl navigation, netrw patterns, jk escape maintained
-✅ **Claude Code Integration**: F-key shortcuts for AI development workflows
-✅ **Comprehensive Documentation**: Migration guide with learning path and troubleshooting
-✅ **Technical Issues Resolved**: LSP loading conflicts, Neo-tree navigation, SSH signing configuration
-✅ **Production Ready**: All features tested and working, committed to repository
-
-**Technical Achievements**:
-- Fixed LSP telescope integration by wrapping function calls to prevent loading conflicts
-- Replaced netrw with Neo-tree for modern file navigation while preserving `-` key workflow  
-- Resolved SSH commit signing configuration to eliminate GPG key errors
-- Enhanced plugin loading with proper error handling and deferred initialization
-- Comprehensive test coverage and user feedback integration
-
-## Phase 4 Completion Status ✅ FULLY COMPLETE
-✅ **Full Integration & Optimization**: All enhanced configurations deployed as primary setup
-✅ **Performance Optimization**: Neovim startup ~47ms, Zsh startup ~380ms
-✅ **Advanced Shell Features**: Project-specific environment management, command correction, enhanced completion
-✅ **Modern Tool Integration**: Complete modern CLI tool suite with coexisting aliases (ll2, cat2, find2, etc.)
-✅ **System Validation**: All functionality tested and validated in production environment
-✅ **Safety Systems**: Complete rollback capability maintained with comprehensive backup files
-
-**Advanced Features Implemented**:
-- Project-specific environment auto-loading (.env, .nvmrc support)
-- Enhanced command correction and completion system
-- Smart URL handling and enhanced editing capabilities
-- Neovim performance optimizations with disabled unnecessary plugins
-- Modern CLI tool aliases with seamless coexistence patterns
-
-**Final Project State**: Production-ready modern CLI environment with all safety systems intact
+- **Structure**: `getting-started/`, `guide/`, `claude-code/`, `reference/`
