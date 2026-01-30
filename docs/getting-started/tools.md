@@ -290,6 +290,38 @@ Manages dotfile symlinks safely and reversibly.
 ./scripts/stow-package.sh git status
 ```
 
+## JavaScript Runtime
+
+### **Bun** - Fast JavaScript Runtime
+Ultra-fast JavaScript runtime, bundler, and package manager.
+
+```bash
+# Installed automatically via install.sh
+# Or install manually:
+curl -fsSL https://bun.sh/install | bash
+
+# Check installation
+bun --version
+```
+
+**Features:**
+- 3-4x faster than Node.js for many operations
+- Built-in TypeScript support
+- Native bundler and test runner
+- npm-compatible package manager
+
+**Usage:**
+```bash
+# Run JavaScript/TypeScript
+bun run script.ts
+
+# Install packages (faster than npm)
+bun install
+
+# Run package.json scripts
+bun run dev
+```
+
 ## Additional Utilities
 
 ### **jq/yq** - Data Processing

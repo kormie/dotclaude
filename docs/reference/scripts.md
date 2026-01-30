@@ -92,6 +92,47 @@ Components:
 
 ## Installation Scripts
 
+### `install.sh`
+**Purpose**: Main bootstrap script for idempotent Mac setup
+**Usage**: `./scripts/install.sh [--all|--minimal|--interactive]`
+
+**Modes:**
+- `--interactive` (default): Prompts for each component
+- `--all`: Full installation with all features
+- `--minimal`: Core dependencies only
+
+**What gets installed:**
+
+| Component | Minimal | Full |
+|-----------|---------|------|
+| Homebrew | ✓ | ✓ |
+| Core deps (stow, git, zsh, nvim, tmux) | ✓ | ✓ |
+| Bun (JavaScript runtime) | ✓ | ✓ |
+| Stow packages | ✓ | ✓ |
+| Local config files | ✓ | ✓ |
+| Modern CLI tools | | ✓ |
+| Nerd Fonts | | ✓ |
+| Oh-My-Zsh | | ✓ |
+| macOS defaults | | ✓ |
+
+**Features:**
+- Fully idempotent - safe to run multiple times
+- Creates `~/.gitconfig.local` and `~/.zshrc.local` for machine-specific settings
+- Sets up `~/.secrets` for API keys and tokens
+- Automatic backup before changes
+- Detailed logging to `install.log`
+
+```bash
+# Fresh Mac setup
+./scripts/install.sh --all
+
+# Update existing installation
+./scripts/install.sh --minimal
+
+# Choose what to install
+./scripts/install.sh
+```
+
 ### `install-modern-tools.sh`
 **Purpose**: Install and configure Rust-based CLI tools
 **Usage**: `./scripts/install-modern-tools.sh`

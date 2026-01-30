@@ -130,6 +130,50 @@ source ~/.aliases
 ./scripts/stow-package.sh git remove
 ```
 
+## Machine-Specific Configuration
+
+DotClaude creates local config files for machine-specific settings that shouldn't be tracked in git.
+
+### Git Identity (`~/.gitconfig.local`)
+
+Set your git identity and signing key:
+
+```bash
+# Edit the local git config
+cat ~/.gitconfig.local
+
+# Add your identity
+git config --file ~/.gitconfig.local user.name "Your Name"
+git config --file ~/.gitconfig.local user.email "your@email.com"
+git config --file ~/.gitconfig.local user.signingkey "~/.ssh/id_ed25519.pub"
+```
+
+### Shell Customizations (`~/.zshrc.local`)
+
+Add machine-specific PATH entries or tools:
+
+```bash
+# Example: Add local tool paths
+echo 'export PATH="$PATH:$HOME/.local-tool/bin"' >> ~/.zshrc.local
+```
+
+### Secrets (`~/.secrets`)
+
+Store API keys and tokens securely:
+
+```bash
+# Edit the secrets file (created during setup)
+$EDITOR ~/.secrets
+
+# Example contents:
+# export OPENAI_API_KEY="sk-..."
+# export GITHUB_TOKEN="ghp_..."
+```
+
+::: warning Security
+The `~/.secrets` file has restricted permissions (600). Never commit secrets to git.
+:::
+
 ## What's Next?
 
 Once you have the basic configurations working:
