@@ -31,13 +31,13 @@
         <key>Blue Component</key><real>0.0</real>
     </dict>
 
-    <!-- Cursor Text: Haiti -->
+    <!-- Cursor Text: Muted Purple (lighter Haiti) -->
     <key>Cursor Text Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.114</real>
-        <key>Green Component</key><real>0.071</real>
-        <key>Blue Component</key><real>0.235</real>
+        <key>Red Component</key><real>0.353</real>
+        <key>Green Component</key><real>0.290</real>
+        <key>Blue Component</key><real>0.478</real>
     </dict>
 
     <!-- Selection: Scarlet Gum -->
@@ -49,22 +49,22 @@
         <key>Blue Component</key><real>0.420</real>
     </dict>
 
-    <!-- ANSI Black: Haiti -->
+    <!-- ANSI Black: Muted Purple (lighter Haiti for visibility) -->
     <key>Ansi 0 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.114</real>
-        <key>Green Component</key><real>0.071</real>
-        <key>Blue Component</key><real>0.235</real>
+        <key>Red Component</key><real>0.353</real>
+        <key>Green Component</key><real>0.290</real>
+        <key>Blue Component</key><real>0.478</real>
     </dict>
 
-    <!-- ANSI Red: Scarlet Gum -->
+    <!-- ANSI Red: Bright Purple -->
     <key>Ansi 1 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.212</real>
-        <key>Green Component</key><real>0.094</real>
-        <key>Blue Component</key><real>0.420</real>
+        <key>Red Component</key><real>0.616</real>
+        <key>Green Component</key><real>0.420</real>
+        <key>Blue Component</key><real>0.804</real>
     </dict>
 
     <!-- ANSI Green: Electric Lime -->
@@ -85,31 +85,31 @@
         <key>Blue Component</key><real>0.502</real>
     </dict>
 
-    <!-- ANSI Blue: Light Purple -->
+    <!-- ANSI Blue: Bright Purple-Blue -->
     <key>Ansi 4 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.420</real>
-        <key>Green Component</key><real>0.302</real>
-        <key>Blue Component</key><real>0.620</real>
+        <key>Red Component</key><real>0.655</real>
+        <key>Green Component</key><real>0.545</real>
+        <key>Blue Component</key><real>0.980</real>
     </dict>
 
-    <!-- ANSI Magenta: Scarlet Gum -->
+    <!-- ANSI Magenta: Bright Magenta -->
     <key>Ansi 5 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.212</real>
-        <key>Green Component</key><real>0.094</real>
-        <key>Blue Component</key><real>0.420</real>
+        <key>Red Component</key><real>0.753</real>
+        <key>Green Component</key><real>0.518</real>
+        <key>Blue Component</key><real>0.988</real>
     </dict>
 
-    <!-- ANSI Cyan: Jewel Green -->
+    <!-- ANSI Cyan: Lime Variant -->
     <key>Ansi 6 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.071</real>
-        <key>Green Component</key><real>0.420</real>
-        <key>Blue Component</key><real>0.306</real>
+        <key>Red Component</key><real>0.659</real>
+        <key>Green Component</key><real>0.878</real>
+        <key>Blue Component</key><real>0.0</real>
     </dict>
 
     <!-- ANSI White: Purple Tint -->
@@ -121,21 +121,22 @@
         <key>Blue Component</key><real>0.941</real>
     </dict>
 
-    <!-- Bright variants -->
+    <!-- Bright Black: Muted Purple (for autocomplete) -->
     <key>Ansi 8 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.212</real>
-        <key>Green Component</key><real>0.094</real>
-        <key>Blue Component</key><real>0.420</real>
+        <key>Red Component</key><real>0.545</real>
+        <key>Green Component</key><real>0.482</real>
+        <key>Blue Component</key><real>0.659</real>
     </dict>
 
+    <!-- Bright Red: Lighter Purple -->
     <key>Ansi 9 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.420</real>
-        <key>Green Component</key><real>0.302</real>
-        <key>Blue Component</key><real>0.620</real>
+        <key>Red Component</key><real>0.722</real>
+        <key>Green Component</key><real>0.545</real>
+        <key>Blue Component</key><real>0.878</real>
     </dict>
 
     <key>Ansi 10 Color</key>
@@ -154,28 +155,31 @@
         <key>Blue Component</key><real>0.910</real>
     </dict>
 
+    <!-- Bright Blue: Light Purple-Blue -->
     <key>Ansi 12 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.420</real>
-        <key>Green Component</key><real>0.302</real>
-        <key>Blue Component</key><real>0.620</real>
+        <key>Red Component</key><real>0.769</real>
+        <key>Green Component</key><real>0.710</real>
+        <key>Blue Component</key><real>0.992</real>
     </dict>
 
+    <!-- Bright Magenta: Light Magenta -->
     <key>Ansi 13 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.910</real>
-        <key>Green Component</key><real>0.902</real>
-        <key>Blue Component</key><real>0.941</real>
+        <key>Red Component</key><real>0.847</real>
+        <key>Green Component</key><real>0.706</real>
+        <key>Blue Component</key><real>0.996</real>
     </dict>
 
+    <!-- Bright Cyan: Bright Lime -->
     <key>Ansi 14 Color</key>
     <dict>
         <key>Color Space</key><string>sRGB</string>
-        <key>Red Component</key><real>0.071</real>
-        <key>Green Component</key><real>0.420</real>
-        <key>Blue Component</key><real>0.306</real>
+        <key>Red Component</key><real>0.773</real>
+        <key>Green Component</key><real>0.941</real>
+        <key>Blue Component</key><real>0.188</real>
     </dict>
 
     <key>Ansi 15 Color</key>
