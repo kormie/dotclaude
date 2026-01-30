@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 
-export default defineConfig({
+export default withMermaid(defineConfig({
   title: 'DotClaude',
   description: 'Modern dotfiles optimized for AI development workflows',
   
@@ -157,5 +158,13 @@ export default defineConfig({
     ['meta', { name: 'og:locale', content: 'en' }],
     ['meta', { name: 'og:site_name', content: 'DotClaude' }],
     ['meta', { name: 'og:image', content: '/dotclaude/og-image.png' }]
-  ]
-})
+  ],
+
+  // Mermaid configuration
+  mermaid: {
+    // https://mermaid.js.org/config/setup/modules/mermaidAPI.html#mermaidapi-configuration-defaults
+  },
+  mermaidPlugin: {
+    class: 'mermaid'
+  }
+}))

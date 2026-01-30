@@ -20,5 +20,9 @@
     "development"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "mermaid": "^11.12.2",
+    "vitepress-plugin-mermaid": "^2.0.17"
+  }
 }
