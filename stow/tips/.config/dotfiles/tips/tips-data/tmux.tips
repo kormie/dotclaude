@@ -1,0 +1,18 @@
+# Tmux Tips (prefix is C-a)
+# Format: alias|old_command_pattern|description|example
+
+C-a ||split vertical|Split pane horizontally (side by side)|C-a |
+C-a -|split horizontal|Split pane vertically (top/bottom)|C-a -
+C-a hjkl|arrow keys|Vim-style pane navigation|C-a h (move left)
+C-a HJKL|resize|Vim-style pane resizing (repeatable)|C-a H (grow left)
+C-a z|zoom|Toggle pane zoom (fullscreen)|C-a z
+C-a S|sync|Toggle pane synchronization|C-a S
+C-a Escape|copy mode|Enter vim-style copy mode|C-a Escape, then v to select
+C-a p|paste|Paste from tmux buffer|C-a p
+C-a c|new window|Create new window in current path|C-a c
+C-a C|claude|Open Claude Code in new window|C-a C
+C-a N|nvim|Open Neovim in new window|C-a N
+C-a W|workspace|Launch Claude Code workspace|C-a W
+C-a g|git pane|Open git status in split pane|C-a g
+C-a r|reload|Reload tmux configuration|C-a r
+cw|tmux-claude|Launch Claude workspace from shell|cw

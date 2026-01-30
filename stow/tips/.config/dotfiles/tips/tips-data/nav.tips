@@ -1,0 +1,13 @@
+# Directory Navigation Tips
+# Format: alias|old_command_pattern|description|example
+
+..|cd ..|Go up one directory|..
+...|cd ../..|Go up two directories|...
+....|cd ../../..|Go up three directories|....
+z|cd /path|Smart jump to frecent directories|z dotfiles
+zi|cd|Interactive directory picker with fzf|zi
+md|mkdir -p|Create directory (with parents)|md src/components/auth
+rd|rmdir|Remove empty directory|rd old_folder
+path|echo $PATH|Show PATH entries one per line|path
+~YT|cd ~/youtube|Jump to named directory (if configured)|cd ~YT
+cd -|cd back|Return to previous directory|cd -

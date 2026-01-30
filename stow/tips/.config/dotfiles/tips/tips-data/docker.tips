@@ -1,0 +1,14 @@
+# Docker Tips (works with colima)
+# Format: alias|old_command_pattern|description|example
+
+d|docker |Short alias for docker|d ps
+dc|docker-compose|Short for docker-compose|dc up -d
+dps|docker ps|List running containers|dps
+di|docker images|List images|di
+drm|docker rm|Remove container|drm container_name
+drmi|docker rmi|Remove image|drmi image:tag
+dstop|docker stop|Stop all running containers|dstop
+drmall|docker rm|Remove all containers|drmall
+colima-start|colima|Start colima (Docker runtime)|colima-start
+colima-stop|colima|Stop colima|colima-stop
+colima-status|colima|Check colima status|colima-status

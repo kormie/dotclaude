@@ -1,0 +1,18 @@
+# Git Tips
+# Format: alias|old_command_pattern|description|example
+
+g|git |Short alias for git|g status
+gs|git status|Quick git status|gs
+ga|git add|Stage files for commit|ga src/main.go
+gc|git commit|Create a commit|gc -m "feat: add feature"
+gp|git push|Push to remote|gp origin main
+gl|git pull|Pull from remote|gl
+gd|git diff|Show changes|gd
+gco|git checkout|Switch branches or restore files|gco feature/auth
+gb|git branch|List or manage branches|gb -a
+glog|git log|Oneline graph log with decorations|glog -10
+gdifft|git diff|Syntax-aware diff with difftastic|gdifft HEAD~1
+glogdifft|git log -p|Syntax-aware git log with difftastic|glogdifft --oneline -5
+gshowdifft|git show|Syntax-aware git show with difftastic|gshowdifft HEAD
+ll_git|ls -la|List files with git-ignore filtering|ll_git
+tree_git|tree|Tree view respecting .gitignore|tree_git src/

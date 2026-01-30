@@ -88,7 +88,13 @@ _koho_print_banner() {
     echo "${_KOHO_LPURPLE}╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ${_KOHO_RESET}"
     echo ""
     echo "${_KOHO_LIME_TINT}    3, 2, 1… Let's get it!${_KOHO_RESET}"
-    echo ""
+
+    # Show startup tip if tips system is loaded
+    if type tips_show_startup &>/dev/null; then
+        tips_show_startup
+    else
+        echo ""
+    fi
 }
 
 # Display banner on theme load (only for interactive shells)

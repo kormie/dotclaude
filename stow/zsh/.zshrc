@@ -22,7 +22,11 @@ plugins=(
   zsh-syntax-highlighting
 )
 
-# Source Oh-My-Zsh
+# Load terminal tips system BEFORE Oh-My-Zsh so tips_show_startup is available
+# when the KOHO theme banner loads
+[[ -f ~/.zshrc.d/tips.zsh ]] && source ~/.zshrc.d/tips.zsh
+
+# Source Oh-My-Zsh (this loads the theme which displays the banner + tip)
 source $ZSH/oh-my-zsh.sh
 
 # ============================================================================

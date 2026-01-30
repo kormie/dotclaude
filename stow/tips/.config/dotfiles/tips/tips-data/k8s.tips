@@ -1,0 +1,12 @@
+# Kubernetes Tips
+# Format: alias|old_command_pattern|description|example
+
+k|kubectl |Short alias for kubectl|k get pods
+kgp|kubectl get pods|List pods|kgp
+kgs|kubectl get services|List services|kgs
+kgd|kubectl get deployments|List deployments|kgd
+kdp|kubectl describe pod|Describe a pod|kdp my-pod
+kds|kubectl describe service|Describe a service|kds my-service
+kdd|kubectl describe deployment|Describe a deployment|kdd my-deployment
+kl|kubectl logs|View pod logs|kl my-pod -f
+kex|kubectl exec|Execute command in pod|kex -it my-pod -- /bin/sh

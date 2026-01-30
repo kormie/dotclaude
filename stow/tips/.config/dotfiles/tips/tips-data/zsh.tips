@@ -1,0 +1,13 @@
+# Zsh Advanced Tips
+# Format: alias|old_command_pattern|description|example
+
+Ctrl-x Ctrl-e|vim|Edit current command in your editor|Type command, then Ctrl-x Ctrl-e
+Ctrl-_|undo|Undo last edit in command line|After Ctrl-w, press Ctrl-_
+!!|sudo|Repeat last command (use with sudo)|sudo !!
+magic-space|history|Expand !! before running with spacebar|sudo !! then space
+zmv|mv *.foo|Batch rename files with patterns|zmv '(*).log' '$1.txt'
+hash -d|cd /long/path|Create named directory bookmarks|hash -d YT=/path/to/youtube
+alias -s|./file.go|Open files by extension automatically|alias -s go=nvim
+alias -g|2>/dev/null|Global aliases expand anywhere|alias -g NE='2>/dev/null'
+Ctrl-x l|clear|Clear screen but keep current command|Ctrl-x then l
+bindkey -s|boilerplate|Create hotkeys that insert text|bindkey -s '^g' 'git status\n'

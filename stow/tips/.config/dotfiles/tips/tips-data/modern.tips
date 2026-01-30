@@ -1,0 +1,19 @@
+# Modern CLI Tool Tips
+# Format: alias|old_command_pattern|description|example
+
+ll|ls -la|List files with git status, icons, and grouping|ll ~/Documents
+ls|ls |Modern file listing with icons|ls ~/Downloads
+cat|cat |Syntax-highlighted file viewing with line numbers|cat ~/.zshrc
+bat|cat |Syntax-highlighted file viewing (bat)|bat package.json
+find|find |Faster, friendlier file finding with smart defaults|fd "*.md" ~/Documents
+fd|find |Smart file finder (fd)|fd config
+grep|grep |Blazing fast recursive search with context|rg "TODO" --type=go
+rg|grep |Ripgrep for fast searching|rg "function" src/
+du|du |Visual disk usage with intuitive bar charts|dust ~/Downloads
+dust|du |Disk usage analyzer (dust)|dust --depth 2
+ps|ps |Modern process viewer with tree and search|procs --tree
+procs|ps |Process viewer with filtering|procs node
+top|top |Beautiful system monitor with graphs|btm
+btm|top |Bottom system monitor|btm --basic
+cd|cd |Smart directory jumping - learns your habits|z projects
+tree|tree|Tree view with git awareness and icons|tree ~/dotfiles
