@@ -48,7 +48,7 @@ _tips_load_patterns() {
             [[ -z "$old_pattern" || "$old_pattern" == \#* ]] && continue
             # Only track patterns that look like commands (not key combos)
             # Allow patterns starting with letter or dot (. is alias for source)
-            [[ "$old_pattern" =~ ^[a-zA-Z.] ]] || continue
+            [[ "$old_pattern" =~ ^[a-zA-Z.\$] ]] || continue
             _tips_patterns[$old_pattern]="${alias_name}|${description}"
         done < "$file"
     done
@@ -57,18 +57,25 @@ _tips_load_patterns() {
 # Initialize patterns
 _tips_load_patterns
 
-# Preexec hook - runs before each command
-_tips_preexec_hook() {
+# ============================================================================
+# True Command Blocking via accept-line Widget
+# ============================================================================
+
+# Check if command should be blocked or reminded
+# Returns: 0 = allow, 1 = block, 2 = remind then allow
+_tips_check_command() {
+    local cmd="$1"
+
     # Skip if coaching disabled
     [[ "${TIPS_COACHING:-1}" == "0" ]] && return 0
 
-    local cmd="$1"
-    _tips_pending_reminder=""
+    # Skip empty commands
+    [[ -z "$cmd" ]] && return 0
 
-    # Skip if command uses _original suffix (intentional bypass)
-    [[ "$cmd" == *_original* ]] && return 0
+    # Skip if command starts with 'command ' (intentional bypass)
+    [[ "$cmd" == "command "* ]] && return 0
 
-    # Skip pipeline commands (contains |)
+    # Skip pipeline commands
     [[ "$cmd" == *\|* ]] && return 0
 
     # Check against patterns
@@ -84,27 +91,54 @@ _tips_preexec_hook() {
             local count=${_tips_miss_count[$pattern]}
 
             if (( count >= TIPS_BLOCK_COUNT )); then
-                # Block the command
-                echo ""
-                echo "${_TIPS_LPURPLE}Blocked:${_TIPS_RESET} You've used '${_TIPS_DIM}${pattern}${_TIPS_RESET}' ${count} times this session"
-                echo "   Use '${_TIPS_LIME}${alias_name}${_TIPS_RESET}' instead, or prefix with 'command' to bypass"
-                echo ""
-
-                # Return non-zero to signal block (though zsh preexec can't actually block)
-                # We'll use a different mechanism - store block state
-                _tips_blocked_cmd="$cmd"
-                _tips_blocked_alias="$alias_name"
+                # Block - store info for message
+                _tips_block_pattern="$pattern"
+                _tips_block_alias="$alias_name"
+                _tips_block_count="$count"
                 return 1
             else
-                # Queue reminder for after command completes
+                # Remind after command completes
                 _tips_pending_reminder="${alias_name}|${count}|${pattern}|${description}"
+                return 2
             fi
-            break
         fi
     done
 
     return 0
 }
+
+# Custom accept-line widget that checks for blocks BEFORE executing
+_tips_accept_line() {
+    local cmd="$BUFFER"
+
+    _tips_check_command "$cmd"
+    local result=$?
+
+    if (( result == 1 )); then
+        # BLOCKED - show message and clear the line
+        echo ""
+        echo "${_TIPS_LPURPLE}Blocked:${_TIPS_RESET} You've used '${_TIPS_DIM}${_tips_block_pattern}${_TIPS_RESET}' ${_tips_block_count} times this session"
+        echo "   Use '${_TIPS_LIME}${_tips_block_alias}${_TIPS_RESET}' instead, or prefix with 'command' to bypass"
+        echo ""
+
+        # Clear the buffer and redisplay prompt
+        BUFFER=""
+        zle redisplay
+        return 0
+    fi
+
+    # Allow the command (result 0 or 2)
+    zle .accept-line
+}
+
+# Register the custom widget (only for interactive shells)
+if [[ -o interactive ]]; then
+    zle -N accept-line _tips_accept_line
+fi
+
+# ============================================================================
+# Reminder Display (after command completes)
+# ============================================================================
 
 # Precmd hook - runs before prompt, after command completes
 _tips_precmd_hook() {
@@ -119,50 +153,11 @@ _tips_precmd_hook() {
     fi
 }
 
-# Register hooks (only for interactive shells)
+# Register precmd hook
 if [[ -o interactive ]]; then
     autoload -Uz add-zsh-hook
-    add-zsh-hook preexec _tips_preexec_hook
     add-zsh-hook precmd _tips_precmd_hook
 fi
-
-# ============================================================================
-# Command Wrapping for Blocking
-# ============================================================================
-
-# Since preexec can't actually block commands, we override common commands
-# to check the block state. This is optional but provides true blocking.
-
-# Helper to check if command should be blocked
-_tips_check_block() {
-    local cmd="$1"
-    local pattern alias_info alias_name description count
-
-    [[ "${TIPS_COACHING:-1}" == "0" ]] && return 0
-
-    for pattern in "${(@k)_tips_patterns}"; do
-        if [[ "$cmd" == ${pattern}* ]]; then
-            (( _tips_miss_count[$pattern]++ ))
-            count=${_tips_miss_count[$pattern]}
-
-            if (( count >= TIPS_BLOCK_COUNT )); then
-                alias_info="${_tips_patterns[$pattern]}"
-                IFS='|' read -r alias_name description <<< "$alias_info"
-
-                echo ""
-                echo "${_TIPS_LPURPLE}Blocked:${_TIPS_RESET} You've used '${_TIPS_DIM}${pattern}${_TIPS_RESET}' ${count} times this session"
-                echo "   Use '${_TIPS_LIME}${alias_name}${_TIPS_RESET}' instead, or prefix with 'command' to bypass"
-                echo ""
-                return 1
-            elif (( count > 0 )); then
-                # Show reminder after command runs (via precmd)
-                _tips_pending_reminder="${alias_name}|${count}|${pattern}|${description}"
-            fi
-            break
-        fi
-    done
-    return 0
-}
 
 # ============================================================================
 # User Commands
