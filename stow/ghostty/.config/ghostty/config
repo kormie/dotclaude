@@ -43,23 +43,23 @@ selection-foreground = #FFFFFF
 # ─────────────────────────────────────────────────────────────────────────────
 
 # Normal colors (0-7)
-palette = 0=#1D123C
-palette = 1=#36186B
+palette = 0=#5A4A7A
+palette = 1=#9D6BCD
 palette = 2=#D1F300
 palette = 3=#E8FA80
-palette = 4=#6B4D9E
-palette = 5=#36186B
-palette = 6=#126B4E
+palette = 4=#A78BFA
+palette = 5=#C084FC
+palette = 6=#A8E000
 palette = 7=#E8E6F0
 
 # Bright colors (8-15)
-palette = 8=#36186B
-palette = 9=#6B4D9E
+palette = 8=#8B7BA8
+palette = 9=#B88BE0
 palette = 10=#D1F300
 palette = 11=#FFF9E8
-palette = 12=#6B4D9E
-palette = 13=#E8E6F0
-palette = 14=#126B4E
+palette = 12=#C4B5FD
+palette = 13=#D8B4FE
+palette = 14=#C5F030
 palette = 15=#FFFFFF
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -91,10 +91,6 @@ scrollback-limit = 10000
 # Copy/paste behavior
 copy-on-select = clipboard
 clipboard-paste-protection = true
-
-# Bell
-visual-bell = true
-audible-bell = false
 
 # Quick terminal
 quick-terminal-position = top
