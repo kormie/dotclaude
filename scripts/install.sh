@@ -300,6 +300,49 @@ setup_secrets_file() {
 }
 
 #######################################
+# Setup Local Config Files
+#######################################
+
+setup_local_configs() {
+    log_step "Setting up local config files..."
+
+    # ~/.gitconfig.local - machine-specific git settings
+    local gitconfig_local="$HOME/.gitconfig.local"
+    if [[ -f "$gitconfig_local" ]]; then
+        log_skip "~/.gitconfig.local already exists"
+    else
+        cat > "$gitconfig_local" << 'GITCONFIG'
+# Machine-specific git configuration (not tracked in dotfiles)
+# This file is sourced by ~/.gitconfig
+
+[user]
+    # Uncomment and set your identity:
+    # name = Your Name
+    # email = your@email.com
+    # signingkey = ~/.ssh/id_ed25519.pub
+GITCONFIG
+        log_success "Created ~/.gitconfig.local"
+        log_info "Edit ~/.gitconfig.local to set your git identity"
+    fi
+
+    # ~/.zshrc.local - machine-specific shell settings
+    local zshrc_local="$HOME/.zshrc.local"
+    if [[ -f "$zshrc_local" ]]; then
+        log_skip "~/.zshrc.local already exists"
+    else
+        cat > "$zshrc_local" << 'ZSHRC'
+# Machine-specific shell configuration (not tracked in dotfiles)
+# This file is sourced at the end of ~/.zshrc
+
+# Add machine-specific PATH entries, aliases, or settings here
+# Example:
+# export PATH="$PATH:$HOME/.some-local-tool/bin"
+ZSHRC
+        log_success "Created ~/.zshrc.local"
+    fi
+}
+
+#######################################
 # Deploy Stow Packages
 #######################################
 
@@ -522,6 +565,11 @@ run_interactive() {
     fi
 
     echo
+    if prompt_yes_no "Setup local config files (gitconfig.local, zshrc.local)?"; then
+        setup_local_configs
+    fi
+
+    echo
     if prompt_yes_no "Apply macOS system defaults?"; then
         apply_macos_defaults
     fi
@@ -546,6 +594,7 @@ run_minimal() {
     deploy_stow_packages
     setup_oh_my_zsh_customizations
     setup_secrets_file
+    setup_local_configs
     validate_installation
 }
 
@@ -568,6 +617,7 @@ run_full() {
     deploy_stow_packages
     setup_oh_my_zsh_customizations
     setup_secrets_file
+    setup_local_configs
     apply_macos_defaults
     validate_installation
 }
