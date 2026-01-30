@@ -47,7 +47,8 @@ _tips_load_patterns() {
         while IFS='|' read -r alias_name old_pattern description example; do
             [[ -z "$old_pattern" || "$old_pattern" == \#* ]] && continue
             # Only track patterns that look like commands (not key combos)
-            [[ "$old_pattern" =~ ^[a-zA-Z] ]] || continue
+            # Allow patterns starting with letter or dot (. is alias for source)
+            [[ "$old_pattern" =~ ^[a-zA-Z.] ]] || continue
             _tips_patterns[$old_pattern]="${alias_name}|${description}"
         done < "$file"
     done
@@ -86,7 +87,7 @@ _tips_preexec_hook() {
                 # Block the command
                 echo ""
                 echo "${_TIPS_LPURPLE}Blocked:${_TIPS_RESET} You've used '${_TIPS_DIM}${pattern}${_TIPS_RESET}' ${count} times this session"
-                echo "   Use '${_TIPS_LIME}${alias_name}${_TIPS_RESET}' instead, or '${_TIPS_DIM}${alias_name}_original${_TIPS_RESET}' to bypass"
+                echo "   Use '${_TIPS_LIME}${alias_name}${_TIPS_RESET}' instead, or prefix with 'command' to bypass"
                 echo ""
 
                 # Return non-zero to signal block (though zsh preexec can't actually block)
@@ -150,7 +151,7 @@ _tips_check_block() {
 
                 echo ""
                 echo "${_TIPS_LPURPLE}Blocked:${_TIPS_RESET} You've used '${_TIPS_DIM}${pattern}${_TIPS_RESET}' ${count} times this session"
-                echo "   Use '${_TIPS_LIME}${alias_name}${_TIPS_RESET}' instead, or '${_TIPS_DIM}${alias_name}_original ...${_TIPS_RESET}' to bypass"
+                echo "   Use '${_TIPS_LIME}${alias_name}${_TIPS_RESET}' instead, or prefix with 'command' to bypass"
                 echo ""
                 return 1
             elif (( count > 0 )); then

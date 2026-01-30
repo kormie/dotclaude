@@ -1,6 +1,8 @@
 # Zsh Advanced Tips
 # Format: alias|old_command_pattern|description|example
 
+reload|source ~/.zshrc|Reload shell configuration|reload
+reload|. ~/.zshrc|Reload shell configuration|reload
 Ctrl-x Ctrl-e|vim|Edit current command in your editor|Type command, then Ctrl-x Ctrl-e
 Ctrl-_|undo|Undo last edit in command line|After Ctrl-w, press Ctrl-_
 !!|sudo|Repeat last command (use with sudo)|sudo !!
