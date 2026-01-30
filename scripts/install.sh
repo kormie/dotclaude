@@ -418,6 +418,7 @@ deploy_stow_packages() {
     local packages=(
         "environment"   # PATH and environment variables first
         "aliases"       # Aliases
+        "tips"          # Terminal tips system (must be before zsh)
         "git"           # Git configuration
         "zsh"           # Zsh configuration
         "tmux"          # Tmux configuration

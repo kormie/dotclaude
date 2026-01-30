@@ -159,6 +159,7 @@ check_stow_packages() {
         ["ghostty"]=".config/ghostty"
         ["zsh"]=".zshrc"
         ["aliases"]=".config/dotfiles"
+        ["tips"]=".zshrc.d/tips.zsh"
     )
 
     for package in "${!package_links[@]}"; do
@@ -230,6 +231,19 @@ check_shell_config() {
         fi
     else
         log_warn "Oh-My-Zsh not installed"
+    fi
+
+    # Check for terminal tips system
+    if [[ -f "$HOME/.zshrc.d/tips.zsh" ]]; then
+        log_pass "Terminal tips system installed"
+        # Check tips data directory
+        if [[ -d "$HOME/.config/dotfiles/tips/tips-data" ]]; then
+            local tip_count
+            tip_count=$(find "$HOME/.config/dotfiles/tips/tips-data" -name "*.tips" 2>/dev/null | wc -l | tr -d ' ')
+            log_verbose "$tip_count tip categories available"
+        fi
+    else
+        log_warn "Terminal tips system not installed (optional)"
     fi
 }
 
