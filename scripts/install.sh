@@ -233,6 +233,29 @@ install_fonts() {
 }
 
 #######################################
+# Install Bun (JavaScript Runtime)
+#######################################
+
+install_bun() {
+    log_step "Checking Bun..."
+
+    if command -v bun &>/dev/null; then
+        log_skip "Bun already installed ($(bun --version))"
+        return 0
+    fi
+
+    log_info "Installing Bun..."
+    if curl -fsSL https://bun.sh/install | bash; then
+        log_success "Bun installed"
+        # Add to current session
+        export BUN_INSTALL="$HOME/.bun"
+        export PATH="$BUN_INSTALL/bin:$PATH"
+    else
+        log_error "Failed to install Bun"
+    fi
+}
+
+#######################################
 # Setup Oh-My-Zsh
 #######################################
 
@@ -483,6 +506,11 @@ run_interactive() {
     fi
 
     echo
+    if prompt_yes_no "Install Bun (fast JavaScript runtime)?"; then
+        install_bun
+    fi
+
+    echo
     if prompt_yes_no "Deploy Stow packages (configurations)?"; then
         deploy_stow_packages
         setup_oh_my_zsh_customizations
@@ -514,6 +542,7 @@ run_minimal() {
     install_homebrew
     install_core_dependencies
     backup_existing_configs
+    install_bun
     deploy_stow_packages
     setup_oh_my_zsh_customizations
     setup_secrets_file
@@ -535,6 +564,7 @@ run_full() {
     install_modern_tools
     install_fonts
     setup_oh_my_zsh
+    install_bun
     deploy_stow_packages
     setup_oh_my_zsh_customizations
     setup_secrets_file
@@ -568,6 +598,7 @@ WHAT GETS INSTALLED:
     Minimal:
       - Homebrew (if not present)
       - Core dependencies (stow, git, zsh, neovim, tmux)
+      - Bun (fast JavaScript runtime)
       - Stow packages deployment
 
     Full (includes minimal plus):

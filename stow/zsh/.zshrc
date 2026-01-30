@@ -209,3 +209,19 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^xe' edit-command-line
 bindkey '^x^e' edit-command-line
+
+# ============================================================================
+# BUN JAVASCRIPT RUNTIME
+# ============================================================================
+
+# Bun (fast JavaScript runtime and package manager)
+export BUN_INSTALL="$HOME/.bun"
+[[ -d "$BUN_INSTALL" ]] && export PATH="$BUN_INSTALL/bin:$PATH"
+[[ -s "$BUN_INSTALL/_bun" ]] && source "$BUN_INSTALL/_bun"  # completions
+
+# ============================================================================
+# LOCAL MACHINE-SPECIFIC CONFIG (not tracked in git)
+# ============================================================================
+
+# Source machine-specific settings (create ~/.zshrc.local for local overrides)
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
