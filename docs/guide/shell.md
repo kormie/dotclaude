@@ -1,123 +1,187 @@
 # Shell Enhancement
 
-Oh-My-Zsh integration with modern CLI tools and enhanced productivity features.
+Oh-My-Zsh integration with modern CLI tools, the KOHO theme, and a terminal tips system for learning.
 
 ## Overview
 
-DotClaude's shell enhancement provides a modern, productive command-line experience with Oh-My-Zsh integration and Rust-based tool replacements.
+DotClaude's shell enhancement provides a modern, productive command-line experience with Oh-My-Zsh integration, Rust-based tool alternatives, and a built-in tips system to help you learn and remember all the functionality.
 
 ## Key Features
 
 ### Oh-My-Zsh Integration
 - **Essential Plugins**: git, zsh-autosuggestions, zsh-syntax-highlighting
-- **Custom Theme**: Optimized for git workflows and AI development
+- **KOHO Theme**: Custom branded theme with git status and Nerd Font support
 - **Plugin Management**: Curated selection for performance and utility
 
-### Modern Tool Replacements
-Rust-based alternatives that are now the default commands:
-- **eza** (`ls`) - Enhanced ls with git integration (was `ll2`)
-- **bat** (`cat`) - Syntax-highlighted cat (was `cat2`)
-- **fd** (`find`) - Fast, user-friendly find (was `find2`)
-- **ripgrep** (`grep`) - Ultra-fast text search (was `grep2`)
-- **zoxide** (`cd`) - Smart directory jumping (was `z`)
-- **dust** (`du`) - Better disk usage visualization
-- **procs** (`ps`) - Modern process viewer
-- **bottom** (`top`) - Enhanced system monitor
+### Modern Tool Alternatives
+
+Rust-based tools are available alongside (not replacing) traditional commands:
+
+| Traditional | Modern Alternative | Usage |
+|-------------|-------------------|-------|
+| `cat` | `bat` | `bat file.js` - syntax highlighting |
+| `find` | `fd` | `fd "*.md"` - faster, simpler syntax |
+| `grep` | `rg` | `rg "pattern"` - blazing fast |
+| `du` | `dust` | `dust` - visual disk usage |
+| `ps` | `procs` | `procs` - modern process viewer |
+| `top` | `btm` | `btm` - beautiful system monitor |
+| `cd` | `z` | `z project` - smart directory jumping |
+
+::: tip Learn the Tools Naturally
+The terminal tips system will remind you about these modern alternatives when you use traditional commands. No need to memorize - just use the terminal and learn as you go.
+:::
+
+### Terminal Tips System
+
+A three-layer system to help you discover and remember terminal functionality:
+
+#### Startup Tips
+Each new shell shows a random tip below the KOHO banner:
+
+```
+██╗  ██╗ ██████╗ ██╗  ██╗ ██████╗
+██║ ██╔╝██╔═══██╗██║  ██║██╔═══██╗
+█████╔╝ ██║   ██║███████║██║   ██║
+██╔═██╗ ██║   ██║██╔══██║██║   ██║
+██║  ██╗╚██████╔╝██║  ██║╚██████╔╝
+╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝
+
+    3, 2, 1… Let's get it!
+
+┌─[Modern]───────────────────────────────────────────────────┐
+│ bat → Syntax-highlighted file viewing with line numbers    │
+│ Try: bat ~/.zshrc                                          │
+└────────────────────────────────────────────────────────────┘
+```
+
+#### Context-Triggered Coaching
+When you use traditional commands, gentle reminders suggest modern alternatives:
+
+```bash
+$ cat ~/.zshrc
+# ... output ...
+Tip (1/3): Use 'bat' instead of 'cat' for syntax highlighting
+```
+
+On the third use in a session, the command is soft-blocked to encourage learning:
+
+```bash
+$ cat ~/.zshrc
+Blocked: You've used 'cat' 3 times this session
+   Use 'bat' instead, or 'command cat' to bypass
+```
+
+#### On-Demand Commands
+
+```bash
+tip              # Show a random tip
+tips             # List available categories
+tips modern      # Show all modern tool tips
+tips git         # Show git-related tips
+tips tmux        # Show tmux keybinding tips
+tips-stats       # View session coaching statistics
+tips-reset       # Reset coaching counters
+tips-reload      # Reload tips after editing
+```
+
+**Tip Categories:**
+- `modern` - Rust tool alternatives (bat, fd, rg, dust, etc.)
+- `git` - Git aliases and difftastic
+- `zsh` - Advanced shell tricks
+- `tmux` - Key bindings and workflows
+- `nav` - Directory navigation
+- `docker` - Container shortcuts
+- `k8s` - Kubernetes shortcuts
 
 ### Centralized Alias Management
 Single source of truth for all aliases:
-- Located in `~/.config/dotfiles/aliases`
-- Consistent across all shell sessions
-- Easy to maintain and extend
-- Includes convenience shortcuts like `c` for `clear`
+- Located in `~/.aliases` (symlinked from stow package)
+- Includes convenience shortcuts (`ll`, `la`, `tree`, etc.)
+- Git workflow shortcuts (`gs`, `ga`, `gc`, etc.)
+- Modern tool shortcuts (`preview`, `tree_git`, etc.)
 
 ## Configuration Files
 
 The shell package includes:
 - `stow/zsh/.zshrc` - Main shell configuration
-- `stow/aliases/.config/dotfiles/aliases` - Centralized aliases
-- `stow/environment/.config/dotfiles/environment` - PATH management
+- `stow/zsh/.oh-my-zsh/custom/themes/koho.zsh-theme` - KOHO branded theme
+- `stow/aliases/.aliases` - Centralized aliases
+- `stow/tips/` - Terminal tips system
 
-## Modern Tools Overview
+## Tips Configuration
 
-| Tool | Purpose | Default Command | Original Available As |
-|------|---------|----------------|-----------------------|
-| eza | Enhanced ls | `ls`, `ll` | `ls_original` |
-| bat | Syntax highlighting | `cat`, `less` | `cat_original` |
-| fd | Fast find | `find` | `find_original` |
-| ripgrep | Ultra-fast search | `grep`, `fgrep`, `egrep` | `grep_original` |
-| zoxide | Smart navigation | `cd` | `cd_original` |
-| dust | Disk usage | `du` | `du_original` |
-| procs | Process viewer | `ps` | `ps_original` |
-| bottom | System monitor | `top` | `top_original` |
-| delta | Git diffs | (automatic) | - |
+Control the tips system via environment variables in `~/.zshrc.local`:
+
+```bash
+export TIPS_STARTUP=0      # Disable startup tips (keep banner)
+export TIPS_COACHING=0     # Disable context-triggered reminders
+export TIPS_BLOCK_COUNT=5  # Change soft-block threshold (default: 3)
+```
 
 ## Installation & Usage
 
 ```bash
-# Install modern tools
-./scripts/install-modern-tools.sh
-
 # Apply shell configuration
 ./scripts/stow-package.sh zsh
 ./scripts/stow-package.sh aliases
-./scripts/stow-package.sh environment
+./scripts/stow-package.sh tips
 
-# Test enhanced shell
+# Reload shell to apply changes
 exec $SHELL
 ```
 
-## Modern Tools Are Now Default
+## Safe Alias Philosophy
 
-As of commit `4559798`, modern tools are the default commands with automatic fallbacks:
+DotClaude intentionally does NOT alias core commands to modern replacements:
 
 ```bash
-# These now use modern tools by default
-ls         # Enhanced ls with eza (falls back to ls if not installed)
-cat file   # Syntax-highlighted cat with bat (falls back to cat if not installed)
-find -n    # Fast find with fd (falls back to find if not installed)
-grep       # Ultra-fast search with ripgrep (falls back to grep if not installed)
-cd project # Smart directory jumping with zoxide (falls back to cd if not installed)
+# These use standard commands (safe for scripts and Claude Code)
+cat file.txt    # Standard cat
+find . -name x  # Standard find
+grep pattern    # Standard grep
 
-# Use original tools when needed
-ls_original  # Original ls command
-cat_original # Original cat command
-find_original # Original find command
-
-# Convenience shortcuts
-c          # Clear terminal (alias for clear)
-
-# Git workflow shortcuts
-gwt branch # Create git worktree with new branch and cd to it
+# Use modern tools explicitly
+bat file.txt    # Syntax highlighting
+fd "*.md"       # Fast file finding
+rg pattern      # Fast searching
 ```
 
-::: tip Smart Navigation with zoxide
-As of commit `84f49a9`, the `cd` command now uses zoxide for smart directory jumping while maintaining full compatibility with traditional cd patterns. Use `cd_original` if you need the shell builtin.
-:::
+**Why?** Aliasing `cat` to `bat` or `find` to `fd` breaks:
+- Non-interactive shells and scripts
+- Tools like Claude Code that expect standard behavior
+- Muscle memory when on other machines
+
+The tips system teaches you to use modern tools directly.
+
+## Customization
+
+### Adding New Aliases
+```bash
+# Edit centralized alias file
+$EDITOR ~/.aliases
+
+# Or add machine-specific aliases
+$EDITOR ~/.aliases.local
+
+# Reload
+source ~/.aliases
+```
+
+### Adding Custom Tips
+```bash
+# Edit tip files (pipe-delimited format)
+$EDITOR ~/.config/dotfiles/tips/tips-data/modern.tips
+
+# Format: tool|old_pattern|description|example
+bat|cat |Syntax-highlighted viewing|bat ~/.zshrc
+
+# Reload tips
+tips-reload
+```
 
 ## Safety Features
 
-### Toggle System
-Easy switching between modern and original tool configurations:
-
-```bash
-# Switch to enhanced shell (modern tools as defaults)
-./scripts/toggle-shell.sh enhanced
-
-# Revert to original (traditional tools as defaults)
-./scripts/toggle-shell.sh original
-
-# Check current status
-./scripts/toggle-shell.sh status
-```
-
-::: warning Migration Complete
-With the recent updates, the enhanced shell configuration with modern tools as defaults is now the standard setup. The toggle system remains available for users who prefer traditional tools.
-:::
-
 ### Backup & Restore
-Comprehensive backup system:
-
 ```bash
 # Backup existing shell config
 ./scripts/backup.sh shell
@@ -126,20 +190,8 @@ Comprehensive backup system:
 ./scripts/restore.sh shell
 ```
 
-## Customization
-
-### Adding New Aliases
-Edit the centralized alias file:
-```bash
-# Edit aliases
-$EDITOR ~/.config/dotfiles/aliases
-
-# Changes take effect in new shell sessions
-exec $SHELL
-```
-
 ### Plugin Management
-Oh-My-Zsh plugins are managed in the zsh configuration:
+Oh-My-Zsh plugins are managed in `.zshrc`:
 - Performance-focused selection
 - Essential productivity features
 - Git workflow optimization
