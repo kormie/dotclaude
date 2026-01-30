@@ -10,25 +10,8 @@ alias cp='cp -i'
 alias mv='mv -i'
 alias ln='ln -i'
 
-# Enhanced basic commands with modern tools as defaults
-# Modern tools (eza, bat, fd, rg) are now the defaults
-# Legacy tools available with _original suffix
-
-# Legacy tool fallbacks (original commands)
-alias ls_original='command ls -G'
-alias ll_original='command ls -la'
-alias la_original='command ls -A'
-alias l_original='command ls -CF'
-alias cat_original='command cat'
-alias find_original='command find'
-alias grep_original='command grep --color=auto'
-alias fgrep_original='command fgrep --color=auto'
-alias egrep_original='command egrep --color=auto'
-alias du_original='command du -ch'
-alias ps_original='command ps'
-alias top_original='command top'
-
-# Modern tools as defaults (with fallbacks if tools not available)
+# Enhanced listing commands with eza (ls-compatible, safe to alias)
+# eza is designed as a drop-in ls replacement with compatible flags
 if command -v eza &> /dev/null; then
     alias ls='eza --icons'
     alias ll='eza -la --icons --git --header --group-directories-first'
@@ -41,68 +24,35 @@ else
     alias l='ls -CF'
 fi
 
-if command -v bat &> /dev/null; then
-    alias cat='bat'
-    alias less='bat'
-else
-    alias cat='cat'  # Fallback to original
-fi
+# NOTE: We intentionally DO NOT alias these commands to modern replacements:
+#   cat -> bat    (different paging behavior, breaks scripts)
+#   find -> fd    (completely different syntax)
+#   grep -> rg    (different flags, breaks scripts)
+#   du -> dust    (different output format)
+#   ps -> procs   (different flags and output)
+#   top -> btm    (completely different tool)
+#   cd -> z       (requires shell integration, breaks non-interactive shells)
+#
+# Instead, use the modern tools directly: bat, fd, rg, dust, procs, btm, z
+# The terminal tips system will help you learn these tools!
 
-if command -v fd &> /dev/null; then
-    alias find='fd'
-else
-    alias find='find'  # Fallback to original
-fi
-
-if command -v rg &> /dev/null; then
-    alias grep='rg'
-    # Note: Don't alias fgrep/egrep to rg - their flags are incompatible
-    # rg's -E means --encoding, not extended regex like egrep
-    # fgrep -F works but users expect other fgrep flags to work
-    alias fgrep='command fgrep --color=auto'
-    alias egrep='command egrep --color=auto'
-else
-    alias grep='grep --color=auto'  # Fallback to original
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
+# Keep grep colorized
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
 
 # Directory navigation
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 
-# Additional modern tool aliases
-if command -v dust &> /dev/null; then
-    alias du='dust'
-else
-    alias du='du -ch'  # Keep original fallback defined above
-fi
-
-if command -v procs &> /dev/null; then
-    alias ps='procs'
-    # Keep myps as legacy ps command for specific use case
-    alias myps='command ps -f -u $USER'
-else
-    alias ps='ps'  # Fallback to original
-fi
-
-if command -v btm &> /dev/null; then
-    alias top='btm'
-else
-    alias top='top'  # Fallback to original
-fi
-
-# Shortcuts for modern tools
+# Shortcuts for modern tools (explicit, not replacing core commands)
 alias tree='eza --tree'
 alias preview='bat'
 
-# zoxide (smart cd) - different pattern since it's an enhancement, not replacement  
-# Note: zoxide is initialized in .zshrc, we just need the alias here
-if command -v zoxide &> /dev/null; then
-    # Make zoxide the default cd for transparent smart navigation
-    alias cd_original='command cd'
-    alias cd='z'
+# Modern tool convenience aliases (use these instead of hijacking core commands)
+if command -v procs &> /dev/null; then
+    alias myps='command ps -f -u $USER'  # Legacy ps for specific use case
 fi
 
 # Git aliases
@@ -129,9 +79,7 @@ alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
 
 # Process management
-# Note: ps is now handled by modern tools section (procs if available)
 alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
-# myps is now handled by modern tools section above
 
 # Network
 alias ping='ping -c 5'
@@ -142,7 +90,6 @@ alias ports='netstat -tulanp'
 alias meminfo='free -m -l -t'
 alias cpuinfo='lscpu'
 alias df='df -H'
-# du is now handled by modern tools section above
 alias free='free -m'
 
 # Git aliases (complement .gitconfig)
