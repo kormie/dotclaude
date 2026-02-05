@@ -44,6 +44,9 @@ _tips_load_patterns() {
 
     local file alias_name old_pattern description example
     for file in "$TIPS_DIR"/*.tips(N); do
+        # Skip tmux tips when not in a tmux session
+        [[ "$(basename "$file")" == "tmux.tips" && -z "$TMUX" ]] && continue
+
         while IFS='|' read -r alias_name old_pattern description example; do
             [[ -z "$old_pattern" || "$old_pattern" == \#* ]] && continue
             # Only track patterns that look like commands (not key combos)
