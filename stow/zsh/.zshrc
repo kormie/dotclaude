@@ -68,13 +68,21 @@ zstyle ':completion:*:warnings' format '%BSorry, no matches for: %d%b'
 # ============================================================================
 
 # Initialize asdf version manager if installed
-if [ -f $(brew --prefix asdf)/libexec/asdf.sh ]; then
-  . $(brew --prefix asdf)/libexec/asdf.sh
+# Use static path to avoid brew subprocess during shell init (performance + reliability)
+if [[ -d /opt/homebrew ]]; then
+  _HOMEBREW_PREFIX="/opt/homebrew"  # Apple Silicon
+else
+  _HOMEBREW_PREFIX="/usr/local"      # Intel
+fi
+
+if [[ -f "$_HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh" ]]; then
+  . "$_HOMEBREW_PREFIX/opt/asdf/libexec/asdf.sh"
 elif [[ -d "${ASDF_DATA_DIR:-$HOME/.asdf}" ]]; then
   . "${ASDF_DATA_DIR:-$HOME/.asdf}/asdf.sh"
   # Append completions to fpath
   fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 fi
+unset _HOMEBREW_PREFIX
 
 # Add local bin directories to PATH
 export PATH="$HOME/.local/bin:$PATH"
