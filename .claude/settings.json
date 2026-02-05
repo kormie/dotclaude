@@ -10,16 +10,6 @@
           }
         ]
       }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "prompt",
-            "prompt": "Before ending, check if any documentation updates are needed based on changes made this session. If significant changes were made to scripts/, stow/, or CLAUDE.md that aren't reflected in docs/, remind the user with a brief note like: 'The docs may need updating to reflect [specific change].' Only mention this for meaningful changes, not cosmetic tweaks."
-          }
-        ]
-      }
     ]
   }
 }
