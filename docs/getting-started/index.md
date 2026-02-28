@@ -77,7 +77,8 @@ Your existing setup remains **completely untouched**:
 ## Next Steps
 
 1. **[Quick Setup](./quick-setup)** - Apply your first configurations
-2. **[Safety Guide](./safety)** - Understand the backup/restore system  
+2. **[Safety Guide](./safety)** - Understand the backup/restore system
+3. **[Linux Server Setup (Minimal Profile)](./server)** - VPS bootstrap (tmux + vim-min + mosh + fzf/bat/zoxide)
 3. **[Modern Tools](./tools)** - Learn about the new CLI tools
 
 ## Verification
