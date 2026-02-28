@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# install.sh - Main bootstrap script for idempotent Mac setup
-# Usage: ./scripts/install.sh [--all|--minimal|--interactive]
+# install.sh - Main bootstrap script for idempotent setup
+# Usage:
+#   macOS:  ./scripts/install.sh [--all|--minimal|--interactive]
+#   Linux:  ./scripts/install.sh --server
 #
 # This script is fully idempotent - safe to run multiple times.
 # Each step checks current state before making changes.
@@ -22,6 +24,12 @@ NC='\033[0m' # No Color
 # Configuration
 INSTALL_MODE="${1:-interactive}"
 LOG_FILE="$DOTFILES_DIR/install.log"
+
+# Server profile: minimal, Linux-friendly install.
+SERVER_MODE=false
+if [[ "$INSTALL_MODE" == "--server" ]]; then
+    SERVER_MODE=true
+fi
 
 #######################################
 # Logging Functions
@@ -94,8 +102,12 @@ detect_arch() {
 #######################################
 
 check_macos() {
+    if [[ "$SERVER_MODE" == true ]]; then
+        return 0
+    fi
+
     if [[ "$(detect_os)" != "macos" ]]; then
-        log_error "This script is designed for macOS"
+        log_error "This script is designed for macOS (or use --server on Linux)"
         log_info "Detected OS: $(uname -s)"
         exit 1
     fi
@@ -164,6 +176,34 @@ install_homebrew() {
 
 install_core_dependencies() {
     log_step "Installing core dependencies..."
+
+    if [[ "$SERVER_MODE" == true ]]; then
+        # Ubuntu/Debian minimal server profile
+        local deps=(
+            "git"
+            "stow"
+            "tmux"
+            "vim"
+            "mosh"
+            "fzf"
+            "bat"
+            "zoxide"
+        )
+
+        # Use apt when available.
+        if command -v apt-get &>/dev/null; then
+            log_info "Updating apt index..."
+            apt-get update -y
+            log_info "Installing server dependencies: ${deps[*]}"
+            DEBIAN_FRONTEND=noninteractive apt-get install -y "${deps[@]}"
+            log_success "Server dependencies installed"
+        else
+            log_error "apt-get not found; server mode currently supports Debian/Ubuntu"
+            exit 1
+        fi
+
+        return 0
+    fi
 
     local deps=(
         "stow"      # GNU Stow for symlink management
@@ -635,15 +675,17 @@ USAGE:
     $(basename "$0") [OPTION]
 
 OPTIONS:
-    --all, -a           Full installation with all features
-    --minimal, -m       Minimal installation (core only)
-    --interactive, -i   Interactive mode with prompts (default)
+    --all, -a           Full installation with all features (macOS)
+    --minimal, -m       Minimal installation (macOS)
+    --interactive, -i   Interactive mode with prompts (default, macOS)
+    --server            Linux server minimal profile (Ubuntu/Debian)
     --help, -h          Show this help message
 
 EXAMPLES:
-    $(basename "$0")              # Interactive mode
-    $(basename "$0") --all        # Full installation
-    $(basename "$0") --minimal    # Minimal installation
+    $(basename "$0")              # Interactive mode (macOS)
+    $(basename "$0") --all        # Full installation (macOS)
+    $(basename "$0") --minimal    # Minimal installation (macOS)
+    $(basename "$0") --server     # Server minimal profile (Linux)
 
 WHAT GETS INSTALLED:
     Minimal:
@@ -675,6 +717,23 @@ EOF
 # Main
 #######################################
 
+run_server() {
+    echo
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}  Dotfiles Installation - Server        ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo
+
+    # Install packages via apt
+    install_core_dependencies
+
+    # Stow server configs into HOME explicitly (avoid stowing into repo dir)
+    log_step "Deploying server configs (tmux + vim-min)"
+    stow -v -d "$DOTFILES_DIR/stow" -t "$HOME" tmux vim-min
+
+    log_success "Server profile installed"
+}
+
 main() {
     # Initialize log file
     mkdir -p "$(dirname "$LOG_FILE")"
@@ -690,6 +749,9 @@ main() {
             ;;
         "--interactive"|"-i"|"interactive"|"")
             run_interactive
+            ;;
+        "--server")
+            run_server
             ;;
         "--help"|"-h"|"help")
             show_usage
