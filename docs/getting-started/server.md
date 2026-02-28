@@ -41,3 +41,23 @@ Via GNU stow into `$HOME`:
 
 - Server mode always stows with an explicit target (`-t $HOME`) to avoid accidentally stowing into the dotfiles repo directory.
 - If you want a different vim indent policy, edit `stow/vim-min/.vimrc`.
+
+## Mosh over Tailscale
+
+Mosh is great over flaky networks, but it uses **UDP**. Over Tailscale, the simplest pattern is:
+
+```bash
+mosh root@<tailscale-hostname>
+```
+
+If you run into UDP/firewall issues, pin a single port:
+
+```bash
+mosh --port=60000 root@<tailscale-hostname>
+```
+
+Then allow that UDP port **only on the Tailscale interface** (example with UFW):
+
+```bash
+ufw allow in on tailscale0 to any port 60000 proto udp
+```
