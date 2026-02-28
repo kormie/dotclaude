@@ -19,6 +19,19 @@
 
 ## 🚀 Quick Start
 
+### Linux Server (Ubuntu/Debian) - Minimal Profile
+
+This profile is designed for VPS/server bootstrapping: **tmux + vim muscle memory + mosh + fzf + bat + zoxide**.
+
+```bash
+git clone git@github.com:kormie/dotclaude.git ~/.dotfiles
+cd ~/.dotfiles
+./scripts/install.sh --server
+
+# Verify
+ls -la ~/.tmux.conf ~/.vimrc
+```
+
 ### Fresh Mac (No SSH Keys Yet)
 
 ```bash
