@@ -193,9 +193,9 @@ install_core_dependencies() {
         # Use apt when available.
         if command -v apt-get &>/dev/null; then
             log_info "Updating apt index..."
-            apt-get update -y
+            sudo apt-get update -y
             log_info "Installing server dependencies: ${deps[*]}"
-            DEBIAN_FRONTEND=noninteractive apt-get install -y "${deps[@]}"
+            sudo DEBIAN_FRONTEND=noninteractive apt-get install -y "${deps[@]}"
             log_success "Server dependencies installed"
         else
             log_error "apt-get not found; server mode currently supports Debian/Ubuntu"
