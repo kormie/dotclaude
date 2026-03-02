@@ -1,0 +1,89 @@
+# Git Configuration — Server (minimal, no macOS dependencies)
+
+[user]
+    # Configure in ~/.gitconfig.local
+    # name = Your Name
+    # email = your@email.com
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = vim
+    autocrlf = input
+    safecrlf = true
+    excludesfile = ~/.gitignore_global
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default
+
+[pull]
+    rebase = true
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[branch]
+    autoSetupMerge = always
+    autoSetupRebase = always
+
+[rebase]
+    autoStash = true
+
+[status]
+    showUntrackedFiles = all
+
+[log]
+    date = relative
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = reset HEAD --
+    last = log -1 HEAD
+
+    lg = log --graph --pretty=format:\"%C(yellow)%h%Cred%d%Creset %s %C(white) %C(cyan)%an%Creset, %C(green)%ar%Creset\"
+    ll = log --pretty=format:\"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]\" --decorate --numstat
+    ls = log --pretty=format:\"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]\" --decorate
+    lga = log --graph --pretty=format:\"%C(yellow)%h%Cred%d%Creset %s %C(white) %C(cyan)%an%Creset, %C(green)%ar%Creset\" --all
+    tree = log --graph --pretty=format:\"%C(yellow)%h%Cred%d%Creset %s %C(white) %C(cyan)%an%Creset, %C(green)%ar%Creset\" --all --simplify-by-decoration
+
+    amend = commit --amend --no-edit
+    fixup = commit --fixup
+    squash = commit --squash
+
+    sync = !git fetch --all && git pull --rebase
+    publish = push -u origin HEAD
+    cleanup = !git branch --merged | grep -v '\\*\\|main\\|master\\|develop' | xargs -n 1 git branch -d
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    status = auto
+
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = cyan
+
+# Include local/private config if it exists
+[include]
+    path = ~/.gitconfig.local

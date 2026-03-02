@@ -728,8 +728,11 @@ run_server() {
     install_core_dependencies
 
     # Stow server configs into HOME explicitly (avoid stowing into repo dir)
-    log_step "Deploying server configs (tmux + vim-min)"
-    stow -v -d "$DOTFILES_DIR/stow" -t "$HOME" tmux vim-min
+    log_step "Deploying server configs (tmux + vim-min + git-server)"
+    stow -v -d "$DOTFILES_DIR/stow" -t "$HOME" tmux vim-min git-server
+
+    # Scaffold local config files (gitconfig.local, etc.)
+    setup_local_configs
 
     log_success "Server profile installed"
 }
