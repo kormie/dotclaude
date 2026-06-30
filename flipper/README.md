@@ -1,0 +1,123 @@
+# `kormie` — Flipper Zero asset pack
+
+A personal [Momentum firmware](https://github.com/Next-Flip/Momentum-Firmware)
+asset pack + custom passport, themed to match the rest of this dotfiles repo:
+terminal/hacker aesthetic, KOHO palette, `kormie@flipper:~$` prompt, vim `hjkl`.
+Built to pair with the decked-out Momentum (`mntm-012`) build.
+
+Inspired by [Kuronons/FZ_graphics](https://github.com/Kuronons/FZ_graphics).
+
+## What's in it
+
+| Asset | File | Notes |
+|-------|------|-------|
+| **Passport background** | `Icons/Passport/passport_128x64.png` | Framed "terminal" border + corner brackets + stock-style barcode strip. Deliberately leaves the dolphin/name/level regions clear so firmware text stays readable. |
+| **Mood faces** | `Icons/Passport/passport_{happy,okay,bad}_46x49.png` | A CRT-monitor mascot ("Termy"): shades + grin when you're a high-level good-mood dolphin, neutral when okay, `x_x` + frown when butthurt. |
+| **Idle anim — `whoami`** | `Anims/kormie_whoami/` | A terminal types `whoami` → `> hacker dolphin` / `> KOHO // hjkl`, blinking cursor. 9 frames @ 3 fps. |
+| **Idle anim — vim splash** | `Anims/kormie_vim/` | The vim welcome screen: `~` gutter, `VIM - Vi IMproved`, `~ kormie ~`, comma-leader, and a highlight box stepping across `h j k l`. 8 frames @ 4 fps. |
+| **Idle anim — BEAM** | `Anims/kormie_beam/` | An OTP supervision tree where a worker crashes (`** (EXIT)` → `let it crash`) and the supervisor restarts it (`:restarting` → `:ok`), Elixir drop logo and `iex>` prompt. 8 frames @ 3 fps. |
+
+The desktop cycles through the three idle animations by weight (set in
+`Anims/manifest.txt`). Momentum's cold-boot logo is compiled into the firmware
+and isn't asset-pack-overridable, so the vim "splash" lives here as the idle
+screen you actually stare at.
+
+All source art is **1-bit black-on-white PNG**. Momentum's packer inverts to the
+device bit convention, so black source pixels render as the dark pixels on the
+Flipper's orange screen.
+
+## Regenerating / editing the art
+
+The pack is fully reproducible — edit the drawing code and re-run:
+
+```bash
+cd flipper
+python3 generate_assets.py     # needs Pillow:  pip install Pillow
+```
+
+This rewrites everything under `asset_packs/kormie/` and a scaled-up
+`preview.png` contact sheet for eyeballing the art before you flash it.
+
+## Installing on the Flipper (Momentum)
+
+The files here are the **source** pack. Momentum needs them packed to the
+on-device `.bm`/`.bmx` format first.
+
+### Easiest — grab the prebuilt zip from CI
+
+GitHub Actions (`.github/workflows/flipper-asset-pack.yml`) packs the source for
+you. You don't need Python locally:
+
+- **Phone-friendly (recommended):** the **`flipper-latest`** prerelease always
+  carries the newest `kormie-asset-pack.zip`, refreshed on every push to `main`.
+  It's a permanent, login-free link — bookmark it once and re-download anytime
+  from Safari or the Flipper app:
+  `https://github.com/kormie/dotclaude/releases/tag/flipper-latest`
+- **Frozen version:** push a tag (`git tag flipper-v1 && git push origin flipper-v1`)
+  to cut a versioned Release you can pin to.
+- **PR builds:** open the workflow run → **Artifacts → `kormie-asset-pack`**
+  (validation builds; best from a desktop).
+
+Then, with the zip in hand:
+
+- **qFlipper (desktop):** File Manager tab → navigate to `/ext/asset_packs/` →
+  drag the unzipped `kormie` folder in.
+- **Flipper mobile app (iOS/Android):** download the Release zip, unzip with the
+  Files app, then use the app's file browser to copy `kormie` into
+  `/ext/asset_packs/`. (BLE transfer is slow for many small files — a card
+  reader or qFlipper is faster if you have one.)
+
+> Asset packs require firmware that supports `asset_packs` (Momentum, which
+> you're already running). The CI pins the packer to the `mntm-012` tag so the
+> output matches your firmware; override via the `MOMENTUM_REF` env var.
+
+### Option A — pack it yourself with the official packer
+
+```bash
+# from a checkout of Next-Flip/Momentum-Firmware
+cp -r /path/to/dotclaude/flipper/asset_packs/kormie ./
+python3 scripts/asset_packer.py        # packs every folder next to the script
+```
+
+Copy the resulting packed `kormie` folder to your SD card under
+`/ext/asset_packs/` (mount the SD directly — qFlipper is slow for bulk copies).
+
+### Option B — online packer
+
+Drop the `asset_packs/kormie` folder into the Momentum asset-pack web packer and
+download the packed result, then copy it to `/ext/asset_packs/`.
+
+### Activate it
+
+1. **Apps → ... or Settings → Momentum → Asset Pack →** select `kormie`. Reboot.
+2. **Set the passport name** (this is a device setting, not part of the pack):
+   **Settings → Desktop → ... Passport / Name →** set to `kormie`.
+3. The mood faces and `whoami` idle animation show up on the desktop/passport
+   once the pack is active and the animation weight wins a roll.
+
+## Layout
+
+```
+flipper/
+├── generate_assets.py        # reproducible source-art generator (Pillow)
+├── pack.py                   # compiles source -> device format into dist/ (CI uses this)
+├── preview.png               # contact sheet (regenerated)
+├── dist/                     # packed output (gitignored, built by pack.py / CI)
+└── asset_packs/kormie/
+    ├── Anims/
+    │   ├── manifest.txt
+    │   ├── kormie_whoami/   # meta.txt + frame_*.png
+    │   ├── kormie_vim/      # meta.txt + frame_*.png
+    │   └── kormie_beam/     # meta.txt + frame_*.png
+    └── Icons/Passport/
+        ├── passport_128x64.png
+        ├── passport_happy_46x49.png
+        ├── passport_okay_46x49.png
+        └── passport_bad_46x49.png
+```
+
+## References
+
+- [Momentum Asset Packs spec](https://momentum-fw.dev/wiki/Assets/)
+- [Momentum `asset_packer.py`](https://github.com/Next-Flip/Momentum-Firmware/blob/dev/scripts/asset_packer.py)
+- [Kuronons/FZ_graphics](https://github.com/Kuronons/FZ_graphics)

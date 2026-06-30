@@ -1,0 +1,96 @@
+name: Flipper asset pack
+
+# Compiles the source PNG pack in flipper/ into the on-device .bm/.bmx format
+# and publishes a ready-to-install zip you can drop onto the SD card via
+# qFlipper's file manager or the Flipper mobile app.
+#
+#   - PR touching flipper/**      -> downloadable Actions artifact (validation)
+#   - push to main                -> refreshes the rolling `flipper-latest`
+#                                    prerelease (permanent, login-free link)
+#   - push a tag `flipper-v*`     -> cuts a frozen, versioned Release
+
+on:
+  push:
+    branches: [main]
+    tags: ["flipper-v*"]
+  pull_request:
+    paths: ["flipper/**", ".github/workflows/flipper-asset-pack.yml"]
+  workflow_dispatch:
+
+# One build per ref; a newer push cancels an in-flight one.
+concurrency:
+  group: flipper-pack-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # needed to create/update Releases
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install Pillow heatshrink2
+
+      - name: Regenerate source art (verifies the generator runs)
+        run: python3 flipper/generate_assets.py
+
+      - name: Pack to device format
+        # Pinned to the firmware tag so the packed output matches the device.
+        env:
+          MOMENTUM_REF: mntm-012
+        run: python3 flipper/pack.py
+
+      - name: Assemble installable zip
+        run: |
+          cd flipper/dist
+          cp ../README.md kormie/INSTALL.md
+          zip -r ../../kormie-asset-pack.zip kormie
+          cd ../..
+          unzip -l kormie-asset-pack.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kormie-asset-pack
+          path: flipper/dist/kormie
+          if-no-files-found: error
+
+      # Rolling, login-free download link — refreshed on every push to main
+      # and on manual runs. Bookmark the `flipper-latest` release on your phone.
+      - name: Publish rolling prerelease
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: flipper-latest
+          name: kormie asset pack (latest)
+          prerelease: true
+          files: kormie-asset-pack.zip
+          body: |
+            Always-current build of the `kormie` asset pack, packed against
+            firmware `mntm-012`. Auto-updated whenever `flipper/**` changes land
+            on `main`.
+
+            **Install:** download `kormie-asset-pack.zip`, unzip, copy the
+            `kormie` folder into `/ext/asset_packs/`, then
+            Settings → Momentum → Asset Pack → kormie and reboot.
+
+      # Frozen, versioned release on a `flipper-v*` tag push.
+      - name: Publish tagged release
+        if: startsWith(github.ref, 'refs/tags/flipper-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: kormie-asset-pack.zip
+          body: |
+            `kormie` Flipper Zero asset pack — packed to the on-device format
+            against firmware `mntm-012`.
+
+            **Install:** download `kormie-asset-pack.zip`, unzip, copy the
+            `kormie` folder into `/ext/asset_packs/`, then
+            Settings → Momentum → Asset Pack → kormie and reboot.
