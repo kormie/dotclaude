@@ -45,14 +45,18 @@ on-device `.bm`/`.bmx` format first.
 
 ### Easiest — grab the prebuilt zip from CI
 
-GitHub Actions (`.github/workflows/flipper-asset-pack.yml`) packs the source on
-every push and on a `flipper-v*` tag. You don't need Python locally:
+GitHub Actions (`.github/workflows/flipper-asset-pack.yml`) packs the source for
+you. You don't need Python locally:
 
-- **Any push:** open the workflow run → **Artifacts → `kormie-asset-pack`**
-  (downloads as a zip). Best from a desktop.
-- **Releases:** push a tag (`git tag flipper-v1 && git push origin flipper-v1`)
-  and the zip is attached to a GitHub **Release** — a public link that's easy to
-  open from the **Flipper iOS/Android app** or Safari on your phone.
+- **Phone-friendly (recommended):** the **`flipper-latest`** prerelease always
+  carries the newest `kormie-asset-pack.zip`, refreshed on every push to `main`.
+  It's a permanent, login-free link — bookmark it once and re-download anytime
+  from Safari or the Flipper app:
+  `https://github.com/kormie/dotclaude/releases/tag/flipper-latest`
+- **Frozen version:** push a tag (`git tag flipper-v1 && git push origin flipper-v1`)
+  to cut a versioned Release you can pin to.
+- **PR builds:** open the workflow run → **Artifacts → `kormie-asset-pack`**
+  (validation builds; best from a desktop).
 
 Then, with the zip in hand:
 
