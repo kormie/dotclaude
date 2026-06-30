@@ -33,10 +33,34 @@ This rewrites everything under `asset_packs/kormie/` and a scaled-up
 
 ## Installing on the Flipper (Momentum)
 
-The files here are the **source** pack. Momentum needs them packed to `.bmx`
-first. Two ways:
+The files here are the **source** pack. Momentum needs them packed to the
+on-device `.bm`/`.bmx` format first.
 
-### Option A — official packer (recommended)
+### Easiest — grab the prebuilt zip from CI
+
+GitHub Actions (`.github/workflows/flipper-asset-pack.yml`) packs the source on
+every push and on a `flipper-v*` tag. You don't need Python locally:
+
+- **Any push:** open the workflow run → **Artifacts → `kormie-asset-pack`**
+  (downloads as a zip). Best from a desktop.
+- **Releases:** push a tag (`git tag flipper-v1 && git push origin flipper-v1`)
+  and the zip is attached to a GitHub **Release** — a public link that's easy to
+  open from the **Flipper iOS/Android app** or Safari on your phone.
+
+Then, with the zip in hand:
+
+- **qFlipper (desktop):** File Manager tab → navigate to `/ext/asset_packs/` →
+  drag the unzipped `kormie` folder in.
+- **Flipper mobile app (iOS/Android):** download the Release zip, unzip with the
+  Files app, then use the app's file browser to copy `kormie` into
+  `/ext/asset_packs/`. (BLE transfer is slow for many small files — a card
+  reader or qFlipper is faster if you have one.)
+
+> Asset packs require firmware that supports `asset_packs` (Momentum, which
+> you're already running). The CI pins the packer to the `mntm-012` tag so the
+> output matches your firmware; override via the `MOMENTUM_REF` env var.
+
+### Option A — pack it yourself with the official packer
 
 ```bash
 # from a checkout of Next-Flip/Momentum-Firmware
@@ -64,8 +88,10 @@ download the packed result, then copy it to `/ext/asset_packs/`.
 
 ```
 flipper/
-├── generate_assets.py        # reproducible generator (Pillow)
+├── generate_assets.py        # reproducible source-art generator (Pillow)
+├── pack.py                   # compiles source -> device format into dist/ (CI uses this)
 ├── preview.png               # contact sheet (regenerated)
+├── dist/                     # packed output (gitignored, built by pack.py / CI)
 └── asset_packs/kormie/
     ├── Anims/
     │   ├── manifest.txt
