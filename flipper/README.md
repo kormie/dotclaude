@@ -13,7 +13,14 @@ Inspired by [Kuronons/FZ_graphics](https://github.com/Kuronons/FZ_graphics).
 |-------|------|-------|
 | **Passport background** | `Icons/Passport/passport_128x64.png` | Framed "terminal" border + corner brackets + stock-style barcode strip. Deliberately leaves the dolphin/name/level regions clear so firmware text stays readable. |
 | **Mood faces** | `Icons/Passport/passport_{happy,okay,bad}_46x49.png` | A CRT-monitor mascot ("Termy"): shades + grin when you're a high-level good-mood dolphin, neutral when okay, `x_x` + frown when butthurt. |
-| **Idle animation** | `Anims/kormie_whoami/` | A terminal types `whoami` and answers `> hacker dolphin` / `> KOHO // hjkl`, blinking block cursor. 9 frames @ 3 fps. |
+| **Idle anim — `whoami`** | `Anims/kormie_whoami/` | A terminal types `whoami` → `> hacker dolphin` / `> KOHO // hjkl`, blinking cursor. 9 frames @ 3 fps. |
+| **Idle anim — vim splash** | `Anims/kormie_vim/` | The vim welcome screen: `~` gutter, `VIM - Vi IMproved`, `~ kormie ~`, comma-leader, and a highlight box stepping across `h j k l`. 8 frames @ 4 fps. |
+| **Idle anim — BEAM** | `Anims/kormie_beam/` | An OTP supervision tree where a worker crashes (`** (EXIT)` → `let it crash`) and the supervisor restarts it (`:restarting` → `:ok`), Elixir drop logo and `iex>` prompt. 8 frames @ 3 fps. |
+
+The desktop cycles through the three idle animations by weight (set in
+`Anims/manifest.txt`). Momentum's cold-boot logo is compiled into the firmware
+and isn't asset-pack-overridable, so the vim "splash" lives here as the idle
+screen you actually stare at.
 
 All source art is **1-bit black-on-white PNG**. Momentum's packer inverts to the
 device bit convention, so black source pixels render as the dark pixels on the
@@ -95,9 +102,9 @@ flipper/
 └── asset_packs/kormie/
     ├── Anims/
     │   ├── manifest.txt
-    │   └── kormie_whoami/
-    │       ├── meta.txt
-    │       └── frame_0.png … frame_8.png
+    │   ├── kormie_whoami/   # meta.txt + frame_*.png
+    │   ├── kormie_vim/      # meta.txt + frame_*.png
+    │   └── kormie_beam/     # meta.txt + frame_*.png
     └── Icons/Passport/
         ├── passport_128x64.png
         ├── passport_happy_46x49.png
