@@ -95,14 +95,40 @@ download the packed result, then copy it to `/ext/asset_packs/`.
 3. The mood faces and `whoami` idle animation show up on the desktop/passport
    once the pack is active and the animation weight wins a roll.
 
+## Bulk SD setup (`setup-sd.sh`)
+
+Beyond the theme, `setup-sd.sh` stages the rest of the SD-card content into a
+single `/ext`-shaped folder you copy onto the card in one pass — no slow
+file-by-file Bluetooth transfers:
+
+| Component | Source | Lands in |
+|-----------|--------|----------|
+| Universal IR remote DB | [Flipper-IRDB](https://github.com/Lucaslhm/Flipper-IRDB) | `infrared/` |
+| Expanded MIFARE dict | Momentum `mntm-012` bundle (3k+ keys) | `nfc/assets/mf_classic_dict_user.nfc` |
+| Amiibo library | [FlipperAmiibo](https://github.com/Gioman101/FlipperAmiibo) | `nfc/amiibo/` |
+
+```bash
+cd flipper
+./setup-sd.sh                 # stage everything -> flipper/sd-staging/
+./setup-sd.sh --irdb --dict   # pick components; --clean wipes first
+rsync -av sd-staging/ /Volumes/<SD>/   # merge onto the card (does NOT wipe nfc saves)
+```
+
+`rsync` (or qFlipper) **merges**; do **not** drag the top-level `nfc` folder in
+Finder — Finder replaces same-named folders and would delete your saved cards.
+The **app loadout** isn't file-copied — install it from the Apps catalog (the
+script prints the list).
+
 ## Layout
 
 ```
 flipper/
 ├── generate_assets.py        # reproducible source-art generator (Pillow)
 ├── pack.py                   # compiles source -> device format into dist/ (CI uses this)
+├── setup-sd.sh               # stages IRDB + MIFARE dict + amiibo into sd-staging/
 ├── preview.png               # contact sheet (regenerated)
 ├── dist/                     # packed output (gitignored, built by pack.py / CI)
+├── sd-staging/               # SD content (gitignored, built by setup-sd.sh)
 └── asset_packs/kormie/
     ├── Anims/
     │   ├── manifest.txt
