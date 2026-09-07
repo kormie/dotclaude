@@ -19,6 +19,41 @@
 
 ## 🚀 Quick Start
 
+### Optional reproducible development shell
+
+The devenv shell is an optional contributor convenience, not an installation
+requirement for these dotfiles. Its pinned environment is tested on both Linux
+and macOS in CI before changes to it are merged.
+
+```bash
+# With Nix and devenv already installed
+devenv shell
+
+# Optional automatic activation for existing direnv users
+direnv allow
+```
+
+Entering the shell only adds tools to `PATH` and prints the available tasks. It
+does **not** install dependencies, inspect or modify the host, write to `$HOME`,
+run Homebrew or `apt`, change macOS defaults, or build the project. Run an
+explicit task when you want that work performed:
+
+| Task | In devenv | Native alternative (no Nix) |
+|------|------------|-----------------------------|
+| Preview docs | `docs:dev` | `cd docs && bun install && bun run docs:dev` |
+| Build docs | `docs:build` | `cd docs && bun install && bun run docs:build` |
+| Lint shell scripts | `lint:shell` | Install ShellCheck, then `shellcheck scripts/*.sh bin/claude-switch` |
+| Check shell formatting | `lint:format` | Install shfmt, then `shfmt -d scripts/*.sh bin/claude-switch` |
+| Lint Actions workflows | `lint:actions` | Install actionlint, then `actionlint` |
+| Generate Flipper art | `flipper:generate` | `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python flipper/generate_assets.py` |
+| Pack Flipper assets | `flipper:pack` | After the preceding Python setup, `.venv/bin/python flipper/pack.py` |
+| Run environment checks | `devenv test` | Install GNU Stow and run `stow --version`; run the three native lint commands above |
+
+Native prerequisites are Bun, Python 3.11 (selected by `.python-version`), Git,
+jq, ShellCheck, shfmt, and actionlint; GNU Stow is needed only for the environment
+check. Install them with your preferred OS package manager. Python package pins
+live in `requirements.txt`, which is also the declaration consumed by CI.
+
 ### Linux Server (Ubuntu/Debian) - Minimal Profile
 
 This profile is designed for VPS/server bootstrapping: **tmux + vim muscle memory + mosh + fzf + bat + zoxide**.
