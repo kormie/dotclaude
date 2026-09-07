@@ -29,7 +29,7 @@ jobs:
           bun-version: 1.2.14
           
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v6
         
       # This is the same root-level entry point used locally and in devenv. Its
       # docs-install prerequisite enforces Bun's frozen lockfile mode.
