@@ -217,3 +217,14 @@ Brewfile.lock.json
 
 # Allow users to add their own ignores
 .gitignore.local
+
+# Devenv
+.devenv*
+devenv.local.nix
+devenv.local.yaml
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml

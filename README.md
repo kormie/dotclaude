@@ -159,9 +159,10 @@ Do not use a bare `command -v devenv` maintenance check: an older cached image
 may have Nix installed without its profile on `PATH`. Reset the container cache
 once after changing the setup and maintenance scripts.
 
-devenv is optional. Without Nix, install Bun, Python 3 (with Pillow and
-heatshrink2), Git, ShellCheck, shfmt, and actionlint using your normal package
-manager, then run the equivalent native entry point:
+devenv is optional. Without Nix, install Bun, Python 3.11 (selected by
+`.python-version`), Git, ShellCheck, shfmt, and actionlint using your normal
+package manager. Install the pinned Python dependencies from `requirements.txt`,
+then run the equivalent native entry point:
 
 ```bash
 make ci
