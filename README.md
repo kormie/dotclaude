@@ -128,6 +128,31 @@ Install the two shell prerequisites with the repository's non-deploying mode:
 This uses devenv's currently documented Nix and devenv installation commands;
 it does not run any of DotClaude's host setup or deployment steps.
 
+#### Codex cloud setup
+
+In the [Codex cloud environment settings](https://platform.openai.com/docs/codex/overview#setup-scripts),
+choose a **Manual** setup script and use:
+
+```bash
+./scripts/install.sh --contributor
+```
+
+Keep **Container caching** enabled. The contributor installer realizes the
+locked devenv shell during setup, when network access is available, so the
+cached environment already contains Bun, Python, Git, ShellCheck, and shfmt.
+In Codex cloud it also places non-destructive `nix`, `nix-env`, and `devenv`
+launchers on the default agent `PATH`, because setup and maintenance run in
+separate Bash sessions. Use this idempotent maintenance script:
+
+```bash
+set -euo pipefail
+./scripts/install.sh --contributor
+```
+
+Do not use a bare `command -v devenv` maintenance check: an older cached image
+may have Nix installed without its profile on `PATH`. Reset the container cache
+once after changing the setup and maintenance scripts.
+
 devenv is optional. Without Nix, install Bun, Python 3, Git, ShellCheck, and
 shfmt using your normal package manager, then run the equivalent native checks:
 

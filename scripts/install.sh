@@ -249,6 +249,27 @@ load_nix_environment() {
     done
 }
 
+persist_codex_contributor_commands() {
+    [[ "${CODEX_CI:-}" == "1" ]] || return 0
+
+    # Codex setup and maintenance scripts run in separate Bash sessions. Put
+    # stable launchers on the default agent PATH so profile exports are not
+    # required after setup. Never replace an existing command.
+    local bin_dir="${CONTRIBUTOR_BIN_DIR:-/usr/local/bin}"
+    local command_name command_path target
+    mkdir -p "$bin_dir"
+    for command_name in nix nix-env devenv; do
+        command_path=$(command -v "$command_name")
+        target="$bin_dir/$command_name"
+        if [[ -e "$target" || -L "$target" ]]; then
+            log_skip "Codex launcher already exists: $target"
+        else
+            ln -s "$(readlink -f "$command_path")" "$target"
+            log_info "Created Codex launcher: $target"
+        fi
+    done
+}
+
 install_contributor_dependencies() {
     log_step "Installing contributor environment prerequisites..."
 
@@ -257,6 +278,9 @@ install_contributor_dependencies() {
         exit 1
     fi
 
+    # An existing Nix installation may not be on PATH in a fresh Codex setup or
+    # maintenance session, so load its official profile before probing it.
+    load_nix_environment
     if command -v nix &>/dev/null; then
         log_skip "Nix already installed ($(nix --version))"
     else
@@ -278,6 +302,18 @@ install_contributor_dependencies() {
         nix-env --install --attr devenv \
             -f https://github.com/NixOS/nixpkgs/tarball/nixpkgs-unstable
     fi
+
+    if ! command -v devenv &>/dev/null; then
+        log_error "devenv was installed but is not available in PATH; start a new shell and retry"
+        exit 1
+    fi
+
+    persist_codex_contributor_commands
+
+    # Realize the locked project shell while setup-script internet access is
+    # available. Codex cloud can then cache the Nix store closure for agent runs.
+    log_step "Preparing the locked contributor shell..."
+    (cd "$DOTFILES_DIR" && devenv shell -- true)
 
     log_success "Contributor prerequisites installed"
     log_info "Run 'devenv shell' to obtain Bun, Python, Git, ShellCheck, and shfmt"
@@ -849,7 +885,11 @@ main() {
     echo -e "${GREEN}========================================${NC}"
     echo
     log_info "Log file: $LOG_FILE"
-    log_info "To apply shell changes, run: exec \$SHELL"
+    if [[ "$INSTALL_MODE" == "--contributor" || "$INSTALL_MODE" == "contributor" ]]; then
+        log_info "Contributor tools are ready; run: devenv shell"
+    else
+        log_info "To apply shell changes, run: exec \$SHELL"
+    fi
     log_info "For help: ./scripts/install.sh --help"
     echo
 

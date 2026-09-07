@@ -17,6 +17,32 @@ devenv tasks run flipper:validate
 devenv tasks run check:all  # aggregate check; `devenv test` is equivalent
 ```
 
+### Codex cloud environment
+
+For a [Codex cloud setup script](https://platform.openai.com/docs/codex/overview#setup-scripts),
+select **Manual** and paste the same bootstrap command:
+
+```bash
+./scripts/install.sh --contributor
+```
+
+Leave container caching enabled. The installer realizes the locked shell during
+the network-enabled setup phase, making its binaries available from the cached
+Nix store without running any DotClaude deployment step. In Codex cloud it adds
+launchers for Nix and devenv to the default agent `PATH`, which persists across
+the separate setup, maintenance, and agent Bash sessions.
+
+Use the same idempotent command for the **Maintenance script**:
+
+```bash
+set -euo pipefail
+./scripts/install.sh --contributor
+```
+
+Do not start maintenance with a bare `command -v devenv`: older cached images
+can have Nix installed while its profile is absent from that session's `PATH`.
+Reset the container cache once after saving these settings.
+
 The locked shell contains only contributor tools: Bun, Python, Git, ShellCheck,
 and shfmt. Shell entry has no setup hook: it does not invoke Stow, Homebrew,
 `apt`, font installation, macOS defaults, or any repository install script, and
