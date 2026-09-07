@@ -13,6 +13,9 @@ hero:
       text: Get Started
       link: /getting-started/
     - theme: alt
+      text: Modernization Roadmap
+      link: https://github.com/kormie/dotclaude/blob/main/PROJECT_PLAN.md
+    - theme: alt
       text: View on GitHub
       link: https://github.com/kormie/dotclaude
 
@@ -125,9 +128,9 @@ Perfect for developers who want a powerful, safe, and modern CLI environment opt
 
 ---
 
-## 🎉 **Mission Accomplished**
+## 🔄 **Maintained Product**
 
-**DotClaude project is complete!** From initial concept to production deployment, this project successfully delivered a modern, safe, and powerful CLI environment specifically optimized for AI-assisted development.
+The original delivery phases established a modern, safe, and powerful CLI environment. DotClaude remains actively maintained; supported platforms, version floors, and the next independently reversible milestones live in the [modernization roadmap](https://github.com/kormie/dotclaude/blob/main/PROJECT_PLAN.md).
 
 **Ready to transform your development workflow?** [Get started now →](/getting-started/)
 
