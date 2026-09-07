@@ -110,6 +110,69 @@ cw myproject feature-1 feature-2
 
 ## 🏗️ Architecture
 
+### Optional contributor environment
+
+The root `devenv.nix`, `devenv.yaml`, and `devenv.lock` define a reproducible,
+cross-platform **contributor shell** for macOS and Linux. If Nix and devenv are
+installed, run `devenv shell`, then `devenv tasks run check:all` (or
+`devenv test`). The shell supplies only Bun for `docs/`, Python for `flipper/`,
+Git, ShellCheck, and shfmt. Entering it does not run Stow or any setup script and
+does not create, remove, or replace files under `$HOME`.
+
+Install the two shell prerequisites with the repository's non-deploying mode:
+
+```bash
+./scripts/install.sh --contributor
+```
+
+This uses devenv's currently documented Nix and devenv installation commands;
+it does not run any of DotClaude's host setup or deployment steps.
+
+#### Codex cloud setup
+
+In the [Codex cloud environment settings](https://platform.openai.com/docs/codex/overview#setup-scripts),
+choose a **Manual** setup script and use:
+
+```bash
+./scripts/install.sh --contributor
+```
+
+Keep **Container caching** enabled. The contributor installer realizes the
+locked devenv shell during setup, when network access is available, so the
+cached environment already contains Bun, Python, Git, ShellCheck, and shfmt.
+In Codex cloud it also places non-destructive `nix`, `nix-env`, and `devenv`
+launchers on the default agent `PATH`, because setup and maintenance run in
+separate Bash sessions. Use this idempotent maintenance script:
+
+```bash
+set -euo pipefail
+./scripts/install.sh --contributor
+```
+
+Do not use a bare `command -v devenv` maintenance check: an older cached image
+may have Nix installed without its profile on `PATH`. Reset the container cache
+once after changing the setup and maintenance scripts.
+
+devenv is optional. Without Nix, install Bun, Python 3, Git, ShellCheck, and
+shfmt using your normal package manager, then run the equivalent native checks:
+
+```bash
+(cd docs && bun install --frozen-lockfile && bun run docs:build)
+shellcheck --severity=error bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace
+for file in bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace; do shfmt --to-json < "$file" >/dev/null; done
+python3 - <<'PY'
+import ast
+from pathlib import Path
+for source in sorted(Path("flipper").glob("*.py")):
+    ast.parse(source.read_text(), filename=str(source))
+PY
+```
+
+This contributor environment is deliberately separate from **host dotfile
+installation**. GNU Stow deployment, Homebrew or `apt`, fonts, macOS defaults,
+and every change under `$HOME` remain opt-in actions performed by the existing
+installation scripts described below; devenv never performs them.
+
 ### GNU Stow Package System
 ```
 stow/

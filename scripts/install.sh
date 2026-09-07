@@ -4,6 +4,7 @@
 # Usage:
 #   macOS:  ./scripts/install.sh [--all|--minimal|--interactive]
 #   Linux:  ./scripts/install.sh --server
+#   Contributors (macOS/Linux): ./scripts/install.sh --contributor
 #
 # This script is fully idempotent - safe to run multiple times.
 # Each step checks current state before making changes.
@@ -225,6 +226,97 @@ install_core_dependencies() {
             fi
         fi
     done
+}
+
+#######################################
+# Contributor Environment
+#######################################
+
+load_nix_environment() {
+    # The official installer uses the daemon profile on multi-user installs and
+    # the user profile on single-user installs. Loading either file affects only
+    # this process; it does not edit the contributor's shell configuration.
+    local nix_profile
+    for nix_profile in \
+        "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" \
+        "$HOME/.nix-profile/etc/profile.d/nix.sh"; do
+        if [[ -r "$nix_profile" ]]; then
+            # The path is selected from the official Nix profiles above.
+            # shellcheck disable=SC1090
+            source "$nix_profile"
+            break
+        fi
+    done
+}
+
+persist_codex_contributor_commands() {
+    [[ "${CODEX_CI:-}" == "1" ]] || return 0
+
+    # Codex setup and maintenance scripts run in separate Bash sessions. Put
+    # stable launchers on the default agent PATH so profile exports are not
+    # required after setup. Never replace an existing command.
+    local bin_dir="${CONTRIBUTOR_BIN_DIR:-/usr/local/bin}"
+    local command_name command_path target
+    mkdir -p "$bin_dir"
+    for command_name in nix nix-env devenv; do
+        command_path=$(command -v "$command_name")
+        target="$bin_dir/$command_name"
+        if [[ -e "$target" || -L "$target" ]]; then
+            log_skip "Codex launcher already exists: $target"
+        else
+            ln -s "$(readlink -f "$command_path")" "$target"
+            log_info "Created Codex launcher: $target"
+        fi
+    done
+}
+
+install_contributor_dependencies() {
+    log_step "Installing contributor environment prerequisites..."
+
+    if ! command -v curl &>/dev/null; then
+        log_error "curl is required to install Nix"
+        exit 1
+    fi
+
+    # An existing Nix installation may not be on PATH in a fresh Codex setup or
+    # maintenance session, so load its official profile before probing it.
+    load_nix_environment
+    if command -v nix &>/dev/null; then
+        log_skip "Nix already installed ($(nix --version))"
+    else
+        log_info "Installing Nix with the official nix-installer..."
+        curl -sSfL https://artifacts.nixos.org/nix-installer | \
+            sh -s -- install --no-confirm
+        load_nix_environment
+    fi
+
+    if ! command -v nix &>/dev/null; then
+        log_error "Nix was installed but is not available in PATH; start a new shell and retry"
+        exit 1
+    fi
+
+    if command -v devenv &>/dev/null; then
+        log_skip "devenv already installed ($(devenv --version))"
+    else
+        log_info "Installing devenv from nixpkgs..."
+        nix-env --install --attr devenv \
+            -f https://github.com/NixOS/nixpkgs/tarball/nixpkgs-unstable
+    fi
+
+    if ! command -v devenv &>/dev/null; then
+        log_error "devenv was installed but is not available in PATH; start a new shell and retry"
+        exit 1
+    fi
+
+    persist_codex_contributor_commands
+
+    # Realize the locked project shell while setup-script internet access is
+    # available. Codex cloud can then cache the Nix store closure for agent runs.
+    log_step "Preparing the locked contributor shell..."
+    (cd "$DOTFILES_DIR" && devenv shell -- true)
+
+    log_success "Contributor prerequisites installed"
+    log_info "Run 'devenv shell' to obtain Bun, Python, Git, ShellCheck, and shfmt"
 }
 
 #######################################
@@ -679,6 +771,7 @@ OPTIONS:
     --minimal, -m       Minimal installation (macOS)
     --interactive, -i   Interactive mode with prompts (default, macOS)
     --server            Linux server minimal profile (Ubuntu/Debian)
+    --contributor       Install only Nix and devenv (macOS/Linux)
     --help, -h          Show this help message
 
 EXAMPLES:
@@ -686,6 +779,7 @@ EXAMPLES:
     $(basename "$0") --all        # Full installation (macOS)
     $(basename "$0") --minimal    # Minimal installation (macOS)
     $(basename "$0") --server     # Server minimal profile (Linux)
+    $(basename "$0") --contributor # Reproducible contributor shell prerequisites
 
 WHAT GETS INSTALLED:
     Minimal:
@@ -699,6 +793,11 @@ WHAT GETS INSTALLED:
       - Nerd Fonts
       - Oh-My-Zsh with plugins
       - macOS system defaults
+
+    Contributor:
+      - Nix (official nix-installer, when missing)
+      - devenv (official nixpkgs installation command)
+      - No Stow deployment or changes to dotfile configuration
 
 IDEMPOTENCY:
     This script is designed to be idempotent - running it multiple
@@ -737,6 +836,16 @@ run_server() {
     log_success "Server profile installed"
 }
 
+run_contributor() {
+    echo
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}  Contributor Environment Prerequisites ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo
+
+    install_contributor_dependencies
+}
+
 main() {
     # Initialize log file
     mkdir -p "$(dirname "$LOG_FILE")"
@@ -756,6 +865,9 @@ main() {
         "--server")
             run_server
             ;;
+        "--contributor"|"contributor")
+            run_contributor
+            ;;
         "--help"|"-h"|"help")
             show_usage
             exit 0
@@ -773,7 +885,11 @@ main() {
     echo -e "${GREEN}========================================${NC}"
     echo
     log_info "Log file: $LOG_FILE"
-    log_info "To apply shell changes, run: exec \$SHELL"
+    if [[ "$INSTALL_MODE" == "--contributor" || "$INSTALL_MODE" == "contributor" ]]; then
+        log_info "Contributor tools are ready; run: devenv shell"
+    else
+        log_info "To apply shell changes, run: exec \$SHELL"
+    fi
     log_info "For help: ./scripts/install.sh --help"
     echo
 
