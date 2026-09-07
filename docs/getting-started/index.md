@@ -11,10 +11,9 @@ it and run the named checks:
 ```bash
 ./scripts/install.sh --contributor
 devenv shell
-devenv tasks run docs:build
-devenv tasks run shell:lint
-devenv tasks run flipper:validate
-devenv tasks run check:all  # aggregate check; `devenv test` is equivalent
+devenv tasks run ci:lint
+devenv tasks run ci:all     # full release/scheduled-CI check; devenv test is equivalent
+devenv tasks run local:docs # optional modified-file-filtered local shortcut
 ```
 
 ### Codex cloud environment
@@ -49,18 +48,11 @@ and shfmt. Shell entry has no setup hook: it does not invoke Stow, Homebrew,
 therefore does not create, remove, or replace user configuration under `$HOME`.
 Only an explicit host-install command from the sections below changes the host.
 
-devenv is not required. Contributors using native tools can run:
+devenv is not required. Contributors with the native dependencies can run the
+same repository-only checks through the Makefile:
 
 ```bash
-(cd docs && bun install --frozen-lockfile && bun run docs:build)
-shellcheck --severity=error bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace
-for file in bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace; do shfmt --to-json < "$file" >/dev/null; done
-python3 - <<'PY'
-import ast
-from pathlib import Path
-for source in sorted(Path("flipper").glob("*.py")):
-    ast.parse(source.read_text(), filename=str(source))
-PY
+make ci
 ```
 
 The contributor shell validates repository sources; the installer below

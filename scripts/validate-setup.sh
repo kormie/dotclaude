@@ -1,9 +1,14 @@
 #!/bin/bash
 
-# validate-setup.sh - Verify dotfiles installation is complete and correct
+# validate-setup.sh - Read-only validation of an installed host
 # Usage: ./scripts/validate-setup.sh [--verbose|-v]
 #
-# This script validates the installation and reports any issues.
+# This reads $HOME, global Git configuration, installed programs, and other
+# host state. It is not portable static repository QA and is intended to run
+# after dotfiles installation. Use `devenv tasks run ci:all` (full) or
+# `make ci` to validate a checkout without inspecting or changing $HOME.
+# For pre-deployment/manual integration tests (including Stow dry-runs against
+# $HOME and loading configs), use scripts/test-config.sh.
 # Exit codes:
 #   0 - All checks passed
 #   1 - Some checks failed
@@ -83,18 +88,18 @@ check_core_dependencies() {
         if command -v "$cmd" &>/dev/null; then
             local version
             case "$cmd" in
-                "brew")
-                    version=$(brew --version | head -1)
-                    ;;
-                "nvim")
-                    version=$(nvim --version | head -1)
-                    ;;
-                "git")
-                    version=$(git --version)
-                    ;;
-                *)
-                    version=$($cmd --version 2>/dev/null | head -1 || echo "installed")
-                    ;;
+            "brew")
+                version=$(brew --version | head -1)
+                ;;
+            "nvim")
+                version=$(nvim --version | head -1)
+                ;;
+            "git")
+                version=$(git --version)
+                ;;
+            *)
+                version=$($cmd --version 2>/dev/null | head -1 || echo "installed")
+                ;;
             esac
             log_pass "$name"
             log_verbose "$version"
@@ -437,7 +442,7 @@ check_backup_system() {
     if [[ -d "$backup_dir" ]]; then
         local backup_count
         backup_count=$(find "$backup_dir" -maxdepth 1 -type d | wc -l)
-        ((backup_count--))  # Subtract 1 for the backups dir itself
+        ((backup_count--)) # Subtract 1 for the backups dir itself
 
         log_pass "Backup directory exists"
         log_verbose "$backup_count backup(s) found"
@@ -496,7 +501,7 @@ show_summary() {
 #######################################
 
 show_usage() {
-    cat << EOF
+    cat <<EOF
 Dotfiles Validation Script
 
 USAGE:
@@ -523,17 +528,17 @@ EOF
 
 main() {
     case "${1:-}" in
-        "--help"|"-h")
-            show_usage
-            exit 0
-            ;;
-        "--verbose"|"-v"|"")
-            ;;
-        *)
-            echo "Unknown option: $1"
-            show_usage
-            exit 1
-            ;;
+    "--help" | "-h")
+        show_usage
+        exit 0
+        ;;
+    "--verbose" | "-v" | "")
+        ;;
+    *)
+        echo "Unknown option: $1"
+        show_usage
+        exit 1
+        ;;
     esac
 
     echo

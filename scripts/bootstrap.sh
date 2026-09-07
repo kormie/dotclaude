@@ -116,19 +116,19 @@ run_installer() {
     fi
 
     case "$INSTALL_MODE" in
-        "all")
-            "$DOTFILES_DIR/scripts/install.sh" --all
-            ;;
-        "minimal")
-            "$DOTFILES_DIR/scripts/install.sh" --minimal
-            ;;
-        "interactive")
-            "$DOTFILES_DIR/scripts/install.sh" --interactive
-            ;;
-        *)
-            log_warn "Unknown install mode: $INSTALL_MODE, using 'all'"
-            "$DOTFILES_DIR/scripts/install.sh" --all
-            ;;
+    "all")
+        "$DOTFILES_DIR/scripts/install.sh" --all
+        ;;
+    "minimal")
+        "$DOTFILES_DIR/scripts/install.sh" --minimal
+        ;;
+    "interactive")
+        "$DOTFILES_DIR/scripts/install.sh" --interactive
+        ;;
+    *)
+        log_warn "Unknown install mode: $INSTALL_MODE, using 'all'"
+        "$DOTFILES_DIR/scripts/install.sh" --all
+        ;;
     esac
 }
 

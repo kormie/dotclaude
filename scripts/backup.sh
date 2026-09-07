@@ -40,7 +40,7 @@ create_backup_structure() {
 backup_file() {
     local source="$1"
     local dest="$2"
-    
+
     if [[ -e "$source" ]]; then
         mkdir -p "$(dirname "$dest")"
         cp -r "$source" "$dest"
@@ -56,11 +56,11 @@ backup_file() {
 backup_common_dotfiles() {
     local backup_session_dir="$1"
     local backed_up=0
-    
+
     # Common dotfiles to backup
     declare -a dotfiles=(
         "$HOME/.zshrc"
-        "$HOME/.bashrc" 
+        "$HOME/.bashrc"
         "$HOME/.bash_profile"
         "$HOME/.profile"
         "$HOME/.gitconfig"
@@ -73,13 +73,13 @@ backup_common_dotfiles() {
         "$HOME/.aliases"
         "$HOME/.exports"
     )
-    
+
     for dotfile in "${dotfiles[@]}"; do
         if backup_file "$dotfile" "$backup_session_dir$(basename "$dotfile")"; then
             ((backed_up++))
         fi
     done
-    
+
     return $backed_up
 }
 
@@ -87,48 +87,48 @@ backup_common_dotfiles() {
 backup_component() {
     local component="$1"
     local backup_session_dir="$2"
-    
+
     case "$component" in
-        "zsh")
-            backup_file "$HOME/.zshrc" "$backup_session_dir/.zshrc"
-            backup_file "$HOME/.oh-my-zsh" "$backup_session_dir/.oh-my-zsh"
-            ;;
-        "git")
-            backup_file "$HOME/.gitconfig" "$backup_session_dir/.gitconfig"
-            backup_file "$HOME/.gitignore_global" "$backup_session_dir/.gitignore_global"
-            ;;
-        "nvim"|"neovim")
-            backup_file "$HOME/.config/nvim" "$backup_session_dir/.config/nvim"
-            backup_file "$HOME/.vimrc" "$backup_session_dir/.vimrc"
-            backup_file "$HOME/.vim" "$backup_session_dir/.vim"  
-            ;;
-        "tmux")
-            backup_file "$HOME/.tmux.conf" "$backup_session_dir/.tmux.conf"
-            ;;
-        "environment"|"env")
-            backup_file "$HOME/.zshenv" "$backup_session_dir/.zshenv"
-            ;;
-        "aliases")
-            backup_file "$HOME/.aliases" "$backup_session_dir/.aliases"
-            ;;
-        *)
-            log_error "Unknown component: $component"
-            log_info "Available components: zsh, git, nvim, tmux, environment, aliases"
-            exit 1
-            ;;
+    "zsh")
+        backup_file "$HOME/.zshrc" "$backup_session_dir/.zshrc"
+        backup_file "$HOME/.oh-my-zsh" "$backup_session_dir/.oh-my-zsh"
+        ;;
+    "git")
+        backup_file "$HOME/.gitconfig" "$backup_session_dir/.gitconfig"
+        backup_file "$HOME/.gitignore_global" "$backup_session_dir/.gitignore_global"
+        ;;
+    "nvim" | "neovim")
+        backup_file "$HOME/.config/nvim" "$backup_session_dir/.config/nvim"
+        backup_file "$HOME/.vimrc" "$backup_session_dir/.vimrc"
+        backup_file "$HOME/.vim" "$backup_session_dir/.vim"
+        ;;
+    "tmux")
+        backup_file "$HOME/.tmux.conf" "$backup_session_dir/.tmux.conf"
+        ;;
+    "environment" | "env")
+        backup_file "$HOME/.zshenv" "$backup_session_dir/.zshenv"
+        ;;
+    "aliases")
+        backup_file "$HOME/.aliases" "$backup_session_dir/.aliases"
+        ;;
+    *)
+        log_error "Unknown component: $component"
+        log_info "Available components: zsh, git, nvim, tmux, environment, aliases"
+        exit 1
+        ;;
     esac
 }
 
 main() {
     local component="${1:-all}"
-    
+
     log_info "Starting backup process..."
     log_info "Timestamp: $TIMESTAMP"
-    
+
     # Create backup session directory
     local backup_session_dir
     backup_session_dir=$(create_backup_structure)
-    
+
     if [[ "$component" == "all" ]]; then
         log_info "Backing up all common dotfiles..."
         if backup_common_dotfiles "$backup_session_dir"; then
@@ -143,12 +143,12 @@ main() {
         log_info "Component backup completed"
         log_info "Backup location: $backup_session_dir"
     fi
-    
+
     # Create backup manifest
-    echo "Backup created: $(date)" > "$backup_session_dir/MANIFEST"
-    echo "Component: $component" >> "$backup_session_dir/MANIFEST"
-    echo "Files backed up:" >> "$backup_session_dir/MANIFEST"
-    find "$backup_session_dir" -type f -not -name "MANIFEST" >> "$backup_session_dir/MANIFEST"
+    echo "Backup created: $(date)" >"$backup_session_dir/MANIFEST"
+    echo "Component: $component" >>"$backup_session_dir/MANIFEST"
+    echo "Files backed up:" >>"$backup_session_dir/MANIFEST"
+    find "$backup_session_dir" -type f -not -name "MANIFEST" >>"$backup_session_dir/MANIFEST"
 }
 
 # Run main function with all arguments

@@ -55,8 +55,8 @@ print_help() {
 
 # Get available profiles
 get_profiles() {
-    find "$CLAUDE_DIR" -name "settings.*.json" -exec basename {} \; | \
-        sed 's/settings\.\(.*\)\.json/\1/' | \
+    find "$CLAUDE_DIR" -name "settings.*.json" -exec basename {} \; |
+        sed 's/settings\.\(.*\)\.json/\1/' |
         sort
 }
 
@@ -66,10 +66,10 @@ get_current_profile() {
         echo "none"
         return
     fi
-    
+
     local current_hash
     current_hash=$(shasum -a 256 "$SETTINGS_FILE" | cut -d' ' -f1)
-    
+
     for profile in $(get_profiles); do
         local profile_file="$CLAUDE_DIR/settings.$profile.json"
         if [[ -f "$profile_file" ]]; then
@@ -81,7 +81,7 @@ get_current_profile() {
             fi
         fi
     done
-    
+
     echo "custom"
 }
 
@@ -89,28 +89,28 @@ get_current_profile() {
 get_profile_description() {
     local profile="$1"
     local profile_file="$CLAUDE_DIR/settings.$profile.json"
-    
+
     if [[ ! -f "$profile_file" ]]; then
         echo "Unknown profile"
         return
     fi
-    
+
     # Extract model info
     local model=""
     local provider=""
-    
+
     if grep -q "CLAUDE_CODE_USE_BEDROCK.*true" "$profile_file"; then
         provider="AWS Bedrock"
     elif grep -q "ANTHROPIC_API_KEY" "$profile_file"; then
         provider="Anthropic API"
     fi
-    
+
     if grep -q "claude-opus" "$profile_file"; then
         model="Claude Opus"
     elif grep -q "claude-sonnet" "$profile_file"; then
         model="Claude Sonnet"
     fi
-    
+
     echo "$model via $provider"
 }
 
@@ -119,14 +119,14 @@ list_profiles() {
     print_header
     echo -e "${WHITE}${BOLD}Available Profiles:${RESET}"
     echo
-    
+
     local current_profile
     current_profile=$(get_current_profile)
-    
+
     for profile in $(get_profiles); do
         local description
         description=$(get_profile_description "$profile")
-        
+
         if [[ "$profile" == "$current_profile" ]]; then
             echo -e "  ${GREEN}${CHECK} ${BOLD}$profile${RESET} ${GRAY}$description${RESET} ${GREEN}${DIM}(current)${RESET}"
         else
@@ -141,10 +141,10 @@ show_status() {
     print_header
     local current_profile
     current_profile=$(get_current_profile)
-    
+
     echo -e "${WHITE}${BOLD}Current Profile:${RESET}"
     echo
-    
+
     if [[ "$current_profile" == "none" ]]; then
         echo -e "  ${RED}${DOT} No settings file found${RESET}"
     elif [[ "$current_profile" == "custom" ]]; then
@@ -161,24 +161,24 @@ show_status() {
 switch_profile() {
     local profile="$1"
     local profile_file="$CLAUDE_DIR/settings.$profile.json"
-    
+
     if [[ ! -f "$profile_file" ]]; then
         echo -e "${RED}${BOLD}Error:${RESET} Profile '$profile' not found"
         echo -e "${GRAY}Available profiles: $(get_profiles | tr '\n' ' ')${RESET}"
         exit 1
     fi
-    
+
     # Create backup
     if [[ -f "$SETTINGS_FILE" ]]; then
         cp "$SETTINGS_FILE" "$SETTINGS_FILE.bak.$(date +%Y%m%d_%H%M%S)"
     fi
-    
+
     # Switch settings
     cp "$profile_file" "$SETTINGS_FILE"
-    
+
     local description
     description=$(get_profile_description "$profile")
-    
+
     echo -e "${GREEN}${CHECK} ${BOLD}Switched to profile:${RESET} ${WHITE}$profile${RESET}"
     echo -e "${GRAY}  $description${RESET}"
 }
@@ -188,17 +188,17 @@ interactive_mode() {
     print_header
     echo -e "${WHITE}${BOLD}Select a profile:${RESET}"
     echo
-    
+
     local profiles
     mapfile -t profiles < <(get_profiles)
     local current_profile
     current_profile=$(get_current_profile)
-    
+
     local i=1
     for profile in "${profiles[@]}"; do
         local description
         description=$(get_profile_description "$profile")
-        
+
         if [[ "$profile" == "$current_profile" ]]; then
             echo -e "  ${GREEN}$i) ${BOLD}$profile${RESET} ${GRAY}$description${RESET} ${GREEN}${DIM}(current)${RESET}"
         else
@@ -206,18 +206,18 @@ interactive_mode() {
         fi
         ((i++))
     done
-    
+
     echo
     echo -e "${GRAY}Enter number (1-${#profiles[@]}) or 'q' to quit:${RESET}"
     read -r choice
-    
+
     if [[ "$choice" == "q" || "$choice" == "Q" ]]; then
         echo -e "${GRAY}Cancelled${RESET}"
         exit 0
     fi
-    
+
     if [[ "$choice" =~ ^[0-9]+$ ]] && [[ "$choice" -ge 1 ]] && [[ "$choice" -le "${#profiles[@]}" ]]; then
-        local selected_profile="${profiles[$((choice-1))]}"
+        local selected_profile="${profiles[$((choice - 1))]}"
         echo
         switch_profile "$selected_profile"
     else
@@ -233,23 +233,23 @@ main() {
         echo -e "${RED}${BOLD}Error:${RESET} Claude directory not found at $CLAUDE_DIR"
         exit 1
     fi
-    
+
     case "${1:-}" in
-        --help|-h|help)
-            print_help
-            ;;
-        --list|-l|list)
-            list_profiles
-            ;;
-        --status|-s|status)
-            show_status
-            ;;
-        "")
-            interactive_mode
-            ;;
-        *)
-            switch_profile "$1"
-            ;;
+    --help | -h | help)
+        print_help
+        ;;
+    --list | -l | list)
+        list_profiles
+        ;;
+    --status | -s | status)
+        show_status
+        ;;
+    "")
+        interactive_mode
+        ;;
+    *)
+        switch_profile "$1"
+        ;;
     esac
 }
 

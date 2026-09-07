@@ -77,7 +77,7 @@ log_step "Creating configuration toggle mechanism..."
 mkdir -p "$HOME/.config/dotfiles"
 
 # Create toggle script
-cat > "$HOME/.config/dotfiles/toggle-zsh.sh" << 'EOF'
+cat >"$HOME/.config/dotfiles/toggle-zsh.sh" <<'EOF'
 #!/bin/bash
 
 # Toggle between original and enhanced Zsh configuration

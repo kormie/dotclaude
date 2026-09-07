@@ -50,14 +50,14 @@ get_current_status() {
 
 set_status() {
     local status="$1"
-    echo "$status" > "$CURRENT_STATUS_FILE"
+    echo "$status" >"$CURRENT_STATUS_FILE"
     log_info "Neovim configuration status set to: $status"
 }
 
 backup_current_config() {
     local backup_name="nvim-backup-$(date +%Y%m%d_%H%M%S)"
     local backup_path="$BACKUP_DIR/$backup_name"
-    
+
     if [[ -d "$NVIM_CONFIG_DIR" ]]; then
         log_info "Backing up current Neovim configuration to $backup_path"
         mkdir -p "$BACKUP_DIR"
@@ -148,7 +148,7 @@ switch_to_original() {
     # Find most recent original backup
     local latest_backup
     latest_backup=$(find "$BACKUP_DIR" -name "nvim-backup-*" -type d 2>/dev/null | sort | tail -1)
-    
+
     if [[ -n "$latest_backup" && -d "$latest_backup" ]]; then
         log_info "Restoring original configuration from $latest_backup"
         cp -r "$latest_backup" "$NVIM_CONFIG_DIR"
@@ -157,16 +157,16 @@ switch_to_original() {
     else
         log_warn "No backup found, creating minimal original configuration"
         mkdir -p "$NVIM_CONFIG_DIR/lua/user"
-        
+
         # Create minimal init.lua
-        cat > "$NVIM_CONFIG_DIR/init.lua" << 'EOF'
+        cat >"$NVIM_CONFIG_DIR/init.lua" <<'EOF'
 -- Minimal Neovim configuration
 require('user.options')
 require('user.keymaps')
 EOF
-        
+
         # Create basic options
-        cat > "$NVIM_CONFIG_DIR/lua/user/options.lua" << 'EOF'
+        cat >"$NVIM_CONFIG_DIR/lua/user/options.lua" <<'EOF'
 -- Basic Neovim options
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -188,9 +188,9 @@ vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.clipboard = 'unnamedplus'
 EOF
-        
+
         # Create basic keymaps
-        cat > "$NVIM_CONFIG_DIR/lua/user/keymaps.lua" << 'EOF'
+        cat >"$NVIM_CONFIG_DIR/lua/user/keymaps.lua" <<'EOF'
 -- Basic keymaps
 vim.g.mapleader = ','
 vim.g.maplocalleader = ','
@@ -226,7 +226,7 @@ map('i', 'jk', '<ESC>')
 map('v', '<', '<gv')
 map('v', '>', '>gv')
 EOF
-        
+
         set_status "original"
         log_info "✅ Created minimal original Neovim configuration"
     fi
@@ -235,35 +235,35 @@ EOF
 show_status() {
     local current_status
     current_status=$(get_current_status)
-    
+
     echo "==================================="
     echo "   Neovim Configuration Status"
     echo "==================================="
     echo
-    
+
     case "$current_status" in
-        "enhanced")
-            echo -e "Current: ${GREEN}Enhanced Configuration${NC}"
-            echo "• Modern Lua-based setup with plugins"
-            echo "• LSP, completion, and modern features"
-            echo "• Git integration with delta/difftastic"
-            echo "• Optimized for Claude Code workflows"
-            ;;
-        "original")
-            echo -e "Current: ${BLUE}Original Configuration${NC}"
-            echo "• Basic Neovim setup"
-            echo "• User's preferred keybindings (comma leader)"
-            echo "• Minimal feature set"
-            echo "• Compatible with existing workflow"
-            ;;
-        *)
-            echo -e "Current: ${YELLOW}Unknown${NC}"
-            ;;
+    "enhanced")
+        echo -e "Current: ${GREEN}Enhanced Configuration${NC}"
+        echo "• Modern Lua-based setup with plugins"
+        echo "• LSP, completion, and modern features"
+        echo "• Git integration with delta/difftastic"
+        echo "• Optimized for Claude Code workflows"
+        ;;
+    "original")
+        echo -e "Current: ${BLUE}Original Configuration${NC}"
+        echo "• Basic Neovim setup"
+        echo "• User's preferred keybindings (comma leader)"
+        echo "• Minimal feature set"
+        echo "• Compatible with existing workflow"
+        ;;
+    *)
+        echo -e "Current: ${YELLOW}Unknown${NC}"
+        ;;
     esac
-    
+
     echo
     echo "Configuration location: $NVIM_CONFIG_DIR"
-    
+
     if [[ -L "$NVIM_CONFIG_DIR" ]]; then
         echo "Type: Symlink"
         echo -e "Target: ${BLUE}$(readlink "$NVIM_CONFIG_DIR")${NC}"
@@ -272,7 +272,7 @@ show_status() {
     else
         echo -e "Type: ${RED}Missing${NC}"
     fi
-    
+
     echo
     echo "Available backups:"
     if find "$BACKUP_DIR" -name "nvim-backup-*" -type d >/dev/null 2>&1; then
@@ -285,7 +285,7 @@ show_status() {
 }
 
 show_help() {
-    cat << EOF
+    cat <<EOF
 Neovim Configuration Toggle Script
 
 USAGE:
@@ -322,26 +322,26 @@ EOF
 
 main() {
     local command="${1:-status}"
-    
+
     case "$command" in
-        "enhanced")
-            switch_to_enhanced
-            ;;
-        "original")
-            switch_to_original
-            ;;
-        "status")
-            show_status
-            ;;
-        "help"|"-h"|"--help")
-            show_help
-            ;;
-        *)
-            log_error "Unknown command: $command"
-            echo
-            show_help
-            exit 1
-            ;;
+    "enhanced")
+        switch_to_enhanced
+        ;;
+    "original")
+        switch_to_original
+        ;;
+    "status")
+        show_status
+        ;;
+    "help" | "-h" | "--help")
+        show_help
+        ;;
+    *)
+        log_error "Unknown command: $command"
+        echo
+        show_help
+        exit 1
+        ;;
     esac
 }
 

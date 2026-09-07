@@ -1,58 +1,72 @@
 { pkgs, ... }:
 
+let
+  shellInputs = [ "bin/claude-switch" "scripts" ];
+  repoInputs = [ "devenv.nix" "Makefile" ];
+  mkCheck = target: inputs: {
+    exec = "make ${target}";
+    execIfModified = inputs ++ repoInputs;
+  };
+in
 {
-  # This environment is intentionally limited to repository development. Host
-  # setup and dotfile deployment remain explicit operations under scripts/.
+  # Repository QA only. Nothing in this environment installs host packages,
+  # invokes Stow, runs an installer, or writes beneath $HOME.
   packages = with pkgs; [
+    actionlint
     git
+    gnumake
     shellcheck
     shfmt
+    (python3.withPackages (ps: with ps; [ heatshrink2 pillow ]))
   ];
 
   languages.javascript.bun.enable = true;
   languages.python.enable = true;
 
   tasks = {
-    "docs:build".exec = ''
-      cd docs
-      bun install --frozen-lockfile
-      bun run docs:build
-    '';
+    # The qa:* tasks are the full, deterministic entry points used by CI and
+    # releases. local:* uses execIfModified strictly as a developer shortcut.
+    "qa:shell-parse".exec = "make shell-parse";
+    "qa:shellcheck".exec = "make shellcheck";
+    "qa:shfmt".exec = "make shfmt";
+    "qa:json".exec = "make json";
+    "qa:actions".exec = "make actions";
+    "qa:docs-install".exec = "make docs-install";
+    "qa:docs-build" = {
+      after = [ "qa:docs-install" ];
+      exec = "make docs-build";
+    };
+    "qa:stow-layout".exec = "make stow-layout";
+    "qa:flipper-generate".exec = "make flipper-generate";
+    "qa:flipper-pack" = {
+      after = [ "qa:flipper-generate" ];
+      exec = "make flipper-pack";
+    };
 
-    "shell:lint".exec = ''
-      shell_files=(
-        bin/claude-switch
-        scripts/*.sh
-        scripts/tmux-claude-workspace
-      )
-      shellcheck --severity=error "''${shell_files[@]}"
-      for file in "''${shell_files[@]}"; do
-        shfmt --to-json < "$file" > /dev/null
-      done
-    '';
+    "local:shell-parse" = mkCheck "shell-parse" shellInputs;
+    "local:shellcheck" = mkCheck "shellcheck" shellInputs;
+    "local:shfmt" = mkCheck "shfmt" shellInputs;
+    "local:json" = mkCheck "json" [ ".github" "docs/package.json" "docs/bun.lock" "stow" ];
+    "local:actions" = mkCheck "actions" [ ".github/workflows" ];
+    "local:docs" = mkCheck "docs" [ "docs" ];
+    "local:stow-layout" = mkCheck "stow-layout" [ "stow" ];
+    "local:flipper" = mkCheck "flipper" [ "flipper" ];
 
-    "flipper:validate".exec = ''
-      python - <<'PY'
-      import ast
-      from pathlib import Path
-
-      sources = sorted(Path("flipper").glob("*.py"))
-      if not sources:
-          raise SystemExit("no Flipper Python sources found")
-      for source in sources:
-          ast.parse(source.read_text(), filename=str(source))
-          print(f"validated {source}")
-      PY
-    '';
-
-    "check:all" = {
+    "ci:lint" = {
       after = [
-        "docs:build"
-        "shell:lint"
-        "flipper:validate"
+        "qa:shell-parse"
+        "qa:shellcheck"
+        "qa:shfmt"
+        "qa:json"
+        "qa:actions"
+        "qa:stow-layout"
       ];
+      exec = ''echo "Static repository lint passed."'';
+    };
+    "ci:all" = {
+      after = [ "ci:lint" "qa:docs-build" "qa:flipper-pack" ];
       before = [ "devenv:enterTest" ];
-      exec = ''echo "All contributor checks passed."'';
+      exec = ''echo "All repository QA passed."'';
     };
   };
 }

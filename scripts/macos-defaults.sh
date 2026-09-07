@@ -113,7 +113,7 @@ configure_capslock() {
     if [[ ! -f "$plist_file" ]]; then
         log_setting "Creating CapsLock → Control LaunchAgent"
 
-        cat > "$plist_file" << 'EOF'
+        cat >"$plist_file" <<'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -364,7 +364,7 @@ show_status() {
 #######################################
 
 show_usage() {
-    cat << EOF
+    cat <<EOF
 macOS Defaults Configuration Script
 
 USAGE:
@@ -414,55 +414,55 @@ main() {
     local target="${1:---all}"
 
     case "$target" in
-        "--all"|"all")
-            echo
-            echo -e "${BLUE}==========================================${NC}"
-            echo -e "${BLUE}     macOS Defaults Configuration        ${NC}"
-            echo -e "${BLUE}==========================================${NC}"
-            echo
-            configure_keyboard
-            configure_capslock
-            configure_finder
-            configure_dock
-            configure_screenshots
-            configure_development
-            restart_affected_apps
-            echo
-            log_info "All macOS defaults have been configured!"
-            log_warn "Some changes require logout/restart to take effect"
-            ;;
-        "--keyboard")
-            configure_keyboard
-            configure_capslock
-            ;;
-        "--capslock")
-            configure_capslock
-            ;;
-        "--finder")
-            configure_finder
-            killall Finder 2>/dev/null || true
-            ;;
-        "--dock")
-            configure_dock
-            killall Dock 2>/dev/null || true
-            ;;
-        "--screenshots")
-            configure_screenshots
-            ;;
-        "--development"|"--dev")
-            configure_development
-            ;;
-        "--status")
-            show_status
-            ;;
-        "--help"|"-h"|"help")
-            show_usage
-            ;;
-        *)
-            log_error "Unknown option: $target"
-            show_usage
-            exit 1
-            ;;
+    "--all" | "all")
+        echo
+        echo -e "${BLUE}==========================================${NC}"
+        echo -e "${BLUE}     macOS Defaults Configuration        ${NC}"
+        echo -e "${BLUE}==========================================${NC}"
+        echo
+        configure_keyboard
+        configure_capslock
+        configure_finder
+        configure_dock
+        configure_screenshots
+        configure_development
+        restart_affected_apps
+        echo
+        log_info "All macOS defaults have been configured!"
+        log_warn "Some changes require logout/restart to take effect"
+        ;;
+    "--keyboard")
+        configure_keyboard
+        configure_capslock
+        ;;
+    "--capslock")
+        configure_capslock
+        ;;
+    "--finder")
+        configure_finder
+        killall Finder 2>/dev/null || true
+        ;;
+    "--dock")
+        configure_dock
+        killall Dock 2>/dev/null || true
+        ;;
+    "--screenshots")
+        configure_screenshots
+        ;;
+    "--development" | "--dev")
+        configure_development
+        ;;
+    "--status")
+        show_status
+        ;;
+    "--help" | "-h" | "help")
+        show_usage
+        ;;
+    *)
+        log_error "Unknown option: $target"
+        show_usage
+        exit 1
+        ;;
     esac
 }
 

@@ -38,32 +38,32 @@ fi
 
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
-    echo "[INFO] $(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "[INFO] $(date '+%Y-%m-%d %H:%M:%S') $1" >>"$LOG_FILE"
 }
 
 log_warn() {
     echo -e "${YELLOW}[WARN]${NC} $1"
-    echo "[WARN] $(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "[WARN] $(date '+%Y-%m-%d %H:%M:%S') $1" >>"$LOG_FILE"
 }
 
 log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
-    echo "[ERROR] $(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "[ERROR] $(date '+%Y-%m-%d %H:%M:%S') $1" >>"$LOG_FILE"
 }
 
 log_step() {
     echo -e "${BLUE}[STEP]${NC} $1"
-    echo "[STEP] $(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "[STEP] $(date '+%Y-%m-%d %H:%M:%S') $1" >>"$LOG_FILE"
 }
 
 log_success() {
     echo -e "${GREEN}[✓]${NC} $1"
-    echo "[SUCCESS] $(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "[SUCCESS] $(date '+%Y-%m-%d %H:%M:%S') $1" >>"$LOG_FILE"
 }
 
 log_skip() {
     echo -e "${CYAN}[SKIP]${NC} $1"
-    echo "[SKIP] $(date '+%Y-%m-%d %H:%M:%S') $1" >> "$LOG_FILE"
+    echo "[SKIP] $(date '+%Y-%m-%d %H:%M:%S') $1" >>"$LOG_FILE"
 }
 
 #######################################
@@ -72,29 +72,29 @@ log_skip() {
 
 detect_os() {
     case "$(uname -s)" in
-        Darwin)
-            echo "macos"
-            ;;
-        Linux)
-            echo "linux"
-            ;;
-        *)
-            echo "unknown"
-            ;;
+    Darwin)
+        echo "macos"
+        ;;
+    Linux)
+        echo "linux"
+        ;;
+    *)
+        echo "unknown"
+        ;;
     esac
 }
 
 detect_arch() {
     case "$(uname -m)" in
-        arm64|aarch64)
-            echo "arm64"
-            ;;
-        x86_64)
-            echo "x86_64"
-            ;;
-        *)
-            echo "unknown"
-            ;;
+    arm64 | aarch64)
+        echo "arm64"
+        ;;
+    x86_64)
+        echo "x86_64"
+        ;;
+    *)
+        echo "unknown"
+        ;;
     esac
 }
 
@@ -207,11 +207,11 @@ install_core_dependencies() {
     fi
 
     local deps=(
-        "stow"      # GNU Stow for symlink management
-        "git"       # Version control
-        "zsh"       # Shell
-        "neovim"    # Editor
-        "tmux"      # Terminal multiplexer
+        "stow"   # GNU Stow for symlink management
+        "git"    # Version control
+        "zsh"    # Shell
+        "neovim" # Editor
+        "tmux"   # Terminal multiplexer
     )
 
     for dep in "${deps[@]}"; do
@@ -285,7 +285,7 @@ install_contributor_dependencies() {
         log_skip "Nix already installed ($(nix --version))"
     else
         log_info "Installing Nix with the official nix-installer..."
-        curl -sSfL https://artifacts.nixos.org/nix-installer | \
+        curl -sSfL https://artifacts.nixos.org/nix-installer |
             sh -s -- install --no-confirm
         load_nix_environment
     fi
@@ -423,7 +423,7 @@ setup_secrets_file() {
 
     if [[ -f "$secrets_template" ]]; then
         cp "$secrets_template" "$secrets_file"
-        chmod 600 "$secrets_file"  # Restrict permissions
+        chmod 600 "$secrets_file" # Restrict permissions
         log_success "Created ~/.secrets from template"
         log_info "Edit ~/.secrets to add your API keys and tokens"
     else
@@ -443,7 +443,7 @@ setup_local_configs() {
     if [[ -f "$gitconfig_local" ]]; then
         log_skip "~/.gitconfig.local already exists"
     else
-        cat > "$gitconfig_local" << 'GITCONFIG'
+        cat >"$gitconfig_local" <<'GITCONFIG'
 # Machine-specific git configuration (not tracked in dotfiles)
 # This file is sourced by ~/.gitconfig
 
@@ -462,7 +462,7 @@ GITCONFIG
     if [[ -f "$zshrc_local" ]]; then
         log_skip "~/.zshrc.local already exists"
     else
-        cat > "$zshrc_local" << 'ZSHRC'
+        cat >"$zshrc_local" <<'ZSHRC'
 # Machine-specific shell configuration (not tracked in dotfiles)
 # This file is sourced at the end of ~/.zshrc
 
@@ -548,14 +548,14 @@ deploy_stow_packages() {
 
     # Define packages in deployment order
     local packages=(
-        "environment"   # PATH and environment variables first
-        "aliases"       # Aliases
-        "tips"          # Terminal tips system (must be before zsh)
-        "git"           # Git configuration
-        "zsh"           # Zsh configuration
-        "tmux"          # Tmux configuration
-        "neovim"        # Neovim configuration
-        "ghostty"       # Terminal configuration
+        "environment" # PATH and environment variables first
+        "aliases"     # Aliases
+        "tips"        # Terminal tips system (must be before zsh)
+        "git"         # Git configuration
+        "zsh"         # Zsh configuration
+        "tmux"        # Tmux configuration
+        "neovim"      # Neovim configuration
+        "ghostty"     # Terminal configuration
     )
 
     for package in "${packages[@]}"; do
@@ -760,7 +760,7 @@ run_full() {
 #######################################
 
 show_usage() {
-    cat << EOF
+    cat <<EOF
 Dotfiles Installation Script
 
 USAGE:
@@ -849,34 +849,34 @@ run_contributor() {
 main() {
     # Initialize log file
     mkdir -p "$(dirname "$LOG_FILE")"
-    echo "=== Installation started: $(date) ===" >> "$LOG_FILE"
-    echo "Mode: $INSTALL_MODE" >> "$LOG_FILE"
+    echo "=== Installation started: $(date) ===" >>"$LOG_FILE"
+    echo "Mode: $INSTALL_MODE" >>"$LOG_FILE"
 
     case "$INSTALL_MODE" in
-        "--all"|"-a"|"all")
-            run_full
-            ;;
-        "--minimal"|"-m"|"minimal")
-            run_minimal
-            ;;
-        "--interactive"|"-i"|"interactive"|"")
-            run_interactive
-            ;;
-        "--server")
-            run_server
-            ;;
-        "--contributor"|"contributor")
-            run_contributor
-            ;;
-        "--help"|"-h"|"help")
-            show_usage
-            exit 0
-            ;;
-        *)
-            log_error "Unknown option: $INSTALL_MODE"
-            show_usage
-            exit 1
-            ;;
+    "--all" | "-a" | "all")
+        run_full
+        ;;
+    "--minimal" | "-m" | "minimal")
+        run_minimal
+        ;;
+    "--interactive" | "-i" | "interactive" | "")
+        run_interactive
+        ;;
+    "--server")
+        run_server
+        ;;
+    "--contributor" | "contributor")
+        run_contributor
+        ;;
+    "--help" | "-h" | "help")
+        show_usage
+        exit 0
+        ;;
+    *)
+        log_error "Unknown option: $INSTALL_MODE"
+        show_usage
+        exit 1
+        ;;
     esac
 
     echo
@@ -893,7 +893,7 @@ main() {
     log_info "For help: ./scripts/install.sh --help"
     echo
 
-    echo "=== Installation completed: $(date) ===" >> "$LOG_FILE"
+    echo "=== Installation completed: $(date) ===" >>"$LOG_FILE"
 }
 
 # Run main function
