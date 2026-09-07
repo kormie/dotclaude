@@ -230,8 +230,8 @@ Add project-specific aliases to your local `.zsh_local` file:
 
 ```bash
 # In your project directory
-echo 'alias run="npm run dev"' >> ~/.zsh_local
-echo 'alias test="npm test"' >> ~/.zsh_local
+echo 'alias run="bun run dev"' >> ~/.zsh_local
+echo 'alias test="bun test"' >> ~/.zsh_local
 ```
 
 ## 📊 Performance Benefits

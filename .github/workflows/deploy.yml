@@ -23,19 +23,18 @@ jobs:
         with:
           fetch-depth: 0
           
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 18
+          bun-version: 1.2.14
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
         
-      - name: Install dependencies
-        run: cd docs && npm install
-        
-      - name: Build with VitePress
-        run: cd docs && npm run docs:build
+      # This is the same root-level entry point used locally and in devenv. Its
+      # docs-install prerequisite enforces Bun's frozen lockfile mode.
+      - name: Install dependencies and build with VitePress
+        run: make docs-build
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

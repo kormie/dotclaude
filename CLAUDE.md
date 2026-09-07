@@ -139,5 +139,5 @@ acceptance and rollback gates for each modernization milestone.
 
 ## Documentation
 - **Live Site**: https://kormie.github.io/dotclaude/
-- **Local Development**: `cd docs && npm run docs:dev`
+- **Local Development**: `bun --cwd docs run docs:dev`
 - **Structure**: `getting-started/`, `guide/`, `claude-code/`, `reference/`

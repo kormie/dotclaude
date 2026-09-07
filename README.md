@@ -434,7 +434,7 @@ Complete guides, tutorials, and reference documentation with beautiful search an
 ### 📚 Local Documentation
 ```bash
 # Serve documentation locally
-cd docs && npm install && npm run docs:dev
+bun --cwd docs install --frozen-lockfile && bun --cwd docs run docs:dev
 # Open http://localhost:5173
 ```
 

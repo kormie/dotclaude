@@ -134,7 +134,7 @@ PROJECT_PATH="$HOME/projects/myapp"
 cd "$PROJECT_PATH"
 
 # Pre-setup tasks
-npm install  # Ensure dependencies are current
+bun install  # Ensure dependencies are current
 git fetch --all  # Update all branches
 
 # Launch Claude workspace with typical features
@@ -143,8 +143,8 @@ cw myapp \
   feature-payment-integration
 
 # Post-setup in each pane
-tmux send-keys -t "claude-dev-myapp:1.1" "npm run dev" Enter
-tmux send-keys -t "claude-dev-myapp:1.2" "npm run test:watch" Enter
+tmux send-keys -t "claude-dev-myapp:1.1" "bun run dev" Enter
+tmux send-keys -t "claude-dev-myapp:1.2" "bun run test:watch" Enter
 ```
 
 ### Development Environment Automation
@@ -181,7 +181,7 @@ if [[ -d "$WORKTREE_PATH" ]]; then
     cd "$WORKTREE_PATH"
     
     # Run tests
-    npm test
+    bun test
     
     # Commit any final changes
     git add .
@@ -482,7 +482,7 @@ test_all_worktrees() {
             echo "Testing $worktree..."
             cd "$worktree"
             
-            if ! npm test; then
+            if ! bun test; then
                 echo "Tests failed in $worktree"
                 exit_code=1
             fi

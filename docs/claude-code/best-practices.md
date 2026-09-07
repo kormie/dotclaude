@@ -155,7 +155,7 @@ cw myproject feature-user-dashboard hotfix-minor-bugs
 
 # Set up development environment
 cd .worktrees/feature-user-dashboard
-npm install  # or equivalent dependency installation
+bun install  # or equivalent dependency installation
 ```
 
 **2. Development Phase:**
@@ -191,9 +191,9 @@ git checkout feature/user-dashboard
 git rebase main  # or merge main into feature
 
 # Run full test suite
-npm test
-npm run lint
-npm run build
+bun test
+bun run lint
+bun run build
 
 # Push feature branch
 git push -u origin feature/user-dashboard
@@ -279,7 +279,7 @@ Include any breaking changes or important notes.
 # 5. Update documentation
 
 # Example workflow:
-npm test -- --watch  # Keep tests running
+bun test --watch  # Keep tests running
 # Claude implements feature incrementally
 # Tests provide immediate feedback
 ```
@@ -291,7 +291,7 @@ npm test -- --watch  # Keep tests running
 for worktree in .worktrees/*/; do
     echo "Testing $worktree..."
     cd "$worktree"
-    npm test || echo "Tests failed in $worktree"
+    bun test || echo "Tests failed in $worktree"
     cd - > /dev/null
 done
 ```
