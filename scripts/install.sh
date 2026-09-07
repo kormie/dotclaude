@@ -4,6 +4,7 @@
 # Usage:
 #   macOS:  ./scripts/install.sh [--all|--minimal|--interactive]
 #   Linux:  ./scripts/install.sh --server
+#   Contributors (macOS/Linux): ./scripts/install.sh --contributor
 #
 # This script is fully idempotent - safe to run multiple times.
 # Each step checks current state before making changes.
@@ -225,6 +226,61 @@ install_core_dependencies() {
             fi
         fi
     done
+}
+
+#######################################
+# Contributor Environment
+#######################################
+
+load_nix_environment() {
+    # The official installer uses the daemon profile on multi-user installs and
+    # the user profile on single-user installs. Loading either file affects only
+    # this process; it does not edit the contributor's shell configuration.
+    local nix_profile
+    for nix_profile in \
+        "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" \
+        "$HOME/.nix-profile/etc/profile.d/nix.sh"; do
+        if [[ -r "$nix_profile" ]]; then
+            # The path is selected from the official Nix profiles above.
+            # shellcheck disable=SC1090
+            source "$nix_profile"
+            break
+        fi
+    done
+}
+
+install_contributor_dependencies() {
+    log_step "Installing contributor environment prerequisites..."
+
+    if ! command -v curl &>/dev/null; then
+        log_error "curl is required to install Nix"
+        exit 1
+    fi
+
+    if command -v nix &>/dev/null; then
+        log_skip "Nix already installed ($(nix --version))"
+    else
+        log_info "Installing Nix with the official nix-installer..."
+        curl -sSfL https://artifacts.nixos.org/nix-installer | \
+            sh -s -- install --no-confirm
+        load_nix_environment
+    fi
+
+    if ! command -v nix &>/dev/null; then
+        log_error "Nix was installed but is not available in PATH; start a new shell and retry"
+        exit 1
+    fi
+
+    if command -v devenv &>/dev/null; then
+        log_skip "devenv already installed ($(devenv --version))"
+    else
+        log_info "Installing devenv from nixpkgs..."
+        nix-env --install --attr devenv \
+            -f https://github.com/NixOS/nixpkgs/tarball/nixpkgs-unstable
+    fi
+
+    log_success "Contributor prerequisites installed"
+    log_info "Run 'devenv shell' to obtain Bun, Python, Git, ShellCheck, and shfmt"
 }
 
 #######################################
@@ -679,6 +735,7 @@ OPTIONS:
     --minimal, -m       Minimal installation (macOS)
     --interactive, -i   Interactive mode with prompts (default, macOS)
     --server            Linux server minimal profile (Ubuntu/Debian)
+    --contributor       Install only Nix and devenv (macOS/Linux)
     --help, -h          Show this help message
 
 EXAMPLES:
@@ -686,6 +743,7 @@ EXAMPLES:
     $(basename "$0") --all        # Full installation (macOS)
     $(basename "$0") --minimal    # Minimal installation (macOS)
     $(basename "$0") --server     # Server minimal profile (Linux)
+    $(basename "$0") --contributor # Reproducible contributor shell prerequisites
 
 WHAT GETS INSTALLED:
     Minimal:
@@ -699,6 +757,11 @@ WHAT GETS INSTALLED:
       - Nerd Fonts
       - Oh-My-Zsh with plugins
       - macOS system defaults
+
+    Contributor:
+      - Nix (official nix-installer, when missing)
+      - devenv (official nixpkgs installation command)
+      - No Stow deployment or changes to dotfile configuration
 
 IDEMPOTENCY:
     This script is designed to be idempotent - running it multiple
@@ -737,6 +800,16 @@ run_server() {
     log_success "Server profile installed"
 }
 
+run_contributor() {
+    echo
+    echo -e "${BLUE}========================================${NC}"
+    echo -e "${BLUE}  Contributor Environment Prerequisites ${NC}"
+    echo -e "${BLUE}========================================${NC}"
+    echo
+
+    install_contributor_dependencies
+}
+
 main() {
     # Initialize log file
     mkdir -p "$(dirname "$LOG_FILE")"
@@ -755,6 +828,9 @@ main() {
             ;;
         "--server")
             run_server
+            ;;
+        "--contributor"|"contributor")
+            run_contributor
             ;;
         "--help"|"-h"|"help")
             show_usage
