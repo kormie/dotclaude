@@ -2,6 +2,45 @@
 
 Get started with DotClaude in minutes with our safety-first approach.
 
+## Contributor shell (optional)
+
+The repository has an optional [devenv](https://devenv.sh/) shell for working
+on the repository on macOS or Linux. Install only its prerequisites, then enter
+it and run the named checks:
+
+```bash
+./scripts/install.sh --contributor
+devenv shell
+devenv tasks run docs:build
+devenv tasks run shell:lint
+devenv tasks run flipper:validate
+devenv tasks run check:all  # aggregate check; `devenv test` is equivalent
+```
+
+The locked shell contains only contributor tools: Bun, Python, Git, ShellCheck,
+and shfmt. Shell entry has no setup hook: it does not invoke Stow, Homebrew,
+`apt`, font installation, macOS defaults, or any repository install script, and
+therefore does not create, remove, or replace user configuration under `$HOME`.
+Only an explicit host-install command from the sections below changes the host.
+
+devenv is not required. Contributors using native tools can run:
+
+```bash
+(cd docs && bun install --frozen-lockfile && bun run docs:build)
+shellcheck --severity=error bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace
+for file in bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace; do shfmt --to-json < "$file" >/dev/null; done
+python3 - <<'PY'
+import ast
+from pathlib import Path
+for source in sorted(Path("flipper").glob("*.py")):
+    ast.parse(source.read_text(), filename=str(source))
+PY
+```
+
+The contributor shell validates repository sources; the installer below
+deploys dotfiles and manages the host. Keeping that boundary explicit makes
+opening a development shell safe on both supported operating systems.
+
 ## Prerequisites
 
 - **macOS** (tested on macOS Sonoma 14.5+)

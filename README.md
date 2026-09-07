@@ -110,6 +110,44 @@ cw myproject feature-1 feature-2
 
 ## 🏗️ Architecture
 
+### Optional contributor environment
+
+The root `devenv.nix`, `devenv.yaml`, and `devenv.lock` define a reproducible,
+cross-platform **contributor shell** for macOS and Linux. If Nix and devenv are
+installed, run `devenv shell`, then `devenv tasks run check:all` (or
+`devenv test`). The shell supplies only Bun for `docs/`, Python for `flipper/`,
+Git, ShellCheck, and shfmt. Entering it does not run Stow or any setup script and
+does not create, remove, or replace files under `$HOME`.
+
+Install the two shell prerequisites with the repository's non-deploying mode:
+
+```bash
+./scripts/install.sh --contributor
+```
+
+This uses devenv's currently documented Nix and devenv installation commands;
+it does not run any of DotClaude's host setup or deployment steps.
+
+devenv is optional. Without Nix, install Bun, Python 3, Git, ShellCheck, and
+shfmt using your normal package manager, then run the equivalent native checks:
+
+```bash
+(cd docs && bun install --frozen-lockfile && bun run docs:build)
+shellcheck --severity=error bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace
+for file in bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace; do shfmt --to-json < "$file" >/dev/null; done
+python3 - <<'PY'
+import ast
+from pathlib import Path
+for source in sorted(Path("flipper").glob("*.py")):
+    ast.parse(source.read_text(), filename=str(source))
+PY
+```
+
+This contributor environment is deliberately separate from **host dotfile
+installation**. GNU Stow deployment, Homebrew or `apt`, fonts, macOS defaults,
+and every change under `$HOME` remain opt-in actions performed by the existing
+installation scripts described below; devenv never performs them.
+
 ### GNU Stow Package System
 ```
 stow/
