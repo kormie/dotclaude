@@ -127,13 +127,15 @@ When implementing Rust-based CLI tool replacements:
 - Ensure easy toggle between old/new configurations during transition
 
 ## Project Status
-This repository is **production-ready** with all four implementation phases complete:
+This repository is a **maintained product**. Its original four implementation phases
+are historical releases:
 - Phase 1: Safety infrastructure, core scripts, modern tools
 - Phase 2: Enhanced shell configuration with Oh-My-Zsh
 - Phase 3: Modern Neovim with Lua configuration (40+ plugins, LSP)
 - Phase 4: Full integration and performance optimization
 
-See `PROJECT_PLAN.md` for detailed implementation history.
+See `PROJECT_PLAN.md` for current supported targets, minimum tool versions, and the
+acceptance and rollback gates for each modernization milestone.
 
 ## Documentation
 - **Live Site**: https://kormie.github.io/dotclaude/

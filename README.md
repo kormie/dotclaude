@@ -6,7 +6,7 @@
 [![Phase 2 Complete](https://img.shields.io/badge/Phase%202-Complete-green.svg)](https://github.com/kormie/dotclaude)
 [![Phase 3 Complete](https://img.shields.io/badge/Phase%203-Complete-green.svg)](https://github.com/kormie/dotclaude)
 [![Phase 4 Complete](https://img.shields.io/badge/Phase%204-Complete-green.svg)](https://github.com/kormie/dotclaude)
-[![Project Complete](https://img.shields.io/badge/Project-Complete-brightgreen.svg)](https://github.com/kormie/dotclaude)
+[![Status: Maintained](https://img.shields.io/badge/Status-Maintained-brightgreen.svg)](PROJECT_PLAN.md)
 [![Safety First](https://img.shields.io/badge/Safety-First-blue.svg)]()
 [![Vim Optimized](https://img.shields.io/badge/Vim-Optimized-purple.svg)]()
 
@@ -372,6 +372,7 @@ cd docs && npm install && npm run docs:dev
 ```
 
 ### 📄 Quick Reference
+- **[PROJECT_PLAN.md](PROJECT_PLAN.md)**: Supported targets, version floors, and reversible modernization roadmap
 - **[CLAUDE.md](CLAUDE.md)**: Project instructions and configuration guidance
 - **[backups/](backups/)**: Automatic backups with timestamps
 - **[docs/](docs/)**: VitePress documentation source
@@ -386,18 +387,18 @@ Personal dotfiles configuration - use at your own discretion.
 
 ---
 
-## 🏆 **Project Complete - Production Ready**
+## 🔄 **Maintained Product**
 
-**DotClaude is now fully operational!** A modern, safe, and powerful CLI environment optimized for AI-assisted development workflows.
+**DotClaude is actively maintained.** The original four phases established a modern, safe CLI environment; ongoing compatibility, hardening, and refresh work is tracked in the [modernization roadmap](PROJECT_PLAN.md).
 
-### **Final Achievement Summary**
+### **Established Foundation**
 - ✅ **All 4 Phases Complete**: Foundation → Shell → Editor → Integration
 - ✅ **Production Deployment**: Enhanced configurations active as primary setup
 - ✅ **Performance Optimized**: Neovim ~47ms, Zsh ~380ms startup times
 - ✅ **Safety Systems Intact**: Complete rollback capability maintained
 - ✅ **Modern Tooling**: Full CLI tool suite with coexisting aliases
-- ✅ **Documentation Complete**: Comprehensive guides with no dead links
+- ✅ **Documented Workflows**: Comprehensive guides maintained alongside the roadmap
 
 **Built for the future of AI-assisted development** 🤖✨
 
-*Project completed: All phases finished - December 2024*
+*Product status: maintained. See [PROJECT_PLAN.md](PROJECT_PLAN.md) for supported targets, acceptance gates, and rollback plans.*
