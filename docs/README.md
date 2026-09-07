@@ -5,19 +5,15 @@ This directory contains the VitePress-powered documentation for DotClaude.
 ## Local Development
 
 ```bash
-# Install dependencies
-cd docs
-npm install
+# From the repository root, install dependencies and build for production
+make docs-build
 
 # Start development server
-npm run docs:dev
+bun --cwd docs run docs:dev
 # Open http://localhost:5173
 
-# Build for production
-npm run docs:build
-
 # Preview production build
-npm run docs:preview
+bun --cwd docs run docs:preview
 ```
 
 ## Documentation Structure
@@ -80,7 +76,7 @@ Documentation is automatically deployed to GitHub Pages when changes are pushed 
 ## Contributing
 
 1. Make changes to markdown files
-2. Test locally with `npm run docs:dev`
+2. From the repository root, test locally with `bun --cwd docs run docs:dev`
 3. Commit and push to main branch
 4. GitHub Actions will build and deploy automatically
 

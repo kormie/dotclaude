@@ -108,7 +108,7 @@ tmux split-window -v -t 2
 tmux select-pane -t 2
 tmux send-keys "nvim src/" Enter
 tmux select-pane -t 3
-tmux send-keys "npm run dev" Enter
+tmux send-keys "bun run dev" Enter
 
 # Focus on first Claude pane
 tmux select-pane -t 0

@@ -10,7 +10,7 @@
     "docs:serve": "vitepress preview"
   },
   "devDependencies": {
-    "vitepress": "^1.0.0-rc.29"
+    "vitepress": "^1.6.4"
   },
   "keywords": [
     "dotfiles",
@@ -22,7 +22,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "mermaid": "^11.12.2",
+    "mermaid": "^11.17.2",
     "vitepress-plugin-mermaid": "^2.0.17"
   }
 }

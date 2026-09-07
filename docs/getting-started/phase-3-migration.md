@@ -310,7 +310,7 @@ Create project-specific settings with `.nvim.lua` files:
 ```lua
 -- .nvim.lua in project root
 vim.opt_local.colorcolumn = "120"
-vim.keymap.set('n', '<leader>r', ':!npm run dev<CR>')
+vim.keymap.set('n', '<leader>r', ':!bun run dev<CR>')
 ```
 
 ### Custom Snippets
