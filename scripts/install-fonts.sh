@@ -61,7 +61,7 @@ check_macos() {
 
 # Check if Homebrew is installed
 check_homebrew() {
-    if ! command -v brew &> /dev/null; then
+    if ! command -v brew &>/dev/null; then
         log_error "Homebrew is not installed"
         log_info "Install Homebrew first: https://brew.sh"
         exit 1
@@ -264,15 +264,15 @@ main() {
     local target="${1:-list}"
 
     case "$target" in
-        "help"|"-h"|"--help")
-            usage
-            exit 0
-            ;;
-        "list")
-            check_macos
-            list_fonts
-            exit 0
-            ;;
+    "help" | "-h" | "--help")
+        usage
+        exit 0
+        ;;
+    "list")
+        check_macos
+        list_fonts
+        exit 0
+        ;;
     esac
 
     check_macos
@@ -284,16 +284,16 @@ main() {
     echo
 
     case "$target" in
-        "recommended")
-            install_recommended
-            ;;
-        "all")
-            install_all
-            ;;
-        *)
-            # Try to install as a specific font
-            install_font_by_key "$target"
-            ;;
+    "recommended")
+        install_recommended
+        ;;
+    "all")
+        install_all
+        ;;
+    *)
+        # Try to install as a specific font
+        install_font_by_key "$target"
+        ;;
     esac
 
     show_summary

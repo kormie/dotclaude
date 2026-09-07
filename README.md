@@ -113,11 +113,17 @@ cw myproject feature-1 feature-2
 ### Optional contributor environment
 
 The root `devenv.nix`, `devenv.yaml`, and `devenv.lock` define a reproducible,
-cross-platform **contributor shell** for macOS and Linux. If Nix and devenv are
-installed, run `devenv shell`, then `devenv tasks run check:all` (or
-`devenv test`). The shell supplies only Bun for `docs/`, Python for `flipper/`,
-Git, ShellCheck, and shfmt. Entering it does not run Stow or any setup script and
-does not create, remove, or replace files under `$HOME`.
+cross-platform **contributor shell** for macOS and Linux. The full,
+repository-only validation entry point is `devenv tasks run ci:all` (or
+`devenv test`). `ci:lint` runs all static linters; `ci:all` additionally installs
+and builds the documentation and generates and packs Flipper assets in temporary
+directories. Neither command runs Stow, a host package manager, or an installer,
+and neither writes beneath `$HOME`.
+
+For quick local iteration, the `local:*` tasks use devenv's modified-file
+filtering (for example, `devenv tasks run local:docs`). This is only an
+optimization: release, scheduled, and other authoritative CI must run
+`devenv tasks run ci:all`, whose `qa:*` prerequisites always perform full checks.
 
 Install the two shell prerequisites with the repository's non-deploying mode:
 
@@ -153,20 +159,17 @@ Do not use a bare `command -v devenv` maintenance check: an older cached image
 may have Nix installed without its profile on `PATH`. Reset the container cache
 once after changing the setup and maintenance scripts.
 
-devenv is optional. Without Nix, install Bun, Python 3, Git, ShellCheck, and
-shfmt using your normal package manager, then run the equivalent native checks:
+devenv is optional. Without Nix, install Bun, Python 3 (with Pillow and
+heatshrink2), Git, ShellCheck, shfmt, and actionlint using your normal package
+manager, then run the equivalent native entry point:
 
 ```bash
-(cd docs && bun install --frozen-lockfile && bun run docs:build)
-shellcheck --severity=error bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace
-for file in bin/claude-switch scripts/*.sh scripts/tmux-claude-workspace; do shfmt --to-json < "$file" >/dev/null; done
-python3 - <<'PY'
-import ast
-from pathlib import Path
-for source in sorted(Path("flipper").glob("*.py")):
-    ast.parse(source.read_text(), filename=str(source))
-PY
+make ci
 ```
+
+Individual native targets mirror the tasks: `make shell-parse`, `shellcheck`,
+`shfmt`, `json`, `actions`, `docs`, `stow-layout`, and `flipper`. Generated docs
+are ignored, while Flipper checks copy their inputs into disposable directories.
 
 This contributor environment is deliberately separate from **host dotfile
 installation**. GNU Stow deployment, Homebrew or `apt`, fonts, macOS defaults,

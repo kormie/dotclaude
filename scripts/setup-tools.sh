@@ -42,21 +42,21 @@ check_macos() {
 # Detect architecture for Homebrew path
 detect_arch() {
     case "$(uname -m)" in
-        arm64|aarch64)
-            echo "arm64"
-            ;;
-        x86_64)
-            echo "x86_64"
-            ;;
-        *)
-            echo "unknown"
-            ;;
+    arm64 | aarch64)
+        echo "arm64"
+        ;;
+    x86_64)
+        echo "x86_64"
+        ;;
+    *)
+        echo "unknown"
+        ;;
     esac
 }
 
 # Install Homebrew if not present (idempotent)
 install_homebrew() {
-    if command -v brew &> /dev/null; then
+    if command -v brew &>/dev/null; then
         log_info "Homebrew is already installed"
         return 0
     fi
@@ -76,7 +76,7 @@ install_homebrew() {
         eval "$(/usr/local/bin/brew shellenv)"
     fi
 
-    if command -v brew &> /dev/null; then
+    if command -v brew &>/dev/null; then
         log_info "Homebrew installed successfully"
         return 0
     else
@@ -87,7 +87,7 @@ install_homebrew() {
 
 # Check if Homebrew is installed, install if not
 check_homebrew() {
-    if ! command -v brew &> /dev/null; then
+    if ! command -v brew &>/dev/null; then
         log_warn "Homebrew is not installed"
         read -rp "Install Homebrew now? [Y/n]: " response
         response="${response:-y}"
@@ -104,14 +104,14 @@ check_homebrew() {
 install_tool() {
     local tool="$1"
     local formula="$2"
-    
+
     log_install "Installing $tool..."
-    
-    if command -v "$tool" &> /dev/null; then
+
+    if command -v "$tool" &>/dev/null; then
         log_info "$tool is already available"
         return 0
     fi
-    
+
     if brew install "$formula"; then
         log_info "$tool installed successfully"
         return 0
@@ -124,35 +124,35 @@ install_tool() {
 # Install modern CLI tools
 install_rust_tools() {
     log_info "Installing modern Rust-based CLI tools..."
-    
+
     # Better ls replacement (eza is the modern fork of exa)
     install_tool "eza" "eza"
-    
-    # Better cat replacement  
+
+    # Better cat replacement
     install_tool "bat" "bat"
-    
+
     # Better find replacement
     install_tool "fd" "fd"
-    
+
     # Better grep replacement
     install_tool "rg" "ripgrep"
-    
+
     # Smart directory navigation
     install_tool "zoxide" "zoxide"
-    
+
     # Better git diff tools
     install_tool "delta" "git-delta"
     install_tool "difft" "difftastic"
-    
+
     # Better du replacement
     install_tool "dust" "dust"
-    
+
     # Better ps replacement
     install_tool "procs" "procs"
-    
+
     # Better top replacement
     install_tool "btm" "bottom"
-    
+
     # Better tree replacement
     install_tool "broot" "broot"
 }
@@ -160,28 +160,28 @@ install_rust_tools() {
 # Install additional useful tools
 install_additional_tools() {
     log_info "Installing additional useful tools..."
-    
+
     # GNU Stow for dotfile management
     install_tool "stow" "stow"
-    
+
     # Modern shell
     install_tool "zsh" "zsh"
-    
+
     # Terminal multiplexer
     install_tool "tmux" "tmux"
-    
+
     # Modern text editor
     install_tool "nvim" "neovim"
-    
+
     # JSON processor
     install_tool "jq" "jq"
-    
-    # YAML processor  
+
+    # YAML processor
     install_tool "yq" "yq"
-    
+
     # HTTP client
     install_tool "httpie" "httpie"
-    
+
     # File archiver
     install_tool "7z" "p7zip"
 }
@@ -189,12 +189,12 @@ install_additional_tools() {
 # Create coexisting aliases for new tools
 create_aliases() {
     local alias_file="$DOTFILES_DIR/stow/rust-tools/.aliases"
-    
+
     log_info "Creating coexisting aliases..."
-    
+
     mkdir -p "$(dirname "$alias_file")"
-    
-    cat > "$alias_file" << 'EOF'
+
+    cat >"$alias_file" <<'EOF'
 # Modern CLI tool aliases - coexist with traditional tools
 # These provide modern alternatives without replacing the originals
 
@@ -251,10 +251,10 @@ EOF
 # Show installation summary
 show_summary() {
     log_info "Installation Summary:"
-    
+
     echo
     echo "Modern CLI Tools Available:"
-    
+
     # Check each tool
     local tools=(
         "eza:Enhanced ls with colors and git integration (modern fork of exa)"
@@ -272,18 +272,18 @@ show_summary() {
         "jq:JSON processor"
         "yq:YAML processor"
     )
-    
+
     for tool_desc in "${tools[@]}"; do
         local tool="${tool_desc%:*}"
         local desc="${tool_desc#*:}"
-        
-        if command -v "$tool" &> /dev/null; then
+
+        if command -v "$tool" &>/dev/null; then
             echo -e "  ✅ ${GREEN}$tool${NC} - $desc"
         else
             echo -e "  ❌ ${RED}$tool${NC} - $desc (not installed)"
         fi
     done
-    
+
     echo
     log_info "Try the new tools with '2' suffix aliases (e.g., ll2, cat2, find2)"
     log_info "Load aliases with: source $DOTFILES_DIR/stow/rust-tools/.aliases"
@@ -291,41 +291,41 @@ show_summary() {
 
 main() {
     local target="${1:-all}"
-    
+
     check_macos
     check_homebrew
-    
+
     log_info "Setting up modern CLI tools..."
     log_info "Target: $target"
-    
+
     case "$target" in
-        "rust"|"rust-tools")
-            install_rust_tools
-            ;;
-        "additional")
-            install_additional_tools
-            ;;
-        "aliases")
-            create_aliases
-            ;;
-        "all")
-            install_rust_tools
-            install_additional_tools
-            create_aliases
-            ;;
-        *)
-            log_error "Unknown target: $target"
-            log_info "Available targets: rust, additional, aliases, all"
-            exit 1
-            ;;
+    "rust" | "rust-tools")
+        install_rust_tools
+        ;;
+    "additional")
+        install_additional_tools
+        ;;
+    "aliases")
+        create_aliases
+        ;;
+    "all")
+        install_rust_tools
+        install_additional_tools
+        create_aliases
+        ;;
+    *)
+        log_error "Unknown target: $target"
+        log_info "Available targets: rust, additional, aliases, all"
+        exit 1
+        ;;
     esac
-    
+
     show_summary
-    
+
     # Create symlink for tmux-claude-workspace script
     local script_path="$DOTFILES_DIR/scripts/tmux-claude-workspace"
     local bin_dir="$HOME/.local/bin"
-    
+
     if [[ -f "$script_path" ]]; then
         mkdir -p "$bin_dir"
         if [[ ! -L "$bin_dir/tmux-claude-workspace" ]]; then
@@ -333,7 +333,7 @@ main() {
             log_info "tmux-claude-workspace script linked to PATH"
         fi
     fi
-    
+
     log_info "Setup completed successfully!"
     log_info "New tools are available alongside your existing ones."
     log_info "Claude Code workspace: Run 'cw' or 'claude-workspace' to start"

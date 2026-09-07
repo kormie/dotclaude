@@ -165,6 +165,14 @@ docs/.vitepress/dist/
 docs/.vitepress/cache/
 docs/node_modules/
 
+# Flipper validation/build output (QA normally creates these under mktemp)
+flipper/dist/
+flipper/.asset_packer.py
+/kormie-asset-pack.zip
+
+# devenv's repository-local evaluation state
+/.devenv/
+
 # Other documentation generators
 _site/
 .jekyll-cache/
