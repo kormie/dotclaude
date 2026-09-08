@@ -24,13 +24,14 @@ jobs:
           name: devenv
       - name: Install devenv
         run: nix profile add nixpkgs#devenv
-      - name: Run aggregate repository QA
-        run: devenv tasks run ci:all
+      # devenv.nix wires ci:all before devenv:enterTest, so this validates both
+      # the aggregate repository tasks and the development shell itself.
+      - name: Test development shell and run aggregate repository QA
+        run: devenv test
 
   macos:
     name: devenv / macOS (advisory)
     runs-on: macos-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@v31
@@ -39,5 +40,5 @@ jobs:
           name: devenv
       - name: Install devenv
         run: nix profile add nixpkgs#devenv
-      - name: Run aggregate repository QA
-        run: devenv tasks run ci:all
+      - name: Test development shell and run aggregate repository QA
+        run: devenv test
