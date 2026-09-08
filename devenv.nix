@@ -25,7 +25,6 @@ in
   languages.javascript = {
     enable = true;
     bun.enable = true;
-    nodejs.enable = false; # docs build runs on Bun alone
   };
   languages.python.enable = true;
 
