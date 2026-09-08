@@ -1,15 +1,10 @@
-name: Devenv shell
+name: Devenv
 
 on:
+  # Run the aggregate QA suite for every pull request. Do not add path filters
+  # without measured cost data, complete dependency coverage, and a scheduled
+  # unfiltered run: a skipped workflow cannot satisfy the required Linux check.
   pull_request:
-    paths:
-      - ".envrc"
-      - ".python-version"
-      - "devenv.lock"
-      - "devenv.nix"
-      - "devenv.yaml"
-      - "requirements.txt"
-      - ".github/workflows/devenv.yml"
   push:
     branches: [main]
   workflow_dispatch:
@@ -18,13 +13,9 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+  linux:
+    name: devenv / Linux
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: cachix/install-nix-action@v31
@@ -33,5 +24,20 @@ jobs:
           name: devenv
       - name: Install devenv
         run: nix profile add nixpkgs#devenv
-      - name: Build and test the development shell
-        run: devenv test
+      - name: Run aggregate repository QA
+        run: devenv tasks run ci:all
+
+  macos:
+    name: devenv / macOS (advisory)
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+      - uses: cachix/cachix-action@v16
+        with:
+          name: devenv
+      - name: Install devenv
+        run: nix profile add nixpkgs#devenv
+      - name: Run aggregate repository QA
+        run: devenv tasks run ci:all
