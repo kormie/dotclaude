@@ -20,7 +20,13 @@ in
     (python3.withPackages (ps: with ps; [ heatshrink2 pillow ]))
   ];
 
-  languages.javascript.bun.enable = true;
+  # languages.javascript.enable must be set too: the module only adds its
+  # packages (including Bun) to the shell when the language itself is enabled.
+  languages.javascript = {
+    enable = true;
+    bun.enable = true;
+    nodejs.enable = false; # docs build runs on Bun alone
+  };
   languages.python.enable = true;
 
   tasks = {
