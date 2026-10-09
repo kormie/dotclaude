@@ -12,6 +12,14 @@ on:
 permissions:
   contents: read
 
+env:
+  # Pin the devenv release instead of taking whatever nixpkgs-unstable has
+  # today. The devenv CLI embeds its own Nix evaluator; when that embedded Nix
+  # is older than the daemon installed by install-nix-action, evaluation can
+  # fail intermittently with "path '/nix/store/...' is not valid"
+  # (cachix/devenv#3064). devenv v2.3 bundles Nix 2.35, matching the runner.
+  DEVENV_VERSION: v2.3
+
 jobs:
   linux:
     name: devenv / Linux
@@ -23,7 +31,7 @@ jobs:
         with:
           name: devenv
       - name: Install devenv
-        run: nix profile add nixpkgs#devenv
+        run: nix profile add "github:cachix/devenv/${DEVENV_VERSION}"
       # devenv.nix wires ci:all before devenv:enterTest, so this validates both
       # the aggregate repository tasks and the development shell itself.
       - name: Test development shell and run aggregate repository QA
@@ -39,6 +47,6 @@ jobs:
         with:
           name: devenv
       - name: Install devenv
-        run: nix profile add nixpkgs#devenv
+        run: nix profile add "github:cachix/devenv/${DEVENV_VERSION}"
       - name: Test development shell and run aggregate repository QA
         run: devenv test
