@@ -1,3 +1,6 @@
 # Build output and the fetched third-party packer (not vendored)
 dist/
 .asset_packer.py
+
+# SD staging output from setup-sd.sh (cloned upstream content, not vendored)
+sd-staging/
